@@ -1177,6 +1177,57 @@ html {
   .hero h1 {font-size:1.7rem!important;}
 }
 
+
+/* Mobile editorial UI v4: the visualization comes first; methodology stays accessible. */
+.il-mobile-data-disclosure,.il-map-title-mobile,.il-map-year-mobile {display:none;}
+@media (max-width:768px) {
+  /* El aviso no tiene por qué ocupar media pantalla antes del gráfico. */
+  .il-data-notice {display:none!important;}
+  .il-mobile-data-disclosure {
+    display:block; margin:3px 0 8px; border:0; border-radius:8px;
+    font-family:inherit;font-size:.68rem;color:#5d6b7d;
+  }
+  .il-mobile-data-disclosure summary {
+    list-style:none;display:inline-flex;align-items:center;gap:5px;
+    min-height:30px;padding:2px 0;cursor:pointer;color:#51647c;font-size:.68rem;
+  }
+  .il-mobile-data-disclosure summary::-webkit-details-marker {display:none;}
+  .il-mobile-data-disclosure summary:focus-visible {outline:2px solid #b89b5e;outline-offset:2px;}
+  .il-mobile-data-disclosure p {
+    padding:8px 10px;margin:0 0 4px;background:#f6f8fa;
+    border:1px solid #e2e7ef;border-radius:8px;line-height:1.45;font-size:.7rem;
+  }
+  .hero {border:0!important;padding:2px 0!important;margin:0 0 2px!important;}
+  .hero-kicker {display:none!important;}
+  .hero h1 {font-size:clamp(1.5rem,6.5vw,1.8rem)!important;
+    margin:1px 0 4px!important;line-height:1.1!important;}
+  .hero-subtitle,.hero-actions {display:none!important;}
+  .hero-meta {margin:2px 0 5px!important;padding:0!important;border:0!important;
+    gap:3px 9px!important;font-size:.65rem!important;}
+  .hero-meta span:last-child {display:none!important;}
+  /* Un título conciso y una sola etiqueta temporal antes del Sankey. */
+  .il-sankey-spotlight {
+    margin:4px 0 4px!important;padding:8px 0 0!important;
+    border-top:2px solid #b89b5e!important;
+  }
+  .il-spotlight-kicker {display:none!important;}
+  .il-map-title-desktop {display:none!important;}
+  .il-map-title-mobile {display:inline!important;}
+  .il-spotlight-top h2 {
+    font-size:clamp(1.25rem,5.1vw,1.55rem)!important;
+    line-height:1.15!important;margin:2px 0 4px!important;
+  }
+  .il-spotlight-top p,.il-sankey-cta,.il-sankey-meta {display:none!important;}
+  .il-map-year-mobile {display:flex;align-items:center;gap:7px;
+    width:max-content;max-width:100%;margin:2px 0 5px;color:#627085;
+    font-size:.65rem;line-height:1.3;}
+  .il-map-year-mobile strong {background:#f8f3e7;color:#826629;border:1px solid #e7d9af;
+    padding:2px 7px;border-radius:999px;font-size:.65rem;}
+  .il-spotlight-footnote {display:none!important;}
+  /* Mover texto auxiliar fuera del primer plano sin ocultar la estadística. */
+  .il-finance-coverage {margin-top:10px!important;}
+}
+
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación del observatorio España en Datos">
@@ -1243,6 +1294,10 @@ if (idealabMobileMenu) {
 ```
 
 <div class="il-data-notice" role="note"><strong>Datos históricos.</strong> Algunas series están en revisión o excluidas por metadatos ambiguos. <a href="./metodologia">Fuentes y límites</a>.</div>
+<details class="il-mobile-data-disclosure">
+  <summary><span aria-hidden="true">ⓘ</span> Datos históricos · Alcance y fuentes</summary>
+  <p>Algunas series están en revisión o excluidas por metadatos ambiguos. Los años y estados de cada indicador se indican en su ficha. <a href="./metodologia">Consultar metodología y limitaciones</a>.</p>
+</details>
 
 ```js
 import {KpiCard} from "./components/kpi-card.js";
@@ -2467,12 +2522,13 @@ display(meta);
   <div class="il-spotlight-top">
     <div>
       <div class="il-spotlight-kicker">LA VISUALIZACIÓN PRINCIPAL · FINANZAS PÚBLICAS</div>
-      <h2>¿De dónde sale el dinero y en qué se gasta?</h2>
+      <h2><span class="il-map-title-desktop">¿De dónde sale el dinero y en qué se gasta?</span><span class="il-map-title-mobile">¿A dónde va el dinero público?</span></h2>
       <p>Explora el recorrido de los recursos públicos: ingresos, financiación y funciones de gasto. Selecciona cada rama para consultar importes, fuentes y metodología.</p>
     </div>
     <a href="./finanzas-publicas" class="il-sankey-cta">Ver análisis completo ↗</a>
   </div>
   <div class="il-sankey-meta">Ejercicio histórico · Sector consolidado S.13 · Datos sujetos a revisión · No se asignan impuestos a gastos concretos.</div>
+<div class="il-map-year-mobile"><strong>2024</strong><span>IGAE · Administraciones públicas</span></div>
 </section>
 
 ```js
