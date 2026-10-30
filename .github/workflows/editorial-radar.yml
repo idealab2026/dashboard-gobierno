@@ -1,6 +1,11 @@
 name: Radar editorial IDEA LAB
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'editorial/**'
+      - '.github/workflows/editorial-radar.yml'
   workflow_dispatch:
   schedule:
     - cron: '17 7 * * 1-5'
