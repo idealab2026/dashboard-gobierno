@@ -1304,6 +1304,54 @@ const kpiPresentation = {
     isPercentage: true
   },
 
+  pensiones_ss_numero: {
+    title: "Pensiones abonadas",
+    formatValue: integer,
+    unitLabel: "número de pensiones · octubre"
+  },
+  pensionistas_ss_aproximado: {
+    title: "Personas pensionistas",
+    formatValue: value => "≈" + compact(value),
+    unitLabel: "personas · estimación oficial"
+  },
+  pension_media_sistema_mes: {
+    title: "Pensión media del sistema",
+    formatValue: euro0,
+    unitLabel: "euros al mes · octubre"
+  },
+  pension_media_jubilacion_mes: {
+    title: "Pensión media de jubilación",
+    formatValue: euro0,
+    unitLabel: "euros al mes · octubre"
+  },
+  nomina_pensiones_ss_mes_mill: {
+    title: "Nómina mensual",
+    formatValue: value => nf0.format(value) + " M€",
+    unitLabel: "solo pensiones contributivas · octubre"
+  },
+  edad_media_acceso_jubilacion: {
+    title: "Edad media de jubilación efectiva",
+    formatValue: value => nf1.format(value),
+    unitLabel: "años · dato hasta septiembre"
+  },
+  poblacion_mayor_64_porcentaje: {
+    title: "Población de 65 años o más",
+    formatValue: pct1,
+    unitLabel: "de la población total · 2025",
+    isPercentage: true
+  },
+  dependencia_mayores_65: {
+    title: "Dependencia demográfica",
+    formatValue: pct1,
+    unitLabel: "65+ por 100 personas de 16–64 · 2025",
+    isPercentage: true
+  },
+  afiliados_ss_desestacionalizados: {
+    title: "Afiliación ajustada",
+    formatValue: compact,
+    unitLabel: "afiliados · 15 oct 2026"
+  },
+
 
   /* ======================================================
      RENTA Y DESIGUALDAD
@@ -1571,32 +1619,42 @@ const sectionDefinitions = {
 
 
   pensiones: {
-    kicker: "05 · Demografía",
-    title: "Pensiones y demografía",
+    kicker: "05 · Pensiones y demografía",
+    title: "Pensiones, cotizantes y envejecimiento",
     description:
-      "La estructura demográfica condiciona la sostenibilidad futura del sistema de pensiones.",
-
+      "Prestaciones, pensionistas, cotizaciones y estructura de edades: cada magnitud conserva su ámbito y periodo de referencia.",
     note:
-      "El gasto en pensiones y sus tres componentes figura en las cuentas IGAE-COFOG de 2024. Afiliación, pensionistas y tasas de dependencia todavía no están incorporados.",
-
+      "No confundas 10,57 millones de pensiones con cerca de 9,6 millones de personas pensionistas. La nómina contributiva mensual de octubre de 2026 tampoco es el gasto anual COFOG de 2024.",
     analysis: () => [
-  `La población residente alcanza ${formatLatest(
-    "poblacion_residente",
-    compact
-  )} personas y su crecimiento anual se sitúa en ${formatLatest(
-    "crecimiento_poblacion",
-    pct1
-  )}.`,
-
-  "El bloque combina población de 2026 y gasto en pensiones de 2024: no son periodos directamente comparables. Las cifras contables, por sí solas, no permiten inferir sostenibilidad; faltan afiliados, pensionistas, pensión media y proyecciones de dependencia."
+      `El sistema de Seguridad Social abonó ${formatLatest("pensiones_ss_numero", integer)} pensiones en octubre de 2026, con una pensión media global de ${formatLatest("pension_media_sistema_mes", euro0)} al mes. La pensión media de jubilación fue de ${formatLatest("pension_media_jubilacion_mes", euro0)} mensuales.`,
+      `En el censo de 2025, los mayores de 64 años representaban el ${formatLatest("poblacion_mayor_64_porcentaje", pct1)} de la población; su tasa de dependencia demográfica era del ${formatLatest("dependencia_mayores_65", pct1)} respecto a la población de 16 a 64 años.`,
+      "La afiliación desestacionalizada de octubre de 2026 y el número aproximado de pensionistas no bastan para calcular una tasa sostenible de cotizantes por pensionista. Son poblaciones, definiciones y fechas diferentes.",
+      "La evolución de la sostenibilidad financiera exige series de ingresos por cotizaciones, prestaciones, transferencias del Estado, empleo y escenarios actuariales comparables. Estos datos siguen pendientes."
     ],
     groups: [
       {
-        title: "Demografía",
+        title: "Pensiones y beneficiarios · octubre 2026",
+        indicators: [
+          "pensiones_ss_numero",
+          "pensionistas_ss_aproximado",
+          "pension_media_sistema_mes",
+          "pension_media_jubilacion_mes",
+          "nomina_pensiones_ss_mes_mill",
+          "edad_media_acceso_jubilacion"
+        ]
+      },
+      {
+        title: "Población y envejecimiento",
         indicators: [
           "poblacion_residente",
-          "crecimiento_poblacion"
+          "crecimiento_poblacion",
+          "poblacion_mayor_64_porcentaje",
+          "dependencia_mayores_65"
         ]
+      },
+      {
+        title: "Mercado laboral · referencia",
+        indicators: ["afiliados_ss_desestacionalizados"]
       }
     ]
   },
