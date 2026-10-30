@@ -12,7 +12,7 @@ class BrandIdentityTests(unittest.TestCase):
         self.assertIn("UN PRODUCTO DE IDEA LAB", home)
         self.assertIn("<h1>España en Datos</h1>", home)
         self.assertIn("Nuestro observatorio económico, social e institucional", home)
-        self.assertIn('href="/dashboard-gobierno/quienes-somos.html"', home)
+        self.assertIn('href="/quienes-somos.html"', home)
 
     def test_about_page_and_independence(self):
         about = (ROOT / "app" / "quienes-somos.md").read_text(encoding="utf-8")
@@ -23,7 +23,7 @@ class BrandIdentityTests(unittest.TestCase):
     def test_finances_and_methodology_have_about_link(self):
         for name in ("finanzas-publicas.md", "metodologia.md", "actualizaciones.md"):
             content = (ROOT / "app" / name).read_text(encoding="utf-8")
-            self.assertIn("/dashboard-gobierno/quienes-somos.html", content)
+            self.assertIn("/quienes-somos.html", content)
 
     def test_all_pages_can_return_to_main_menu(self):
         """Canonical links must work even with trailing slashes or deep URLs."""
@@ -37,9 +37,9 @@ class BrandIdentityTests(unittest.TestCase):
         for page in pages:
             with self.subTest(page=page):
                 text = (ROOT / "app" / page).read_text(encoding="utf-8")
-                self.assertIn('href="/dashboard-gobierno/"', text)
+                self.assertIn('href="/"', text)
                 self.assertNotIn('href="./"', text)
-                self.assertIn("/dashboard-gobierno/quienes-somos.html", text)
+                self.assertIn("/quienes-somos.html", text)
         for page in ("metodologia.md", "actualizaciones.md", "quienes-somos.md"):
             with self.subTest(page=page):
                 text = (ROOT / "app" / page).read_text(encoding="utf-8")
@@ -55,8 +55,10 @@ class BrandIdentityTests(unittest.TestCase):
             content = (ROOT / "app" / page).read_text(encoding="utf-8")
             for slug in ("quienes-somos", "finanzas-publicas",
                          "actualizaciones", "metodologia"):
-                self.assertNotIn(f'/dashboard-gobierno/{slug}"', content)
-                self.assertNotIn(f'/dashboard-gobierno/{slug}"', content)
+                self.assertNotIn(f'/{slug}"', content)
+                self.assertNotIn(f'/{slug})', content)
+                self.assertIn(f'/{slug}.html', (ROOT / "app" / "index.md").read_text(encoding="utf-8"))
+            self.assertNotIn("/dashboard-gobierno/", content)
 
     def test_x_bio_fits_limit(self):
         content = (ROOT / "editorial" / "PERFIL_X.md").read_text(encoding="utf-8")
