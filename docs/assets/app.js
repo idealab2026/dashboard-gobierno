@@ -36,7 +36,7 @@ function format(v,unit,id){
  if(!Number.isFinite(n(v)))return "—";
  const x=n(v),u=String(unit||"").toLowerCase();
  if(id==="pib_nominal_eur")return exactFmt.format(x/1e12)+" billones €";
- if(u==="%"||u.includes("porcentaje")||u.includes("puntos porcentuales"))return exactFmt.format(x)+" %";
+ if(u==="%"||u.includes("porcentaje")||u.includes("puntos porcentuales")||id==="deuda_publica_pde_pib")return exactFmt.format(x)+" %";
  if(u.includes("millones de euros"))return euroFmt.format(x)+" M€";
  if(u==="euros"||u.includes("euros por"))return euroFmt.format(x)+" €";
  if(Math.abs(x)>=1e6)return exactFmt.format(x/1e6)+" M";
