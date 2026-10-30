@@ -1,0 +1,34 @@
+name: Auditoría X - CI con datos ficticios
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'editorial/audit_x.py'
+      - 'editorial/tests/test_audit_x.py'
+      - 'editorial/fixtures/SOLO_DATOS_FICTICIOS.csv'
+      - '.github/workflows/editorial-audit-x.yml'
+  pull_request:
+    paths:
+      - 'editorial/audit_x.py'
+      - 'editorial/tests/test_audit_x.py'
+      - 'editorial/fixtures/SOLO_DATOS_FICTICIOS.csv'
+      - '.github/workflows/editorial-audit-x.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout público sin persistir credenciales
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Tests de deduplicación, privacidad y límites
+        run: python3 -m unittest discover -s editorial/tests -p 'test_audit_x.py' -v
+      - name: Análisis de datos inequívocamente ficticios
+        run: python3 editorial/audit_x.py editorial/fixtures/SOLO_DATOS_FICTICIOS.csv >> "$GITHUB_STEP_SUMMARY"
