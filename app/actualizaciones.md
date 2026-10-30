@@ -5,6 +5,14 @@ sidebar: false
 toc: false
 ---
 
+
+<style>
+/* Editorial paragraphs, not labels or tabular values. */
+.observablehq > p,.observablehq > blockquote p,.observablehq > div > p {
+  text-align:justify;text-align-last:left;hyphens:auto;-webkit-hyphens:auto;
+}
+</style>
+
 # Estado de actualización y fuentes
 
 En IDEA LAB construimos **España en Datos**, nuestro observatorio económico, social e institucional, a partir de series históricas seleccionadas y fuentes públicas. Comprobamos periódicamente la disponibilidad de las fuentes oficiales, pero **una fuente accesible no significa que todas sus cifras se hayan importado o actualizado**. [Conoce nuestra iniciativa](./quienes-somos).
