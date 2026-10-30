@@ -57,6 +57,23 @@ const preview = (latestOfficial.records || []).map(d => ({
 display(preview.length ? Inputs.table(preview) : html`<p>No se han podido obtener ejemplos oficiales durante esta comprobación. Los datos históricos de la web se mantienen inalterados.</p>`);
 ```
 
+## Avances oficiales de finanzas públicas
+
+La serie anual de operaciones no financieras S.13 de la IGAE se descarga y examina automáticamente desde el fichero XLSX publicado por Hacienda. **Esta inspección no reemplaza los importes del Sankey**: el desglose de gasto por funciones COFOG de 2025 está previsto oficialmente para el **30 de noviembre de 2026**.
+
+```js
+const igStatus=await FileAttachment("./data/igae-annual-status.json").json();
+const fiscalState=igStatus.status==="downloaded_for_mapping"
+  ? "Fichero oficial anual descargado para mapeo de las series"
+  : "La descarga del fichero anual no se ha podido verificar en esta ejecución";
+display(html`<div style="background:#f8fafc;border:1px solid #dbe4eb;padding:1rem;border-radius:10px">
+  <strong>IGAE · Operaciones no financieras anuales</strong>
+  <p>${fiscalState}</p>
+  <p style="font-size:.82rem;color:#667085">Última comprobación UTC: ${igStatus.checked_at_utc || "pendiente"}. El Sankey continúa con las cifras completas y conciliadas de 2024 hasta disponer del COFOG 2025.</p>
+  <p><a href="https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Paginas/ianofinancierasTotal.aspx" target="_blank" rel="noopener noreferrer">Consultar publicación oficial IGAE</a></p>
+</div>`);
+```
+
 ## Vigencia de los datos representados
 
 - **Panel de España:** series históricas seleccionadas, con fecha individual para cada observación.
