@@ -55,8 +55,8 @@ class BrandIdentityTests(unittest.TestCase):
             content = (ROOT / "app" / page).read_text(encoding="utf-8")
             for slug in ("quienes-somos", "finanzas-publicas",
                          "actualizaciones", "metodologia"):
-                self.assertNotIn(f"/dashboard-gobierno/{slug}\\"", content)
-                self.assertNotIn(f"/dashboard-gobierno/{slug})", content)
+                self.assertNotIn(f'/dashboard-gobierno/{slug}"', content)
+                self.assertNotIn(f'/dashboard-gobierno/{slug}"', content)
 
     def test_x_bio_fits_limit(self):
         content = (ROOT / "editorial" / "PERFIL_X.md").read_text(encoding="utf-8")
