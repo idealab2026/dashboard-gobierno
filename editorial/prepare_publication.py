@@ -5,11 +5,12 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 from pathlib import Path
 from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parent
-DEFAULT_DRAFT = ROOT / "drafts" / "2026-10-30-primera-prueba.json"
+DEFAULT_DRAFT = ROOT / "drafts" / "2026-10-30-presentacion-sankey.json"
 
 
 def validate(draft: dict) -> tuple[str, int]:
@@ -20,8 +21,10 @@ def validate(draft: dict) -> tuple[str, int]:
     content = draft.get("text")
     if not isinstance(content, str) or not content.strip():
         raise ValueError("Texto vacío")
-    if any(word in content.lower() for word in ("http://", "https://")):
-        raise ValueError("Esta prueba debe ser sin enlaces externos")
+    allowed_urls = {"https://idealab2026.github.io/dashboard-gobierno/#mapa-dinero"}
+    seen_urls = re.findall(r"https?://[^\s]+", content)
+    if any(url not in allowed_urls for url in seen_urls):
+        raise ValueError("Solo se permite el enlace público oficial al Sankey IDEA LAB")
     n = len(content)
     if n > 280:
         raise ValueError(f"Texto demasiado largo: {n}/280")
