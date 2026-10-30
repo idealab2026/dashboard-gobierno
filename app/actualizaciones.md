@@ -55,10 +55,10 @@ toc: false
       <a href="/dashboard-gobierno/">Inicio</a>
       <a href="/dashboard-gobierno/#mapa-dinero">Mapa del dinero</a>
       <a href="/dashboard-gobierno/#resumen">Indicadores</a>
-      <a href="/dashboard-gobierno/finanzas-publicas">Finanzas públicas</a>
-      <a href="/dashboard-gobierno/actualizaciones">Actualización</a>
-      <a href="/dashboard-gobierno/metodologia">Metodología</a>
-      <a href="/dashboard-gobierno/quienes-somos">Quiénes somos</a>
+      <a href="/dashboard-gobierno/finanzas-publicas.html">Finanzas públicas</a>
+      <a href="/dashboard-gobierno/actualizaciones.html">Actualización</a>
+      <a href="/dashboard-gobierno/metodologia.html">Metodología</a>
+      <a href="/dashboard-gobierno/quienes-somos.html">Quiénes somos</a>
     </div>
   </details>
 </nav>
@@ -66,7 +66,7 @@ toc: false
 
 # Estado de actualización y fuentes
 
-En IDEA LAB construimos **España en Datos**, nuestro observatorio económico, social e institucional, a partir de series históricas seleccionadas y fuentes públicas. Comprobamos periódicamente la disponibilidad de las fuentes oficiales, pero **una fuente accesible no significa que todas sus cifras se hayan importado o actualizado**. [Conoce nuestra iniciativa](/dashboard-gobierno/quienes-somos).
+En IDEA LAB construimos **España en Datos**, nuestro observatorio económico, social e institucional, a partir de series históricas seleccionadas y fuentes públicas. Comprobamos periódicamente la disponibilidad de las fuentes oficiales, pero **una fuente accesible no significa que todas sus cifras se hayan importado o actualizado**. [Conoce nuestra iniciativa](/dashboard-gobierno/quienes-somos.html).
 
 ```js
 const state = await FileAttachment("./data/official-checks.json").json();
@@ -148,4 +148,4 @@ El workflow público consulta semanalmente fuentes oficiales del INE y la IGAE y
 
 La comprobación está programada los lunes a las **07:17 UTC**, y también puede ejecutarse manualmente desde el repositorio público. Las ejecuciones programadas de GitHub pueden demorarse.
 
-[Volver al resumen](/dashboard-gobierno/) · [Abrir finanzas públicas](/dashboard-gobierno/finanzas-publicas)
+[Volver al resumen](/dashboard-gobierno/) · [Abrir finanzas públicas](/dashboard-gobierno/finanzas-publicas.html)
