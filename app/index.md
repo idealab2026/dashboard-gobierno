@@ -2066,6 +2066,32 @@ if (centre && spendingRows.length === 10 && Math.abs(spendingSum-centre.value)<1
   warning.textContent="El desglose funcional no ha superado la conciliación. No se publican porcentajes hasta corregirlo.";
   display(warning);
 }
+
+const highlightedTaxes=(spotlightTaxes||[])
+  .filter(d=>Number(d.year)===spotlightYears[0] &&
+    Number.isFinite(Number(d.value_mill_eur)) &&
+    Number(d.value_mill_eur)>0)
+  .sort((a,b)=>Number(b.value_mill_eur)-Number(a.value_mill_eur))
+  .slice(0,12);
+if(highlightedTaxes.length) {
+  const panel=document.createElement("section");panel.className="il-finance-coverage";
+  panel.setAttribute("aria-label","Figuras tributarias documentadas por subsector");
+  panel.innerHTML="<h3>Impuestos y figuras tributarias destacados</h3><p>Importes de 2024 extraídos de las cuentas de los distintos subsectores. <strong>Este listado no es exhaustivo ni se puede sumar</strong>: no reconstruye la recaudación consolidada de España y no debe confundirse con el total de ingresos del Sankey.</p>";
+  const table=document.createElement("table");
+  const thead=document.createElement("thead");
+  thead.innerHTML="<tr><th>Figura tributaria</th><th>Subsector</th><th>Millones €</th></tr>";
+  table.append(thead);
+  const tbody=document.createElement("tbody");
+  const format=new Intl.NumberFormat("es-ES",{maximumFractionDigits:0});
+  for(const item of highlightedTaxes){
+    const tr=document.createElement("tr");
+    for (const value of [item.tax_figure,item.subsector,format.format(Number(item.value_mill_eur))]){
+      const td=document.createElement("td");td.textContent=String(value);tr.append(td);
+    }
+    tbody.append(tr);
+  }
+  table.append(tbody);panel.append(table);display(panel);
+}
 ```
 
 <div class="il-spotlight-footnote">La necesidad de financiación (déficit) se representa separada de los ingresos no financieros. <a href="./metodologia">Consulta las limitaciones</a> y <a href="./actualizaciones">las fechas de actualización</a>.</div>
