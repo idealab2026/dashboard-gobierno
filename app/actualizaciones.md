@@ -47,18 +47,18 @@ toc: false
 </style>
 
 <nav class="il-site-navigation" aria-label="Navegación del observatorio">
-  <a class="il-site-brand" href="/dashboard-gobierno/" aria-label="IDEA LAB · Volver al inicio">IDEA LAB</a>
-  <a class="il-site-home" href="/dashboard-gobierno/">← Inicio</a>
+  <a class="il-site-brand" href="/" aria-label="IDEA LAB · Volver al inicio">IDEA LAB</a>
+  <a class="il-site-home" href="/">← Inicio</a>
   <details class="il-site-menu">
     <summary aria-label="Abrir menú del observatorio">Menú ☰</summary>
     <div class="il-site-menu-links">
-      <a href="/dashboard-gobierno/">Inicio</a>
-      <a href="/dashboard-gobierno/#mapa-dinero">Mapa del dinero</a>
-      <a href="/dashboard-gobierno/#resumen">Indicadores</a>
-      <a href="/dashboard-gobierno/finanzas-publicas.html">Finanzas públicas</a>
-      <a href="/dashboard-gobierno/actualizaciones.html">Actualización</a>
-      <a href="/dashboard-gobierno/metodologia.html">Metodología</a>
-      <a href="/dashboard-gobierno/quienes-somos.html">Quiénes somos</a>
+      <a href="/">Inicio</a>
+      <a href="/#mapa-dinero">Mapa del dinero</a>
+      <a href="/#resumen">Indicadores</a>
+      <a href="/finanzas-publicas.html">Finanzas públicas</a>
+      <a href="/actualizaciones.html">Actualización</a>
+      <a href="/metodologia.html">Metodología</a>
+      <a href="/quienes-somos.html">Quiénes somos</a>
     </div>
   </details>
 </nav>
@@ -66,7 +66,7 @@ toc: false
 
 # Estado de actualización y fuentes
 
-En IDEA LAB construimos **España en Datos**, nuestro observatorio económico, social e institucional, a partir de series históricas seleccionadas y fuentes públicas. Comprobamos periódicamente la disponibilidad de las fuentes oficiales, pero **una fuente accesible no significa que todas sus cifras se hayan importado o actualizado**. [Conoce nuestra iniciativa](/dashboard-gobierno/quienes-somos.html).
+En IDEA LAB construimos **España en Datos**, nuestro observatorio económico, social e institucional, a partir de series históricas seleccionadas y fuentes públicas. Comprobamos periódicamente la disponibilidad de las fuentes oficiales, pero **una fuente accesible no significa que todas sus cifras se hayan importado o actualizado**. [Conoce nuestra iniciativa](/quienes-somos.html).
 
 ```js
 const state = await FileAttachment("./data/official-checks.json").json();
@@ -148,4 +148,4 @@ El workflow público consulta semanalmente fuentes oficiales del INE y la IGAE y
 
 La comprobación está programada los lunes a las **07:17 UTC**, y también puede ejecutarse manualmente desde el repositorio público. Las ejecuciones programadas de GitHub pueden demorarse.
 
-[Volver al resumen](/dashboard-gobierno/) · [Abrir finanzas públicas](/dashboard-gobierno/finanzas-publicas.html)
+[Volver al resumen](/) · [Abrir finanzas públicas](/finanzas-publicas.html)
