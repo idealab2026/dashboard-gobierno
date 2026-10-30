@@ -27,6 +27,48 @@ for p in d.rglob("*"):
   if marker.lower() in content.lower():errors.append("Referencia privada: "+str(p))
  for regex in secrets:
   if re.search(regex,content):errors.append("Secreto detectado: "+str(p))
+
+# Validate built navigation against real artifacts deployed by GitHub Pages.
+# This catches the extensionless-path 404 which source-only checks missed.
+from html.parser import HTMLParser
+from urllib.parse import urljoin, urlparse, unquote
+
+class AnchorLinks(HTMLParser):
+ def __init__(self):
+  super().__init__(convert_charrefs=True)
+  self.hrefs=[]
+ def handle_starttag(self,tag,attrs):
+  if tag.lower()=="a":
+   href=dict(attrs).get("href")
+   if href:self.hrefs.append(href)
+
+pages=("index.html","quienes-somos.html","actualizaciones.html",
+       "metodologia.html","finanzas-publicas.html")
+for page in pages:
+ published=d/page
+ if not published.exists():
+  errors.append("Falta página de navegación: "+page)
+  continue
+ parser=AnchorLinks()
+ parser.feed(published.read_text(encoding="utf-8"))
+ origin="https://idealab2026.github.io/dashboard-gobierno/"+("" if page=="index.html" else page)
+ for href in parser.hrefs:
+  if href.startswith(("#","mailto:","tel:","javascript:")):continue
+  target=urlparse(urljoin(origin,href))
+  if target.netloc!="idealab2026.github.io":continue
+  path=unquote(target.path)
+  if not path.startswith("/dashboard-gobierno/"):
+   errors.append(f"{page}: enlace fuera del proyecto: {href}")
+   continue
+  relative=path[len("/dashboard-gobierno/"):]
+  if not relative or relative.endswith("/"):
+   relative+="index.html"
+  if not relative.endswith(".html") and "." not in relative.rsplit("/",1)[-1]:
+   errors.append(f"{page}: URL sin extensión no servida en Pages: {href}")
+   continue
+  if not (d/relative).is_file():
+   errors.append(f"{page}: URL a un archivo no publicado: {href} (dist/{relative})")
+
 if errors:
  print("\n".join(errors[:25]),file=sys.stderr)
  raise SystemExit(1)
