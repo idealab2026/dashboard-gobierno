@@ -27,7 +27,7 @@ class BrandIdentityTests(unittest.TestCase):
 
     def test_x_bio_fits_limit(self):
         content = (ROOT / "editorial" / "PERFIL_X.md").read_text(encoding="utf-8")
-        result = re.search(r"^> (Somos el canal editorial de IDEA LAB\\..+)$", content, flags=re.M)
+        result = re.search(r"^> (Somos el canal editorial de IDEA LAB\..+)$", content, flags=re.M)
         self.assertIsNotNone(result, "Falta la propuesta institucional para X")
         self.assertLessEqual(len(result.group(1)), 160)
 
