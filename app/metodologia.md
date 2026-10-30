@@ -5,6 +5,14 @@ sidebar: false
 toc: true
 ---
 
+
+<style>
+/* Justified methodology body text without modifying links or tables. */
+.observablehq > p,.observablehq > blockquote p,.observablehq > div > p {
+  text-align:justify;text-align-last:left;hyphens:auto;-webkit-hyphens:auto;
+}
+</style>
+
 # Cómo trabajamos
 
 **Somos IDEA LAB, una iniciativa independiente de investigación y divulgación.** Desarrollamos **España en Datos**, nuestro observatorio económico, social e institucional. Los indicadores que mostramos incluyen bases históricas y no deben confundirse con una fotografía completamente actualizada de España. Conoce [quiénes somos](./quienes-somos) y cómo distinguimos datos, interpretación y opinión.
