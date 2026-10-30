@@ -1228,6 +1228,132 @@ html {
   .il-finance-coverage {margin-top:10px!important;}
 }
 
+
+/* Mobile typography and density v5 — 3 columns where values remain legible. */
+.columna-analisis p,
+.dashboard-section .section-description,
+.dashboard-section .section-note,
+.il-finance-coverage > p,
+.il-sankey-spotlight p,
+.il-mobile-data-disclosure p {
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+@media (min-width:390px) and (max-width:768px) {
+  /* 3 facts per row; narrow iPhones retain the previous 2-column view. */
+  .kpi-grid {
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:6px!important;
+  }
+  .kpi-grid .kpi-card {
+    padding:8px 7px!important;
+    border-radius:9px!important;
+    min-width:0!important;
+  }
+  .kpi-card-top {
+    display:flex!important;
+    flex-direction:column-reverse!important;
+    align-items:flex-start!important;
+    justify-content:flex-end!important;
+    gap:4px!important;
+    min-height:55px!important;
+  }
+  .kpi-card-top .kpi-year {
+    align-self:flex-end!important;
+    font-size:.54rem!important;
+    padding:1px 5px!important;
+  }
+  .kpi-card .kpi-title {
+    font-size:.59rem!important;
+    letter-spacing:0!important;
+    line-height:1.2!important;
+    overflow-wrap:anywhere;
+  }
+  .kpi-card .kpi-value-block {margin-top:5px!important;}
+  .kpi-card .kpi-value {
+    font-size:clamp(.90rem,3.55vw,1.12rem)!important;
+    line-height:1.15!important;
+    letter-spacing:-.045em;
+    font-variant-numeric:tabular-nums;
+    overflow-wrap:anywhere;
+  }
+  .kpi-card .kpi-unit,.kpi-card .kpi-diff {font-size:.61rem!important;line-height:1.25!important;}
+  .kpi-card .kpi-diff {margin-top:4px!important;}
+  .kpi-card .kpi-spark svg {height:27px!important;max-height:27px!important;}
+  .kpi-card .kpi-spark {padding-top:2px!important;margin-top:3px!important;}
+  .kpi-card .kpi-years {font-size:.53rem!important;}
+  .kpi-card .kpi-mobile-meta {padding-top:3px!important;}
+  .kpi-card .kpi-mobile-meta summary {font-size:.61rem!important;min-height:29px!important;}
+  .kpi-card .kpi-mobile-meta-content {font-size:.63rem!important;}
+
+  /* COFOG: ten functional areas as three compact cards per row. */
+  .il-finance-coverage.is-cofog-table tbody {
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:6px!important;
+  }
+  .il-finance-coverage.is-cofog-table tbody tr {
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto auto auto!important;
+    gap:3px!important;
+    padding:8px 6px!important;
+    min-width:0!important;
+    align-content:start!important;
+  }
+  .il-finance-coverage.is-cofog-table tbody td:first-child {
+    grid-column:1!important;
+    font-size:.65rem!important;
+    line-height:1.18!important;
+    overflow-wrap:anywhere!important;
+  }
+  .il-finance-coverage.is-cofog-table tbody td:nth-child(2) {
+    grid-column:1!important;
+    text-align:left!important;
+    white-space:nowrap!important;
+    font-size:.68rem!important;
+    margin-top:3px!important;
+    letter-spacing:-.025em;
+    font-variant-numeric:tabular-nums;
+  }
+  .il-finance-coverage.is-cofog-table tbody td:nth-child(2)::after {font-size:.58rem!important;}
+  .il-finance-coverage.is-cofog-table tbody td:nth-child(3) {
+    grid-column:1!important;
+    text-align:left!important;
+    font-size:.78rem!important;
+    line-height:1.18!important;
+  }
+  /* The reconciled total is a full-width footer, not an orphan eleventh card. */
+  .il-finance-coverage.is-cofog-table tbody tr:last-child {
+    grid-column:1/-1!important;
+    display:flex!important;
+    flex-wrap:wrap;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:4px 9px!important;
+    padding:8px 10px!important;
+    background:#f5f1e6!important;
+    border-color:#dfd2ab!important;
+  }
+  .il-finance-coverage.is-cofog-table tbody tr:last-child td {
+    width:auto!important;margin:0!important;
+    align-self:center!important;
+  }
+}
+@media (max-width:768px) {
+  .columna-analisis {text-align:justify!important;}
+  .columna-analisis p {text-align:justify!important;text-align-last:left!important;}
+  .section-description,.section-note,.il-finance-coverage > p {
+    text-align:justify!important;text-align-last:left!important;
+  }
+}
+/* Preserve compact two-column cards where three cannot fit safely. */
+@media (max-width:389px) {
+  .kpi-grid {grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  .il-finance-coverage.is-cofog-table tbody {grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+}
+
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación del observatorio España en Datos">
