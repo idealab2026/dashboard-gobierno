@@ -1934,7 +1934,7 @@ meta.innerHTML = `
   </span>
 
   <span>
-    Cobertura hasta:
+    Último año presente en alguna serie:
     <strong>${latestDatasetYear}</strong>
   </span>
 `;
@@ -1951,7 +1951,7 @@ display(meta);
     </div>
     <a href="./finanzas-publicas" class="il-sankey-cta">Ver análisis completo ↗</a>
   </div>
-  <div class="il-sankey-meta">Ejercicio histórico <strong>2024</strong> · Sector consolidado S.13 · Datos sujetos a revisión · No se asignan impuestos a gastos concretos.</div>
+  <div class="il-sankey-meta">Ejercicio histórico · Sector consolidado S.13 · Datos sujetos a revisión · No se asignan impuestos a gastos concretos.</div>
 </section>
 
 ```js
@@ -1988,10 +1988,10 @@ header.className = "section-header dashboard-section first";
 header.style.borderTop = "none";
 header.style.marginTop = "0";
 header.innerHTML = `
-  <div class="section-kicker">Situación actual</div>
+  <div class="section-kicker">Últimos datos disponibles</div>
   <h2>España en un minuto</h2>
   <div class="section-description">
-    Indicadores esenciales para comprender rápidamente la situación económica y social de España.
+    Indicadores con distintas fechas de referencia. Verifica el año de cada dato y consulta su fuente antes de interpretarlo.
   </div>
 `;
 display(header);
