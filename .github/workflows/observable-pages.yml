@@ -51,6 +51,8 @@ jobs:
           npm ci
       - name: Weekly check against official INE and IGAE sources
         run: python scripts/refresh_official.py
+      - name: Read latest literal INE observations
+        run: python scripts/fetch_ine_latest.py
       - name: Validate statistical and public-only data
         run: python scripts/validate_public.py
       - name: Compile original V2 dashboard and Sankey
