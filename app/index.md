@@ -851,6 +851,16 @@ html {
 @media(max-width:760px){.il-pension-figures{grid-template-columns:repeat(2,minmax(0,1fr))}.il-finance-coverage{padding:14px 12px}}
 @media(max-width:480px){.il-pension-figures{gap:6px}.il-finance-coverage table{font-size:.75rem}}
 
+
+.il-pension-monthly{margin-top:12px;}
+.il-pension-monthly>a{font-size:.78rem;font-weight:650}
+.il-pension-breakdown{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 19px}
+.il-pension-payroll-label{display:flex;justify-content:space-between;gap:12px;font-size:.8rem;color:#475569}
+.il-pension-payroll-label strong{color:#0b2447;font-variant-numeric:tabular-nums}
+.il-pension-payroll-track{height:7px;background:#e7edf2;border-radius:9px;overflow:hidden;margin-top:4px}
+.il-pension-payroll-bar{height:7px;background:#a58a4d;border-radius:9px}
+@media(max-width:690px){.il-pension-breakdown{grid-template-columns:1fr}}
+
 </style>
 
 <nav class="idealab-nav">
@@ -1828,6 +1838,51 @@ function renderMetricSection(sectionId) {
     }
   }
 
+  if (sectionId === "pensiones" && pensionMonthlyRows.length === 5) {
+    const pensionMonth = "2026-10";
+    const entries=pensionMonthlyRows.filter(r=>r.period===pensionMonth &&
+      Number.isFinite(Number(r.monthly_million_eur)) &&
+      Number(r.monthly_million_eur)>0);
+    const total=entries.reduce((sum,r)=>sum+Number(r.monthly_million_eur),0);
+    const certifiedTotal=Number(spainData.find(d=>
+      d.indicator_id==="nomina_pensiones_ss_mes_mill" && String(d.reference_period)===pensionMonth)?.value);
+    if(entries.length===5 && Number.isFinite(certifiedTotal) &&
+        Math.abs(total-certifiedTotal)<0.2) {
+      const panel=document.createElement("div");
+      panel.className="il-pension-info il-pension-monthly";
+      const title=document.createElement("h3");
+      title.textContent="Nómina contributiva mensual por tipo · octubre 2026";
+      panel.append(title);
+      const formatter=new Intl.NumberFormat("es-ES",{maximumFractionDigits:1});
+      const rows=document.createElement("div");
+      rows.className="il-pension-breakdown";
+      for(const data of [...entries].sort((a,b)=>b.monthly_million_eur-a.monthly_million_eur)){
+        const amount=Number(data.monthly_million_eur);
+        const item=document.createElement("div");item.className="il-pension-payroll-row";
+        const top=document.createElement("div");top.className="il-pension-payroll-label";
+        const name=document.createElement("span");name.textContent=data.pension_type;
+        const value=document.createElement("strong");value.textContent=formatter.format(amount)+" M€";
+        top.append(name,value);
+        const track=document.createElement("div");track.className="il-pension-payroll-track";
+        const bar=document.createElement("div");bar.className="il-pension-payroll-bar";
+        bar.style.width=(amount/certifiedTotal*100).toFixed(2)+"%";
+        track.append(bar);item.append(top,track);rows.append(item);
+      }
+      panel.append(rows);
+      const info=document.createElement("p");
+      info.textContent="Total oficial: "+formatter.format(certifiedTotal)+
+        " M€ (suma de ramas "+formatter.format(total)+
+        " M€; diferencia de redondeo). Es nómina mensual de Seguridad Social, no gasto público COFOG anual.";
+      panel.append(info);
+      const source=document.createElement("a");
+      source.href=entries[0].source_url;
+      source.target="_blank";source.rel="noopener noreferrer";
+      source.textContent="Fuente oficial · Ministerio de Inclusión (27/10/2026)";
+      panel.append(source);
+      section.append(panel);
+    }
+  }
+
   if (config.action) {
     const action = document.createElement("a");
     action.className = "section-action";
@@ -2071,6 +2126,7 @@ import {PublicFinanceExplorer} from "./components/public-finance-sankey.js";
 const spotlightFinanceRaw = await FileAttachment("./data/public-finance.csv").csv({typed:true});
 const spotlightSources = await FileAttachment("./data/public-finance-sources.csv").csv({typed:true});
 const spotlightTaxes = await FileAttachment("./data/public-finance-tax-figures.csv").csv({typed:true});
+const pensionMonthlyRows = await FileAttachment("./data/pensions-payroll.csv").csv({typed:true});
 const spotlightFinance = spotlightFinanceRaw
   .map(d => ({...d, year:Number(d.year), value:Number(d.value)}))
   .filter(d => Number.isFinite(d.year) && Number.isFinite(d.value));
