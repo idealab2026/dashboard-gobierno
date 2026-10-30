@@ -127,7 +127,7 @@ export function KpiCard(data, options = {}) {
 
   const firstYear = rows[0].year;
   const referencePeriod = String(latest.reference_period || latest.year);
-  const periodLabel = /^\\d{4}-\\d{2}(-\\d{2})?$/.test(referencePeriod)
+  const periodLabel = /^\d{4}-\d{2}(-\d{2})?$/.test(referencePeriod)
     ? referencePeriod
     : String(latest.year);
   const hasHistory = rows.length > 1;
