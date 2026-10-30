@@ -23,7 +23,9 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout public sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
       - name: Unit tests without network
         run: python3 -m unittest discover -s editorial/tests -p 'test_*.py' -v
       - name: Collect public RSS and prepare review summary
