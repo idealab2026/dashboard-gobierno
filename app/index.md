@@ -894,6 +894,103 @@ html {
   .idealab-nav-links a,.idealab-nav-areas{font-size:.77rem}
 }
 
+
+/* IDEA LAB 2026 · responsive real: menú de una sola línea, tablas en fichas */
+.idealab-nav-mobile {display:none;}
+@media (max-width: 768px) {
+  html,body {max-width:100%; overflow-x:clip;}
+  .observablehq {box-sizing:border-box; max-width:100%; padding-inline:12px;}
+  .idealab-nav {
+    position:sticky;top:0;z-index:1050;display:flex!important;
+    flex-direction:row!important;align-items:center!important;
+    justify-content:space-between!important;flex-wrap:nowrap!important;
+    gap:8px!important;min-height:54px;padding:8px 9px!important;
+    background:rgba(255,255,255,.98);box-shadow:0 1px 5px rgba(11,36,71,.06);
+  }
+  .idealab-brand {font-size:.85rem!important;letter-spacing:.01em;white-space:nowrap;}
+  .idealab-brand-product {display:none;}
+  .idealab-nav-links {display:contents!important;}
+  .idealab-nav-links > :not(.idealab-nav-priority) {display:none!important;}
+  .idealab-nav-links .idealab-nav-priority {
+    display:inline-flex;min-height:40px;align-items:center;justify-content:center;
+    border:1px solid #d8dfeb;border-radius:9px;padding:0 9px;
+    background:#f6f8fb;color:#0b2447!important;font-size:.76rem!important;
+    font-weight:800!important;margin-left:auto;flex:none;
+  }
+  .idealab-nav-mobile {display:block;position:relative;flex:none;margin:0;}
+  .idealab-nav-mobile > summary {
+    list-style:none;min-height:40px;display:flex;align-items:center;gap:6px;
+    border:1px solid #0b2447;border-radius:9px;padding:0 10px;background:#0b2447;
+    color:#fff;font-family:inherit;font-size:.79rem;font-weight:800;cursor:pointer;
+  }
+  .idealab-nav-mobile > summary::-webkit-details-marker {display:none;}
+  .idealab-nav-mobile > summary:focus-visible,
+  .idealab-nav-mobile-panel a:focus-visible {outline:3px solid #b89b5e;outline-offset:2px;}
+  .idealab-nav-mobile-panel {
+    position:absolute;right:0;top:calc(100% + 10px);width:min(320px,calc(100vw - 24px));
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 5px;
+    max-height:calc(100dvh - 78px);overflow-y:auto;overscroll-behavior:contain;
+    border:1px solid #d9e0ea;border-radius:13px;padding:11px;
+    box-shadow:0 14px 32px rgba(11,36,71,.18);background:white;z-index:1400;
+  }
+  .idealab-nav-mobile-panel a {
+    display:flex;align-items:center;min-height:40px;border-radius:8px;padding:8px 9px;
+    color:#1d3555!important;font-size:.79rem;font-weight:650;text-decoration:none;
+    overflow-wrap:anywhere;
+  }
+  .idealab-nav-mobile-panel a:hover {background:#f1f5f9;}
+  .idealab-nav-mobile-heading {
+    grid-column:1/-1;margin-top:4px;padding:8px 8px 3px;
+    border-top:1px solid #e7ebf0;color:#8b6c35;text-transform:uppercase;
+    font-size:.65rem;font-weight:800;letter-spacing:.09em;
+  }
+  .dashboard-section,.il-sankey-spotlight {scroll-margin-top:68px!important;}
+  .il-sankey-spotlight {margin-top:1.1rem;padding-top:.65rem;}
+  .il-spotlight-top h2 {font-size:clamp(1.45rem,5.5vw,1.95rem);}
+  .il-finance-coverage {width:100%;box-sizing:border-box;padding:13px 12px!important;margin:10px 0 18px;}
+  .il-finance-coverage h3 {font-size:1.02rem;line-height:1.25;}
+  .il-finance-coverage p {font-size:.78rem;line-height:1.46;}
+  .il-finance-coverage:is(.is-tax-table,.is-cofog-table) table,
+  .il-finance-coverage:is(.is-tax-table,.is-cofog-table) tbody,
+  .il-finance-coverage:is(.is-tax-table,.is-cofog-table) tr,
+  .il-finance-coverage:is(.is-tax-table,.is-cofog-table) td {display:block;width:100%;box-sizing:border-box;}
+  .il-finance-coverage:is(.is-tax-table,.is-cofog-table) thead {display:none;}
+  .il-finance-coverage:is(.is-tax-table,.is-cofog-table) tbody {
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;
+  }
+  .il-finance-coverage:is(.is-tax-table,.is-cofog-table) tbody tr {
+    border:1px solid #e3e8ee;border-radius:10px;background:#f9fafc;
+    padding:11px 10px;overflow-wrap:anywhere;min-width:0;
+  }
+  .il-finance-coverage:is(.is-tax-table,.is-cofog-table) tbody td {
+    white-space:normal!important;text-align:left!important;padding:0!important;
+    border:0!important;font-size:.79rem;line-height:1.35;min-width:0;
+  }
+  .il-finance-coverage:is(.is-tax-table,.is-cofog-table) tbody td:first-child {
+    font-weight:800;color:#0b2447;margin-bottom:8px;
+  }
+  .il-finance-coverage:is(.is-tax-table,.is-cofog-table) tbody td:nth-child(2) {
+    color:#637185;margin-bottom:6px;font-size:.73rem;
+  }
+  .il-finance-coverage:is(.is-tax-table,.is-cofog-table) tbody td:last-child {
+    color:#0b2447;font-size:1.01rem;font-weight:800;font-variant-numeric:tabular-nums;
+  }
+  .il-finance-coverage.is-tax-table tbody td:nth-child(2)::before {content:"Subsector · ";font-weight:700;}
+  .il-finance-coverage.is-tax-table tbody td:nth-child(3)::before {content:"Importe · ";font-size:.7rem;color:#667085;font-weight:600;}
+  .il-finance-coverage.is-cofog-table tbody td:nth-child(2)::before {content:"Millones € · ";font-weight:700;}
+  .il-finance-coverage.is-cofog-table tbody td:nth-child(3)::before {content:"Gasto total · ";font-size:.7rem;color:#667085;font-weight:600;}
+  .il-pension-info {padding:12px!important;}
+  .il-pension-figures {gap:7px;}
+  .il-pension-figure {padding:10px 9px;}
+  .il-pension-figure strong {font-size:clamp(.93rem,4vw,1.18rem);}
+  .il-pension-figure small {font-size:.68rem;}
+}
+@media (max-width: 520px) {
+  .il-finance-coverage:is(.is-tax-table,.is-cofog-table) tbody {grid-template-columns:minmax(0,1fr);}
+  .il-finance-coverage:is(.is-tax-table,.is-cofog-table) tbody tr {padding:11px 12px;}
+  .idealab-nav-mobile-panel {grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación del observatorio España en Datos">
@@ -921,7 +1018,43 @@ html {
     <a href="./quienes-somos">Quiénes somos</a>
     <a class="idealab-nav-x" href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer" aria-label="Canal editorial de IDEA LAB en X">En X</a>
   </div>
+  <details class="idealab-nav-mobile">
+    <summary aria-label="Abrir menú de navegación">Menú <span aria-hidden="true">☰</span></summary>
+    <div class="idealab-nav-mobile-panel">
+      <a href="#mapa-dinero">Mapa del dinero</a>
+      <a href="#resumen">Indicadores</a>
+      <div class="idealab-nav-mobile-heading">Áreas temáticas</div>
+      <a href="#economia">Economía</a>
+      <a href="#empleo">Empleo</a>
+      <a href="#vivienda">Vivienda</a>
+      <a href="#estado">Sector público</a>
+      <a href="#pensiones">Pensiones y demografía</a>
+      <a href="#sociedad">Sociedad</a>
+      <a href="#mundo">Mundo</a>
+      <div class="idealab-nav-mobile-heading">Observatorio</div>
+      <a href="./finanzas-publicas">Finanzas públicas</a>
+      <a href="./metodologia">Metodología</a>
+      <a href="./actualizaciones">Actualización</a>
+      <a href="./quienes-somos">Quiénes somos</a>
+      <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">En X ↗</a>
+    </div>
+  </details>
 </nav>
+
+```js
+const idealabMobileMenu = document.querySelector(".idealab-nav-mobile");
+if (idealabMobileMenu) {
+  idealabMobileMenu.addEventListener("click", event => {
+    if (event.target.closest("a")) idealabMobileMenu.open = false;
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") idealabMobileMenu.open = false;
+  });
+  document.addEventListener("click", event => {
+    if (!idealabMobileMenu.contains(event.target)) idealabMobileMenu.open = false;
+  });
+}
+```
 
 <div style="margin: 0.6rem auto 1rem; max-width: 1400px; padding: 0.55rem 0.85rem; border: 1px solid #e3e6ea; border-radius: 10px; font-size: 0.84rem; color:#344054; background: #f8fafc;">Datos históricos en proceso de revisión. Algunas series están excluidas por metadatos ambiguos. <a href="./metodologia">Fuentes y limitaciones</a>.</div>
 
@@ -2188,7 +2321,7 @@ const centre = spotlightFinance.find(d => d.year === spotlightYears[0] && d.code
 const spendingSum = spendingRows.reduce((a,d)=>a+d.value,0);
 if (centre && spendingRows.length === 10 && Math.abs(spendingSum-centre.value)<1) {
   const section = document.createElement("section");
-  section.className = "il-finance-coverage";
+  section.className = "il-finance-coverage is-cofog-table";
   section.setAttribute("aria-label","Detalle completo de las diez funciones oficiales del gasto");
   section.innerHTML = '<h3>Las 10 funciones del gasto público, sin ramas ocultas</h3><p>Clasificación COFOG de 2024 (IGAE). Haz clic en una rama del Sankey para explorar el siguiente nivel. El total de estas diez funciones cuadra exactamente con el gasto público consolidado.</p>';
   const table = document.createElement("table");
@@ -2225,7 +2358,7 @@ const highlightedTaxes=(spotlightTaxes||[])
   .sort((a,b)=>Number(b.value_mill_eur)-Number(a.value_mill_eur))
   .slice(0,12);
 if(highlightedTaxes.length) {
-  const panel=document.createElement("section");panel.className="il-finance-coverage";
+  const panel=document.createElement("section");panel.className="il-finance-coverage is-tax-table";
   panel.setAttribute("aria-label","Figuras tributarias documentadas por subsector");
   panel.innerHTML="<h3>Impuestos y figuras tributarias destacados</h3><p>Importes de 2024 extraídos de las cuentas de los distintos subsectores. <strong>Este listado no es exhaustivo ni se puede sumar</strong>: no reconstruye la recaudación consolidada de España y no debe confundirse con el total de ingresos del Sankey.</p>";
   const table=document.createElement("table");
