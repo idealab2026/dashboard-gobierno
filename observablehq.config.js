@@ -5,5 +5,6 @@ export default {
  sidebar: false,
  toc: false,
  pager: false,
+ preserveExtension: true,
  theme: "light"
 };
