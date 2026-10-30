@@ -247,6 +247,7 @@ body {
     flex-wrap:nowrap!important;gap:8px!important;min-height:54px;padding:8px 9px!important;
     background:rgba(255,255,255,.98);box-shadow:0 1px 5px rgba(11,36,71,.06);}
   .idealab-brand{font-size:.84rem!important;white-space:nowrap;letter-spacing:0!important;}
+  .idealab-brand-product{display:none;}
   .idealab-nav-links{display:contents!important;}
   .idealab-nav-links>:not(.idealab-nav-priority){display:none!important;}
   .idealab-nav-links .idealab-nav-priority{display:inline-flex;min-height:40px;align-items:center;
@@ -282,7 +283,7 @@ body {
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación España en Datos">
-  <a class="idealab-brand" href="./">IDEA LAB · España en Datos</a>
+  <a class="idealab-brand" href="./">IDEA LAB <span class="idealab-brand-product">· España en Datos</span></a>
   <div class="idealab-nav-links">
     <a class="idealab-nav-priority" href="./#mapa-dinero">Mapa del dinero</a>
     <a href="./#resumen">Indicadores</a>
