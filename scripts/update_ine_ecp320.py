@@ -19,6 +19,7 @@ import os
 import urllib.error
 import urllib.request
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 ROOT=Path(__file__).resolve().parents[1]
 INPUT=ROOT/"app"/"data"/"seed"/"observations.csv"
@@ -26,7 +27,7 @@ STATUS=ROOT/"app"/"data"/"official-sync-status.json"
 CODE="ECP320"
 TITLE="Total Nacional. Todas las edades. Total. Población. Número."
 SERIES_URL="https://servicios.ine.es/wstempus/js/ES/DATOS_SERIE/ECP320?nult=8"
-TABLE_URL="https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/56934?nult=2"
+TABLE_URL="https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/56934?nult=8"
 REFERENCE_URL="https://ine.es/jaxiT3/Tabla.htm?t=56934"
 UTC=dt.timezone.utc
 
@@ -49,16 +50,38 @@ def parse_series(payload):
     years={}
     for point in data:
         if not isinstance(point,dict):continue
+        # ECP320 is quarterly: only 1 January belongs in the annual snapshot.
+        raw_date=point.get("Fecha")
+        try:
+            if isinstance(raw_date,(int,float)):
+                timestamp=float(raw_date)
+                if timestamp>10_000_000_000:timestamp/=1000.0
+                period=dt.datetime.fromtimestamp(timestamp, tz=ZoneInfo("Europe/Madrid")).date()
+            elif isinstance(raw_date,str):
+                try:
+                    timestamp=float(raw_date)
+                    if timestamp>10_000_000_000:timestamp/=1000.0
+                    period=dt.datetime.fromtimestamp(timestamp,tz=ZoneInfo("Europe/Madrid")).date()
+                except ValueError:
+                    period=dt.datetime.fromisoformat(raw_date.replace("Z","+00:00")).date()
+            else:
+                raise OfficialDataError("Official ECP series has missing period date")
+        except (OverflowError,OSError,ValueError) as exc:
+            raise OfficialDataError("Invalid official observation date") from exc
+        if period.month!=1 or period.day!=1:
+            continue
         year=point.get("Anyo"); value=point.get("Valor")
         if value is None or year is None:continue
         try: y=int(year);n=float(value)
         except (TypeError,ValueError):raise OfficialDataError("Invalid official year/value")
+        if y!=period.year:
+            raise OfficialDataError("Official Anyo does not match January period")
         if y<1971 or y>dt.datetime.now(UTC).year+1 or not math.isfinite(n):
             raise OfficialDataError("Out-of-range official observation")
         if n<=20_000_000 or n>=80_000_000 or not n.is_integer():
             raise OfficialDataError("Population magnitude or units invalid")
         if y in years and years[y]!=int(n):
-            raise OfficialDataError("Several inconsistent official values for one year")
+            raise OfficialDataError("Several inconsistent official January values")
         years[y]=int(n)
     if len(years)<2:raise OfficialDataError("Official series has insufficient history")
     return years
@@ -96,11 +119,11 @@ def apply_official(years,fields,rows):
             base=dict(pop[latest])
             base.update(year=str(year),indicator_id=indicator,indicator_name=name,
                        value=str(value),unit=unit,reference_period=str(year),
-                       source="INE · ECP320 (serie nacional fijada)",
+                       source="INE · ECP320 (serie nacional, 1 de enero)",
                        source_url=REFERENCE_URL,source_revision_date=today,status=status,
-                       notes="Actualización automática desde INE ECP320 validada frente al histórico previo.")
+                       notes="Valor de 1 de enero obtenido automáticamente del INE. Estado de revisión provisional hasta confirmación explícita del INE.")
             return {k:base.get(k,"") for k in fields}
-        rows.append(row("poblacion_residente","Población residente",population,"personas","oficial"))
+        rows.append(row("poblacion_residente","Población residente",population,"personas","provisional"))
         rows.append(row("crecimiento_poblacion","Crecimiento población",
                         f"{(population/previous-1)*100:.2f}","%","calculado"))
         added.append({"year":year,"population":population,"growth_pct":round((population/previous-1)*100,2)})
