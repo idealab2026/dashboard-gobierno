@@ -243,6 +243,19 @@ export function KpiCard(data, options = {}) {
       : ""
     }
 
+      <details class="kpi-mobile-meta">
+        <summary>Fuente y método</summary>
+        <div class="kpi-mobile-meta-content">
+          <div class="kpi-mobile-source">
+            <strong>Fuente:</strong>
+            ${hasSourceUrl ? htl.html`<a href=${sourceUrl} target="_blank" rel="noopener noreferrer">${source}</a>` : source}
+          </div>
+          ${status ? htl.html`<div><strong>Estado:</strong> ${status}</div>` : ""}
+          ${definition ? htl.html`<div><strong>Definición:</strong> ${definition}</div>` : ""}
+          <div><strong>Periodo:</strong> ${referencePeriod}</div>
+        </div>
+      </details>
+
     </article>
   `;
 }
