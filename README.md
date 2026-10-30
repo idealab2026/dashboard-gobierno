@@ -4,7 +4,7 @@ Web pública gratuita e independiente de divulgación estadística: https://idea
 
 ## Qué está publicado
 
-El **Sankey original de ATENEA V2, migrado a identidad IDEA LAB**, es la visualización protagonista de la portada y dispone de explorador independiente en `/finanzas-publicas`. Se conservan las secciones de economía, empleo, vivienda, sector público, pensiones, sociedad y mundo.
+El **Sankey interactivo original de IDEA LAB** es la visualización protagonista de la portada y dispone de explorador independiente en `/finanzas-publicas`. Se conservan las secciones de economía, empleo, vivienda, sector público, pensiones, sociedad y mundo.
 
 Esta web se construye con **Observable Framework** desde `app/` y se publica exclusivamente mediante el workflow público `.github/workflows/observable-pages.yml`, utilizando **GitHub Pages → Source: GitHub Actions**. La antigua carpeta `docs/` ya no es la fuente de publicación. El resultado en `dist/` contiene únicamente los recursos públicos auditados.
 
