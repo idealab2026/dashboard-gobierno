@@ -832,6 +832,25 @@ html {
 .il-sankey-spotlight + .pf-explorer {margin:0 0 .3rem;max-width:100%;}
 @media(max-width:560px){.il-sankey-spotlight{margin-top:1.2rem}.il-sankey-meta{font-size:.71rem}.il-sankey-cta{width:100%;text-align:center}}
 
+
+/* Auditoría visual: datos COFOG y pensiones que no estaban expuestos en el panel. */
+.il-finance-coverage {border:1px solid #e1e7ec;background:#fff;border-radius:14px;padding:18px 20px;margin:14px 0 28px;overflow:hidden}
+.il-finance-coverage h3 {font-size:1.08rem;color:#0b2447;margin:0 0 4px}
+.il-finance-coverage p {font-size:.83rem;color:#667085;margin:.25rem 0 13px;max-width:950px}
+.il-finance-coverage table {width:100%;border-collapse:collapse;font-size:.83rem}
+.il-finance-coverage th {font-size:.68rem;color:#6b798b;background:#f5f8fa;text-transform:uppercase;letter-spacing:.04em}
+.il-finance-coverage td,.il-finance-coverage th {padding:10px 9px;border-bottom:1px solid #e9edf0;text-align:left}
+.il-finance-coverage td:nth-child(2),.il-finance-coverage td:nth-child(3),.il-finance-coverage th:nth-child(2),.il-finance-coverage th:nth-child(3) {text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.il-pension-info {margin:.7rem 0 1.4rem;padding:1rem;border:1px solid #e3e6ea;border-radius:12px;background:#fff}
+.il-pension-info h3 {color:#0b2447;font-size:1.01rem;margin:0 0 10px}
+.il-pension-figures {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.il-pension-figure {background:#f7f9fb;border-radius:9px;border:1px solid #e4e9ef;padding:13px 11px}
+.il-pension-figure strong {display:block;color:#0b2447;font-size:clamp(.98rem,1.7vw,1.36rem);font-variant-numeric:tabular-nums}
+.il-pension-figure small {display:block;color:#667085;font-size:.73rem;line-height:1.35}
+.il-pension-info p {font-size:.79rem;margin:.7rem 0 0;color:#667085}
+@media(max-width:760px){.il-pension-figures{grid-template-columns:repeat(2,minmax(0,1fr))}.il-finance-coverage{padding:14px 12px}}
+@media(max-width:480px){.il-pension-figures{gap:6px}.il-finance-coverage table{font-size:.75rem}}
+
 </style>
 
 <nav class="idealab-nav">
@@ -1558,7 +1577,7 @@ const sectionDefinitions = {
       "La estructura demográfica condiciona la sostenibilidad futura del sistema de pensiones.",
 
     note:
-      "El dataset actual todavía no contiene indicadores específicos del sistema de pensiones. Esta primera versión muestra únicamente la base demográfica.",
+      "El gasto en pensiones y sus tres componentes figura en las cuentas IGAE-COFOG de 2024. Afiliación, pensionistas y tasas de dependencia todavía no están incorporados.",
 
     analysis: () => [
   `La población residente alcanza ${formatLatest(
@@ -1569,7 +1588,7 @@ const sectionDefinitions = {
     pct1
   )}.`,
 
-  "Estos indicadores describen la base demográfica, pero todavía no permiten evaluar la sostenibilidad del sistema de pensiones. Faltan métricas específicas de afiliación, pensionistas, pensión media, gasto, tasa de dependencia y proyecciones."
+  "El bloque combina población de 2026 y gasto en pensiones de 2024: no son periodos directamente comparables. Las cifras contables, por sí solas, no permiten inferir sostenibilidad; faltan afiliados, pensionistas, pensión media y proyecciones de dependencia."
     ],
     groups: [
       {
@@ -1715,6 +1734,39 @@ function renderMetricSection(sectionId) {
     note.textContent = config.note;
 
     section.append(note);
+  }
+
+  if (sectionId === "pensiones") {
+    const pensionRows=spotlightFinance.filter(d=>d.year===spotlightYears[0]);
+    const byPensionCode=new Map(pensionRows.map(d=>[d.code,d]));
+    const total=byPensionCode.get("PENS");
+    const parts=["PENS.CONTR","PENS.NOCONTR","PENS.CP"].map(code=>byPensionCode.get(code));
+    if (total && parts.every(Boolean) &&
+        Math.abs(parts.reduce((sum,item)=>sum+item.value,0)-total.value)<1) {
+      const wrapper=document.createElement("div");
+      wrapper.className="il-pension-info";
+      const title=document.createElement("h3");
+      title.textContent="Gasto en pensiones · IGAE COFOG "+spotlightYears[0];
+      wrapper.append(title);
+      const cards=document.createElement("div");
+      cards.className="il-pension-figures";
+      const makeCard=(name,val)=>{
+        const el=document.createElement("div");el.className="il-pension-figure";
+        const strong=document.createElement("strong");
+        strong.textContent=new Intl.NumberFormat("es-ES",{maximumFractionDigits:0}).format(val)+" M€";
+        const label=document.createElement("small");label.textContent=name;
+        el.append(strong,label);return el;
+      };
+      cards.append(makeCard("Pensiones · total COFOG",total.value));
+      cards.append(makeCard("Contributivas de Seguridad Social",parts[0].value));
+      cards.append(makeCard("No contributivas de Seguridad Social",parts[1].value));
+      cards.append(makeCard("Clases pasivas",parts[2].value));
+      wrapper.append(cards);
+      const note=document.createElement("p");
+      note.textContent="Desglose analítico dentro de protección social. Los importes del año "+spotlightYears[0]+" no deben sumarse de nuevo al resto del COFOG. Fuente: IGAE.";
+      wrapper.append(note);
+      section.append(wrapper);
+    }
   }
 
   if (config.action) {
@@ -1976,6 +2028,44 @@ const spotlightSankey = PublicFinanceExplorer(
   {year:spotlightYears[0],dataUrl:spotlightDataUrl,workbookUrl:spotlightWorkbookUrl}
 );
 display(spotlightSankey);
+
+const spendingRows = spotlightFinance
+  .filter(d => d.year === spotlightYears[0] && d.parent_code === "S13.GASTO" &&
+    d.side === "gasto" && String(d.level) === "1")
+  .sort((a,b) => b.value - a.value);
+const centre = spotlightFinance.find(d => d.year === spotlightYears[0] && d.code === "S13.GASTO");
+const spendingSum = spendingRows.reduce((a,d)=>a+d.value,0);
+if (centre && spendingRows.length === 10 && Math.abs(spendingSum-centre.value)<1) {
+  const section = document.createElement("section");
+  section.className = "il-finance-coverage";
+  section.setAttribute("aria-label","Detalle completo de las diez funciones oficiales del gasto");
+  section.innerHTML = '<h3>Las 10 funciones del gasto público, sin ramas ocultas</h3><p>Clasificación COFOG de 2024 (IGAE). Haz clic en una rama del Sankey para explorar el siguiente nivel. El total de estas diez funciones cuadra exactamente con el gasto público consolidado.</p>';
+  const table = document.createElement("table");
+  const header = document.createElement("thead");
+  header.innerHTML="<tr><th>Función del gasto</th><th>Millones €</th><th>% del gasto</th></tr>";
+  table.append(header);
+  const tbody=document.createElement("tbody");
+  const fmt=new Intl.NumberFormat("es-ES",{maximumFractionDigits:1});
+  for (const item of spendingRows) {
+    const tr=document.createElement("tr");
+    for (const val of [item.indicator_name,fmt.format(item.value),fmt.format(item.value/centre.value*100)+" %"]) {
+      const td=document.createElement("td");
+      td.textContent=val;
+      tr.append(td);
+    }
+    tbody.append(tr);
+  }
+  const total=document.createElement("tr");
+  for (const v of ["TOTAL COFOG",fmt.format(spendingSum),"100 %"]) {
+    const td=document.createElement("td");td.textContent=v;td.style.fontWeight="800";total.append(td);
+  }
+  tbody.append(total);table.append(tbody);section.append(table);display(section);
+} else {
+  const warning=document.createElement("div");
+  warning.className="section-note";
+  warning.textContent="El desglose funcional no ha superado la conciliación. No se publican porcentajes hasta corregirlo.";
+  display(warning);
+}
 ```
 
 <div class="il-spotlight-footnote">La necesidad de financiación (déficit) se representa separada de los ingresos no financieros. <a href="./metodologia">Consulta las limitaciones</a> y <a href="./actualizaciones">las fechas de actualización</a>.</div>
