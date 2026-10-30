@@ -305,10 +305,10 @@ body {
     <a href="/dashboard-gobierno/" class="il-nav-start">Inicio</a>
     <a class="idealab-nav-priority" href="/dashboard-gobierno/#mapa-dinero">Mapa del dinero</a>
     <a href="/dashboard-gobierno/#resumen">Indicadores</a>
-    <a class="is-active" href="/dashboard-gobierno/finanzas-publicas">Finanzas públicas</a>
-    <a href="/dashboard-gobierno/metodologia">Metodología</a>
-    <a href="/dashboard-gobierno/actualizaciones">Actualización</a>
-    <a href="/dashboard-gobierno/quienes-somos">Quiénes somos</a>
+    <a class="is-active" href="/dashboard-gobierno/finanzas-publicas.html">Finanzas públicas</a>
+    <a href="/dashboard-gobierno/metodologia.html">Metodología</a>
+    <a href="/dashboard-gobierno/actualizaciones.html">Actualización</a>
+    <a href="/dashboard-gobierno/quienes-somos.html">Quiénes somos</a>
     <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">En X</a>
   </div>
   <details class="idealab-nav-mobile">
@@ -317,7 +317,7 @@ body {
       <a href="/dashboard-gobierno/">Inicio</a>
       <a href="/dashboard-gobierno/#mapa-dinero">Mapa del dinero</a>
       <a href="/dashboard-gobierno/#resumen">Indicadores</a>
-      <a href="/dashboard-gobierno/finanzas-publicas" aria-current="page">Finanzas públicas</a>
+      <a href="/dashboard-gobierno/finanzas-publicas.html" aria-current="page">Finanzas públicas</a>
       <a href="/dashboard-gobierno/#economia">Economía</a>
       <a href="/dashboard-gobierno/#empleo">Empleo</a>
       <a href="/dashboard-gobierno/#vivienda">Vivienda</a>
@@ -326,9 +326,9 @@ body {
       <a href="/dashboard-gobierno/#sociedad">Sociedad</a>
       <a href="/dashboard-gobierno/#mundo">Mundo</a>
       <div class="idealab-nav-mobile-heading">Observatorio</div>
-      <a href="/dashboard-gobierno/metodologia">Metodología</a>
-      <a href="/dashboard-gobierno/actualizaciones">Actualización</a>
-      <a href="/dashboard-gobierno/quienes-somos">Quiénes somos</a>
+      <a href="/dashboard-gobierno/metodologia.html">Metodología</a>
+      <a href="/dashboard-gobierno/actualizaciones.html">Actualización</a>
+      <a href="/dashboard-gobierno/quienes-somos.html">Quiénes somos</a>
       <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">En X ↗</a>
     </div>
   </details>
@@ -349,7 +349,7 @@ if (financesMobileMenu) {
 }
 ```
 
-<div style="margin: 0.6rem auto 1rem; max-width: 1400px; padding: 0.55rem 0.85rem; border: 1px solid #e3e6ea; border-radius: 10px; font-size: 0.84rem; color:#344054; background: #f8fafc;">Datos históricos en proceso de revisión. Algunas series están excluidas por metadatos ambiguos. <a href="/dashboard-gobierno/metodologia">Fuentes y limitaciones</a>.</div>
+<div style="margin: 0.6rem auto 1rem; max-width: 1400px; padding: 0.55rem 0.85rem; border: 1px solid #e3e6ea; border-radius: 10px; font-size: 0.84rem; color:#344054; background: #f8fafc;">Datos históricos en proceso de revisión. Algunas series están excluidas por metadatos ambiguos. <a href="/dashboard-gobierno/metodologia.html">Fuentes y limitaciones</a>.</div>
 
 <div class="pf-hero">
   <div class="pf-kicker">ESPAÑA EN DATOS · UN PRODUCTO DE IDEA LAB</div>
