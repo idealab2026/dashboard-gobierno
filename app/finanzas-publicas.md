@@ -243,6 +243,7 @@ body {
     <a href="./#estado">Sector público</a>
     <a class="is-active" href="./finanzas-publicas">Dinero público</a>
     <a href="./metodologia">Metodología</a>
+    <a href="./actualizaciones">Actualización</a>
     <a href="./#pensiones">Pensiones</a>
     <a href="./#sociedad">Sociedad</a>
     <a href="./#mundo">Mundo</a>
