@@ -126,6 +126,11 @@ export function KpiCard(data, options = {}) {
   });
 
   const firstYear = rows[0].year;
+  const referencePeriod = String(latest.reference_period || latest.year);
+  const periodLabel = /^\\d{4}-\\d{2}(-\\d{2})?$/.test(referencePeriod)
+    ? referencePeriod
+    : String(latest.year);
+  const hasHistory = rows.length > 1;
 
   const source =
     latest.source ||
@@ -155,7 +160,7 @@ export function KpiCard(data, options = {}) {
         <div class="kpi-title">${title}</div>
 
         <div class="kpi-year">
-          ${latest.year}
+          ${periodLabel}
         </div>
       </div>
 
@@ -176,19 +181,11 @@ export function KpiCard(data, options = {}) {
 
       </div>
 
-      <div class="kpi-diff">
-        <span class="kpi-arrow">${arrow}</span>
-        ${diffText}
-      </div>
+      ${hasHistory ? htl.html`<div class="kpi-diff"><span class="kpi-arrow">${arrow}</span>${diffText}</div>` : ""}
 
-      <div class="kpi-spark">
-        ${sparkline}
-      </div>
+      ${hasHistory ? htl.html`<div class="kpi-spark">${sparkline}</div>` : ""}
 
-      <div class="kpi-years">
-        <span>${firstYear}</span>
-        <span>${latest.year}</span>
-      </div>
+      ${hasHistory ? htl.html`<div class="kpi-years"><span>${firstYear}</span><span>${latest.year}</span></div>` : htl.html`<div class="kpi-years"><span>Observación puntual</span><span>${periodLabel}</span></div>`}
 
       <div class="kpi-source">
 
