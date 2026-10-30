@@ -53,6 +53,10 @@ jobs:
         run: python scripts/refresh_official.py
       - name: Read latest literal INE observations
         run: python scripts/fetch_ine_latest.py
+      - name: Unit tests · pinned INE series and fail-closed updates
+        run: python -m unittest discover -s scripts/tests -p "test_*.py" -v
+      - name: Update only validated annual population figures (official INE ECP320)
+        run: python scripts/update_ine_ecp320.py
       - name: Validate statistical and public-only data
         run: python scripts/validate_public.py
       - name: Compile original V2 dashboard and Sankey
