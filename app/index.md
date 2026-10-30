@@ -872,6 +872,7 @@ html {
     <a href="#pensiones">Pensiones</a>
     <a href="#sociedad">Sociedad</a>
     <a href="#mundo">Mundo</a>
+    <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer" aria-label="Actualidad y análisis de IDEA LAB en X, perfil @LARREALIDAD">Actualidad en X</a>
   </div>
 
 </nav>
