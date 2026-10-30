@@ -20,6 +20,21 @@ const checks = (state.sources || []).map(s => ({
 display(Inputs.table(checks));
 ```
 
+## Lecturas recientes de la API oficial
+
+A continuación se muestran **registros literales** del INE recogidos durante la comprobación, con su nombre de serie completo. Son ejemplos de la fuente, no cifras homologadas ni sustitutos de las tarjetas del observatorio.
+
+```js
+const latestOfficial = await FileAttachment("./data/ine-latest.json").json();
+const preview = (latestOfficial.records || []).map(d => ({
+  "Serie INE (nombre completo)": d.serie_original,
+  "Año": d.anyo,
+  "Valor publicado": d.valor_fuente,
+  "URL origen": d.source_url
+}));
+display(preview.length ? Inputs.table(preview) : html`<p>No se han podido obtener ejemplos oficiales durante esta comprobación. Los datos históricos de la web se mantienen inalterados.</p>`);
+```
+
 ## Vigencia de los datos representados
 
 - **Panel de España:** series históricas seleccionadas, con fecha individual para cada observación.
