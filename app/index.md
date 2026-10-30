@@ -1,9 +1,9 @@
 ---
-title: España en Datos
+title: España en Datos | IDEA LAB
 theme: light
 toc: false
 sidebar: false
-footer: By Idea Lab - OBSERVATORIO ESTADÍSTICO
+footer: IDEA LAB · Investigación y divulgación independiente
 ---
 
 <style>
@@ -861,30 +861,66 @@ html {
 .il-pension-payroll-bar{height:7px;background:#a58a4d;border-radius:9px}
 @media(max-width:690px){.il-pension-breakdown{grid-template-columns:1fr}}
 
+
+/* Marca matriz IDEA LAB · producto España en Datos */
+.idealab-nav{gap:1rem;padding:.7rem 1rem}
+.idealab-brand{white-space:nowrap}
+.idealab-brand-product{font-weight:600;letter-spacing:0;color:#475569}
+.idealab-nav-links{min-width:0;flex:1;justify-content:flex-end;gap:.4rem .8rem;flex-wrap:wrap;overflow:visible;white-space:normal}
+.idealab-nav-links a{white-space:nowrap}
+.idealab-nav-x{padding:.32rem .6rem;border:1px solid var(--idealab-border);border-radius:7px}
+.idealab-nav-areas{position:relative;color:var(--idealab-muted);font-size:.85rem;font-weight:650}
+.idealab-nav-areas>summary{cursor:pointer;white-space:nowrap;list-style:none}
+.idealab-nav-areas>summary::-webkit-details-marker{display:none}
+.idealab-nav-areas>summary::after{content:" ▾";font-size:.76em}
+.idealab-nav-areas-panel{position:absolute;top:calc(100% + 12px);left:0;z-index:1200;min-width:180px;display:grid;gap:.65rem;padding:.85rem 1rem;border:1px solid var(--idealab-border);border-radius:10px;background:#fff;box-shadow:0 12px 30px rgba(11,36,71,.12)}
+.idealab-nav-areas-panel a{display:block;text-decoration:none}
+.hero{padding:.9rem 0 .8rem;margin-bottom:.7rem}
+.hero h1{font-size:clamp(2.5rem,5vw,3.8rem);margin:.45rem 0 .7rem;white-space:normal}
+.hero-subtitle{font-size:1.02rem;line-height:1.5;max-width:76ch}
+.hero-actions{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem}
+.hero-actions a{display:inline-block;padding:.62rem .9rem;border:1px solid var(--idealab-navy);border-radius:8px;font-weight:700;font-size:.87rem;color:var(--idealab-navy);text-decoration:none}
+.hero-actions a:first-child{background:var(--idealab-navy);color:white}
+.hero-meta{margin-top:.65rem}
+@media(max-width:900px){
+  .idealab-nav{align-items:flex-start;gap:.5rem}
+  .idealab-nav-links{width:100%;justify-content:flex-start;flex-wrap:wrap;overflow:visible;white-space:normal;gap:.45rem .8rem;padding-bottom:.15rem}
+  .dashboard-section{scroll-margin-top:165px}
+}
+@media(max-width:650px){
+  .idealab-brand-product{font-size:.78em}
+  .hero h1{font-size:2.4rem}
+  .hero-subtitle{font-size:.95rem}
+  .idealab-nav-links a,.idealab-nav-areas{font-size:.77rem}
+}
+
 </style>
 
-<nav class="idealab-nav">
-
-  <a class="idealab-brand" href="#inicio" aria-label="IDEA LAB · España en datos">
-    IDEA LAB · España en datos
+<nav class="idealab-nav" aria-label="Navegación del observatorio España en Datos">
+  <a class="idealab-brand" href="#inicio" aria-label="IDEA LAB · España en Datos">
+    IDEA LAB <span class="idealab-brand-product">· España en Datos</span>
   </a>
-
   <div class="idealab-nav-links">
     <a class="idealab-nav-priority" href="#mapa-dinero">Mapa del dinero</a>
-    <a href="#resumen">Resumen</a>
-    <a href="#economia">Economía</a>
-    <a href="#empleo">Empleo</a>
-    <a href="#vivienda">Vivienda</a>
-    <a href="#estado">Sector público</a>
-    <a href="./finanzas-publicas">Ingresos y gastos</a>
+    <a href="#resumen">Indicadores</a>
+    <details class="idealab-nav-areas">
+      <summary>Áreas temáticas</summary>
+      <div class="idealab-nav-areas-panel">
+        <a href="#economia">Economía</a>
+        <a href="#empleo">Empleo</a>
+        <a href="#vivienda">Vivienda</a>
+        <a href="#estado">Sector público</a>
+        <a href="#pensiones">Pensiones</a>
+        <a href="#sociedad">Sociedad</a>
+        <a href="#mundo">Mundo</a>
+      </div>
+    </details>
+    <a href="./finanzas-publicas">Finanzas públicas</a>
     <a href="./metodologia">Metodología</a>
     <a href="./actualizaciones">Actualización</a>
-    <a href="#pensiones">Pensiones</a>
-    <a href="#sociedad">Sociedad</a>
-    <a href="#mundo">Mundo</a>
-    <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer" aria-label="Actualidad y análisis de IDEA LAB en X, perfil @LARREALIDAD">Actualidad en X</a>
+    <a href="./quienes-somos">Quiénes somos</a>
+    <a class="idealab-nav-x" href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer" aria-label="Canal editorial de IDEA LAB en X">En X</a>
   </div>
-
 </nav>
 
 <div style="margin: 0.6rem auto 1rem; max-width: 1400px; padding: 0.55rem 0.85rem; border: 1px solid #e3e6ea; border-radius: 10px; font-size: 0.84rem; color:#344054; background: #f8fafc;">Datos históricos en proceso de revisión. Algunas series están excluidas por metadatos ambiguos. <a href="./metodologia">Fuentes y limitaciones</a>.</div>
@@ -2073,14 +2109,14 @@ const indicatorCount = availableIndicators.length;
 
 
 <div id="inicio" class="hero">
-  <div class="hero-kicker">
-    IDEA LAB
-  </div>
-
-  <h1>España en datos</h1>
-
+  <div class="hero-kicker">UN PRODUCTO DE IDEA LAB · OBSERVATORIO DE ESPAÑA</div>
+  <h1>España en Datos</h1>
   <div class="hero-subtitle">
-    Una radiografía de la realidad económica, social e institucional de España construida a partir de datos verificables, trazables y  comparables internacionalmente.
+    Nuestro observatorio económico, social e institucional de España. Reunimos, contrastamos y visualizamos datos de fuentes oficiales para ofrecer una mirada rigurosa y comprensible de la realidad.
+  </div>
+  <div class="hero-actions">
+    <a href="#mapa-dinero">Explorar el mapa del dinero</a>
+    <a href="./quienes-somos">Quiénes somos</a>
   </div>
 </div>
 

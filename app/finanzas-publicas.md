@@ -3,7 +3,7 @@ title: Dinero público
 theme: light
 sidebar: false
 toc: false
-footer: By Idea Lab - OBSERVATORIO ESTADÍSTICO
+footer: IDEA LAB · Investigación y divulgación independiente
 ---
 
 <style>
@@ -231,29 +231,30 @@ body {
     page-break-inside: avoid;
   }
 }
+
+.idealab-nav{gap:1rem}
+.idealab-nav-links{min-width:0;justify-content:flex-end;flex-wrap:wrap;white-space:normal;overflow:visible;gap:.45rem .85rem}
+.idealab-nav-links a{white-space:nowrap}
+@media(max-width:900px){.idealab-nav-links{justify-content:flex-start}}
 </style>
 
-<nav class="idealab-nav">
-  <a class="idealab-brand" href="./">IDEA LAB · España en datos</a>
+<nav class="idealab-nav" aria-label="Navegación España en Datos">
+  <a class="idealab-brand" href="./">IDEA LAB · España en Datos</a>
   <div class="idealab-nav-links">
-    <a href="./#resumen">Resumen</a>
-    <a href="./#economia">Economía</a>
-    <a href="./#empleo">Empleo</a>
-    <a href="./#vivienda">Vivienda</a>
-    <a href="./#estado">Sector público</a>
-    <a class="is-active" href="./finanzas-publicas">Dinero público</a>
+    <a href="./#mapa-dinero">Mapa del dinero</a>
+    <a href="./#resumen">Indicadores</a>
+    <a class="is-active" href="./finanzas-publicas">Finanzas públicas</a>
     <a href="./metodologia">Metodología</a>
     <a href="./actualizaciones">Actualización</a>
-    <a href="./#pensiones">Pensiones</a>
-    <a href="./#sociedad">Sociedad</a>
-    <a href="./#mundo">Mundo</a>
+    <a href="./quienes-somos">Quiénes somos</a>
+    <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">En X</a>
   </div>
 </nav>
 
 <div style="margin: 0.6rem auto 1rem; max-width: 1400px; padding: 0.55rem 0.85rem; border: 1px solid #e3e6ea; border-radius: 10px; font-size: 0.84rem; color:#344054; background: #f8fafc;">Datos históricos en proceso de revisión. Algunas series están excluidas por metadatos ambiguos. <a href="./metodologia">Fuentes y limitaciones</a>.</div>
 
 <div class="pf-hero">
-  <div class="pf-kicker">IDEA LAB · Finanzas públicas</div>
+  <div class="pf-kicker">ESPAÑA EN DATOS · UN PRODUCTO DE IDEA LAB</div>
   <h1>Mapa del dinero público</h1>
   <p>De dónde proceden los recursos de las Administraciones Públicas españolas y en qué se emplean. Pulsa cualquier rama para consultar su desglose, metodología y fuente oficial.</p>
 </div>

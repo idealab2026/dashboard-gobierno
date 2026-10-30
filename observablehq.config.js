@@ -1,5 +1,5 @@
 export default {
- title: "Idea Lab · Observatorio de España",
+ title: "IDEA LAB · España en Datos",
  root: "app",
  base: "/dashboard-gobierno/",
  sidebar: false,
