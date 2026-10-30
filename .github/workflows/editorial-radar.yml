@@ -1,0 +1,25 @@
+name: Radar editorial IDEA LAB
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 7 * * 1-5'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: editorial-radar
+  cancel-in-progress: false
+
+jobs:
+  radar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout public sources
+        uses: actions/checkout@v4
+      - name: Unit tests without network
+        run: python3 -m unittest discover -s editorial/tests -p 'test_*.py' -v
+      - name: Collect public RSS and prepare review summary
+        run: python3 editorial/digest.py
