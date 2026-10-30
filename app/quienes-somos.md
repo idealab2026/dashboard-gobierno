@@ -75,10 +75,10 @@ footer: IDEA LAB · Investigación, análisis y divulgación
       <a href="/dashboard-gobierno/">Inicio</a>
       <a href="/dashboard-gobierno/#mapa-dinero">Mapa del dinero</a>
       <a href="/dashboard-gobierno/#resumen">Indicadores</a>
-      <a href="/dashboard-gobierno/finanzas-publicas">Finanzas públicas</a>
-      <a href="/dashboard-gobierno/actualizaciones">Actualización</a>
-      <a href="/dashboard-gobierno/metodologia">Metodología</a>
-      <a href="/dashboard-gobierno/quienes-somos">Quiénes somos</a>
+      <a href="/dashboard-gobierno/finanzas-publicas.html">Finanzas públicas</a>
+      <a href="/dashboard-gobierno/actualizaciones.html">Actualización</a>
+      <a href="/dashboard-gobierno/metodologia.html">Metodología</a>
+      <a href="/dashboard-gobierno/quienes-somos.html">Quiénes somos</a>
     </div>
   </details>
 </nav>
@@ -114,7 +114,7 @@ footer: IDEA LAB · Investigación, análisis y divulgación
   <section>
     <h2>Cómo trabajamos</h2>
     <p>Partimos de preguntas concretas, localizamos fuentes primarias, comprobamos unidades, periodos y cobertura, y documentamos nuestras transformaciones. Publicamos conclusiones proporcionadas a la evidencia disponible y explicitamos las incertidumbres o discrepancias detectadas.</p>
-    <p>Mostramos el <a href="/dashboard-gobierno/metodologia">procedimiento de análisis y validación</a> y el <a href="/dashboard-gobierno/actualizaciones">estado de actualización de las fuentes</a>. Las series históricas no se presentan como cifras actuales sin una comprobación adicional.</p>
+    <p>Mostramos el <a href="/dashboard-gobierno/metodologia.html">procedimiento de análisis y validación</a> y el <a href="/dashboard-gobierno/actualizaciones.html">estado de actualización de las fuentes</a>. Las series históricas no se presentan como cifras actuales sin una comprobación adicional.</p>
   </section>
 
   <section>
