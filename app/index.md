@@ -991,6 +991,72 @@ html {
   .idealab-nav-mobile-panel {grid-template-columns:repeat(2,minmax(0,1fr));}
 }
 
+
+/* Mobile density v2: KPI overview shows useful comparative information without
+   hiding numeric values, reference years or authoritative provenance. */
+.kpi-mobile-meta {display:none;}
+@media (max-width:768px) {
+  .observablehq {padding-inline:10px!important;}
+  .section-header {margin-top:.7rem!important;margin-bottom:.6rem!important;}
+  .section-header h2 {font-size:clamp(1.35rem,5.2vw,1.65rem)!important;line-height:1.13!important;margin:.28rem 0!important;}
+  .section-description {font-size:.79rem!important;line-height:1.4!important;}
+  .section-kicker {font-size:.64rem!important;letter-spacing:.09em;}
+  .dashboard-section {padding-top:.7rem!important;padding-bottom:.85rem!important;scroll-margin-top:67px!important;}
+  .seccion-con-analisis {gap:.65rem!important;margin-bottom:.5rem!important;min-width:0;}
+  .columna-datos {width:100%;min-width:0;}
+  .kpi-grid {display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;align-items:stretch;}
+  .kpi-card {
+    box-sizing:border-box;width:100%;min-width:0;max-width:100%;
+    padding:10px 10px 9px!important;border-radius:10px;
+    min-height:0!important;height:auto!important;overflow-wrap:anywhere;
+  }
+  .kpi-card:hover {transform:none;box-shadow:none;}
+  .kpi-card-top {display:flex;align-items:flex-start;gap:5px;min-height:33px;}
+  .kpi-title {font-size:.64rem!important;line-height:1.24!important;letter-spacing:.025em!important;min-width:0;}
+  .kpi-year {font-size:.58rem!important;line-height:1.2;white-space:nowrap;
+    padding:2px 5px!important;flex-shrink:0;}
+  .kpi-value-block {margin-top:6px!important;}
+  .kpi-value {font-size:clamp(1.12rem,4.55vw,1.5rem)!important;line-height:1.13!important;
+    letter-spacing:-.025em;overflow-wrap:anywhere;}
+  .kpi-unit {font-size:.65rem!important;line-height:1.25;margin-top:2px!important;}
+  .kpi-diff {font-size:.66rem!important;line-height:1.23;margin-top:6px!important;}
+  .kpi-spark {width:100%!important;max-width:100%;padding-top:5px!important;margin-top:4px!important;}
+  .kpi-spark svg {display:block;width:100%!important;height:35px!important;max-height:35px!important;
+    overflow:hidden!important;}
+  .kpi-years {font-size:.58rem!important;line-height:1.2;margin-top:1px!important;}
+  /* The same source metadata is available inside an accessible native disclosure. */
+  .kpi-source,.kpi-details {display:none!important;}
+  .kpi-mobile-meta {display:block;margin-top:auto;padding-top:7px;}
+  .kpi-mobile-meta summary {cursor:pointer;list-style:revert;color:#335373;font-size:.65rem;
+    line-height:1.35;font-weight:700;min-height:30px;display:flex;align-items:center;gap:4px;}
+  .kpi-mobile-meta summary::before {content:"▸";font-size:.7rem;line-height:1;}
+  .kpi-mobile-meta[open] summary::before {content:"▾";}
+  .kpi-mobile-meta summary:focus-visible {outline:2px solid #a88a4a;outline-offset:2px;}
+  .kpi-mobile-meta-content {border-top:1px solid #e4e9f0;margin-top:2px;padding-top:7px;
+    display:grid;gap:5px;color:#526075;font-size:.65rem;line-height:1.35;
+    overflow-wrap:anywhere;}
+  .kpi-mobile-meta-content a {color:#244c77;overflow-wrap:anywhere;}
+  .metric-group {margin-top:.7rem!important;}
+  .metric-group:first-of-type {margin-top:.45rem!important;}
+  .metric-group-title {font-size:.95rem!important;margin-bottom:.55rem!important;}
+  .section-note {margin:.6rem 0 .85rem!important;padding:9px 11px!important;
+    font-size:.75rem!important;line-height:1.4!important;}
+  .columna-analisis {padding-top:.65rem!important;margin-top:.15rem;line-height:1.48;
+    font-size:.8rem!important;text-align:left;}
+  .columna-analisis h4 {margin:0 0 6px!important;font-size:.68rem!important;}
+  .columna-analisis p {margin:.4rem 0!important;}
+  .il-pension-info {padding:10px!important;margin:.55rem 0 .85rem;}
+  .il-pension-figure {padding:8px!important;}
+  .il-pension-figure strong {font-size:clamp(.9rem,3.7vw,1.1rem);}
+  .il-pension-figure small {font-size:.64rem;}
+  .il-pension-payroll-label {font-size:.72rem;}
+}
+@media (max-width:350px) {
+  .kpi-card {padding:8px!important;}
+  .kpi-title {font-size:.6rem!important;}
+  .kpi-value {font-size:1.05rem!important;}
+}
+
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación del observatorio España en Datos">
