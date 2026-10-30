@@ -7,7 +7,7 @@ toc: false
 
 # Estado de actualización y fuentes
 
-La publicación se construye desde el historial de datos seleccionado por Idea Lab. Las fuentes oficiales se comprueban periódicamente, pero **una fuente accesible no significa que todas sus cifras se hayan importado**.
+En IDEA LAB construimos **España en Datos**, nuestro observatorio económico, social e institucional, a partir de series históricas seleccionadas y fuentes públicas. Comprobamos periódicamente la disponibilidad de las fuentes oficiales, pero **una fuente accesible no significa que todas sus cifras se hayan importado o actualizado**. [Conoce nuestra iniciativa](./quienes-somos).
 
 ```js
 const state = await FileAttachment("./data/official-checks.json").json();
