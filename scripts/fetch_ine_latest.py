@@ -31,7 +31,7 @@ try:
         if not entries:continue
         entries.sort(key=lambda v:int(v.get("Fecha") or v.get("Anyo") or 0),reverse=True)
         obs=entries[0]
-        payload["records"].append({"serie_original":title,"anyo":str(obs.get("Anyo")),"valor_fuente":obs.get("Valor"),"fecha_ine":obs.get("Fecha"),"source_url":URL})
+        payload["records"].append({"id_serie":str(serie.get("COD","")),"serie_original":title,"anyo":str(obs.get("Anyo")),"valor_fuente":obs.get("Valor"),"fecha_ine":obs.get("Fecha"),"source_url":URL})
         if len(payload["records"])>=12:break
     payload["status"]="ok"
 except (OSError,ValueError,TimeoutError,json.JSONDecodeError) as e:
@@ -40,3 +40,6 @@ except (OSError,ValueError,TimeoutError,json.JSONDecodeError) as e:
 OUT.parent.mkdir(parents=True,exist_ok=True)
 OUT.write_text(json.dumps(payload,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
 print("Lecturas literales INE:",len(payload["records"]),"estado:",payload["status"])
+
+for item in payload["records"]:
+    print("INE_SAMPLE",item["id_serie"],item["anyo"],item["valor_fuente"],item["serie_original"][:170])
