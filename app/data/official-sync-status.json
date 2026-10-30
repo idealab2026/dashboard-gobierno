@@ -1,0 +1,12 @@
+{
+  "checked_at_utc": null,
+  "source": "INE",
+  "series_code": "ECP320",
+  "series_title": "Total Nacional. Todas las edades. Total. Población. Número.",
+  "source_url": "https://servicios.ine.es/wstempus/js/ES/DATOS_SERIE/ECP320?nult=8",
+  "status": "not_run",
+  "published_new_rows": 0,
+  "historical_data_rewritten": false,
+  "canonical_drive_modified": false,
+  "scope": "Unicamente población residente nacional y crecimiento interanual calculado"
+}
