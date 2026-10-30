@@ -280,6 +280,23 @@ body {
   .pf-explorer-host{min-width:0;max-width:100%;}
 }
 
+
+/* Justified editorial body text; retain aligned data, labels and table cells. */
+.pf-hero p,.pf-section-heading p,.pf-after-map p,.pf-footnote,
+.pf-source-note p,.observablehq > p,.pf-documentation p {
+  text-align:justify;
+  text-align-last:left;
+  hyphens:auto;
+  -webkit-hyphens:auto;
+}
+@media(max-width:768px){
+  .pf-hero p,.pf-section-heading p,.pf-after-map p,
+  .pf-footnote,.observablehq > p {
+    text-align:justify!important;
+    text-align-last:left!important;
+  }
+}
+
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación España en Datos">
