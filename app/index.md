@@ -834,6 +834,7 @@ html {
     <a href="#estado">Sector público</a>
     <a href="./finanzas-publicas">Ingresos y gastos</a>
     <a href="./metodologia">Metodología</a>
+    <a href="./actualizaciones">Actualización</a>
     <a href="#pensiones">Pensiones</a>
     <a href="#sociedad">Sociedad</a>
     <a href="#mundo">Mundo</a>
