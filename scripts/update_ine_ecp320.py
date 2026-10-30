@@ -79,7 +79,7 @@ def apply_official(years,fields,rows):
     # Check every overlapping archived year, not merely the most recent one.
     for year,value in years.items():
         if year in pop and int(float(pop[year]["value"]))!=value:
-            raise OfficialDataError(f"Historical source revision detected for {year} (manual review required)")
+            raise OfficialDataError(f"Historical source revision detected for {year}: snapshot={pop[year]['value']}; official={value} (manual review required)")
     newer=sorted(y for y in years if y>latest)
     if newer and newer!=list(range(latest+1,max(newer)+1)):
         raise OfficialDataError("Gap in official annual reporting")
