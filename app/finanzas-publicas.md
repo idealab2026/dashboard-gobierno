@@ -321,6 +321,16 @@ const fmtM = value => Number.isFinite(value)
   </div>
 </div>
 
+<div style="margin:1rem 0;padding:1rem 1.2rem;border:1px solid #d9e3e9;background:#f7fafc;border-radius:12px;line-height:1.5">
+  <div style="font-size:.72rem;font-weight:800;letter-spacing:.07em;color:#52647b;margin-bottom:.3rem">2025 · AVANCE OFICIAL, TODAVÍA NO INTEGRABLE EN EL SANKEY</div>
+  <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:baseline">
+    <strong style="font-size:1.52rem;color:#0b2447">766.296 M€</strong>
+    <span style="font-size:.87rem;color:#344054">Empleos no financieros del total de AAPP, año 2025 (serie IGAE publicada en BDSICE).</span>
+  </div>
+  <p style="font-size:.78rem;color:#667085;margin:.5rem 0">La fuente actualizada el 30/09/2026 publica también 725.122 M€ para 2024, frente a los 725.001 M€ de la vintage del Sankey. <strong>Son revisiones diferentes: no mezclar importes entre versiones.</strong> La clasificación funcional COFOG de 2025 está prevista para el 30/11/2026; hasta disponer de ella no existe un reparto funcional completo y conciliado de 2025.</p>
+  <a style="font-size:.79rem;font-weight:700" href="https://bdsice.mineco.gob.es/indeco/reports/verSerieGraf_limpio.aspx/?codigo=770a002000&amp;frec=-1" target="_blank" rel="noopener noreferrer">Fuente oficial · Serie anual 770a002000 ↗</a>
+</div>
+
 <div class="pf-section-heading" id="mapa">
   <h2>Ingresos → Administraciones Públicas → gasto</h2>
   <p>${displayYear} · sector consolidado S.13 · clasificación funcional COFOG</p>
