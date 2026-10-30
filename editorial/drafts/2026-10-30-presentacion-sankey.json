@@ -1,0 +1,11 @@
+{
+  "id": "2026-10-30-presentacion-sankey",
+  "account": "@LARREALIDAD",
+  "status": "review_pending",
+  "theme": "Lanzamiento del observatorio público IDEA LAB",
+  "created_at": "2026-10-30",
+  "text": "¿De dónde sale el dinero público y en qué se gasta?\n\nEn IDEA LAB hemos creado un Sankey interactivo para explorar los ingresos y gastos públicos de España (2024), con fuentes y metodología.\n\nhttps://idealab2026.github.io/dashboard-gobierno/#mapa-dinero",
+  "source_url": "https://idealab2026.github.io/dashboard-gobierno/#mapa-dinero",
+  "editorial_notes": "Sankey de ingresos y gastos públicos del sector S.13 de 2024. Revisión contrastada con la portada pública. El enlace conduce al mapa interactivo; no implica atribución de impuestos concretos a gastos concretos.",
+  "publication": "Abrir manualmente X con @LARREALIDAD y publicar; GitHub Actions no envía nada a X."
+}
