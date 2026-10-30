@@ -1,0 +1,28 @@
+name: Prueba de publicación @LARREALIDAD (sin envío a X)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'editorial/drafts/**'
+      - 'editorial/prepare_publication.py'
+      - 'editorial/tests/test_publication_preview.py'
+      - '.github/workflows/editorial-publication-preview.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout sin credenciales persistidas
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Validar borrador y límites de X
+        run: python3 -m unittest discover -s editorial/tests -p 'test_publication_preview.py' -v
+      - name: Crear enlace para publicación manual
+        run: python3 editorial/prepare_publication.py
