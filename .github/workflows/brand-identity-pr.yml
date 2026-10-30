@@ -1,0 +1,28 @@
+name: IDEA LAB · Control de identidad institucional
+
+on:
+  pull_request:
+    paths:
+      - 'app/index.md'
+      - 'app/quienes-somos.md'
+      - 'app/finanzas-publicas.md'
+      - 'app/metodologia.md'
+      - 'app/actualizaciones.md'
+      - 'editorial/PERFIL_X.md'
+      - 'scripts/tests/test_brand_identity.py'
+      - '.github/workflows/brand-identity-pr.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  brand-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Verificar arquitectura de marca y voz plural
+        run: python3 -m unittest discover -s scripts/tests -p 'test_brand_identity.py' -v
