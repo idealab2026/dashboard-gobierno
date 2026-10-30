@@ -1,0 +1,10 @@
+{
+  "id": "2026-10-30-primera-prueba",
+  "account": "@LARREALIDAD",
+  "status": "review_pending",
+  "theme": "Método de análisis",
+  "created_at": "2026-10-30",
+  "text": "Una cifra pública puede ser correcta y llevar a una conclusión errónea.\n\nAntes de compartirla, revisa:\n1) Fuente primaria.\n2) Fecha, unidad y ámbito.\n3) Comparación adecuada.\n4) Evidencia de causalidad, si se afirma una causa.\n\nLos datos importan. El contexto también.",
+  "editorial_notes": "Primera prueba de flujo. Mensaje educativo, sin estadísticas concretas, atribuciones a terceros ni enlaces externos.",
+  "publication": "Manual en la interfaz oficial de X después de revisar el borrador. No hay conexión OAuth ni API."
+}
