@@ -11,11 +11,62 @@ toc: true
 .observablehq > p,.observablehq > blockquote p,.observablehq > div > p {
   text-align:justify;text-align-last:left;hyphens:auto;-webkit-hyphens:auto;
 }
+
+/* Consistent, unambiguous return to project home from information subpages. */
+.il-site-navigation{position:sticky;top:0;z-index:1000;display:flex;gap:10px;
+  align-items:center;justify-content:space-between;min-height:54px;
+  padding:7px 12px;background:rgba(255,255,255,.98);border-bottom:1px solid #e1e7ee;
+  box-shadow:0 1px 4px rgba(11,36,71,.05);}
+.il-site-navigation a{text-decoration:none;color:#102a4c;}
+.il-site-brand{font-family:Georgia,serif;font-weight:800;font-size:1.06rem;white-space:nowrap;}
+.il-site-home{margin-left:auto;border:1px solid #dce3ec;border-radius:8px;
+  padding:10px 13px;min-height:40px;box-sizing:border-box;
+  font-size:.82rem;font-weight:750;}
+.il-site-menu{position:relative;}
+.il-site-menu>summary{list-style:none;display:flex;align-items:center;cursor:pointer;
+  min-height:40px;padding:8px 13px;background:#0b2447;color:#fff;border-radius:8px;
+  box-sizing:border-box;font-size:.82rem;font-weight:750;}
+.il-site-menu>summary::-webkit-details-marker{display:none;}
+.il-site-menu-links{position:absolute;right:0;top:calc(100% + 7px);
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;
+  width:min(320px,calc(100vw - 30px));max-height:70dvh;overflow-y:auto;
+  padding:10px;background:white;border:1px solid #e0e6ef;border-radius:10px;
+  box-shadow:0 12px 28px rgba(10,35,64,.16);}
+.il-site-menu-links a{padding:10px 8px;min-height:40px;box-sizing:border-box;
+  font-size:.8rem;border-radius:7px;overflow-wrap:anywhere;}
+.il-site-menu-links a:hover{background:#f3f6f9;}
+.il-site-navigation a:focus-visible,.il-site-navigation summary:focus-visible{
+  outline:3px solid #b59b59;outline-offset:2px;}
+@media(max-width:768px){
+  .il-site-navigation{padding:7px 9px;min-height:53px;}
+  .il-site-brand{font-size:.93rem;}
+  .il-site-home{padding:9px;font-size:.76rem;}
+  .il-site-menu>summary{padding:9px;font-size:.76rem;}
+}
+
 </style>
+
+<nav class="il-site-navigation" aria-label="Navegación del observatorio">
+  <a class="il-site-brand" href="/dashboard-gobierno/" aria-label="IDEA LAB · Volver al inicio">IDEA LAB</a>
+  <a class="il-site-home" href="/dashboard-gobierno/">← Inicio</a>
+  <details class="il-site-menu">
+    <summary aria-label="Abrir menú del observatorio">Menú ☰</summary>
+    <div class="il-site-menu-links">
+      <a href="/dashboard-gobierno/">Inicio</a>
+      <a href="/dashboard-gobierno/#mapa-dinero">Mapa del dinero</a>
+      <a href="/dashboard-gobierno/#resumen">Indicadores</a>
+      <a href="/dashboard-gobierno/finanzas-publicas">Finanzas públicas</a>
+      <a href="/dashboard-gobierno/actualizaciones">Actualización</a>
+      <a href="/dashboard-gobierno/metodologia">Metodología</a>
+      <a href="/dashboard-gobierno/quienes-somos">Quiénes somos</a>
+    </div>
+  </details>
+</nav>
+
 
 # Cómo trabajamos
 
-**Somos IDEA LAB, una iniciativa independiente de investigación y divulgación.** Desarrollamos **España en Datos**, nuestro observatorio económico, social e institucional. Los indicadores que mostramos incluyen bases históricas y no deben confundirse con una fotografía completamente actualizada de España. Conoce [quiénes somos](./quienes-somos) y cómo distinguimos datos, interpretación y opinión.
+**Somos IDEA LAB, una iniciativa independiente de investigación y divulgación.** Desarrollamos **España en Datos**, nuestro observatorio económico, social e institucional. Los indicadores que mostramos incluyen bases históricas y no deben confundirse con una fotografía completamente actualizada de España. Conoce [quiénes somos](/dashboard-gobierno/quienes-somos) y cómo distinguimos datos, interpretación y opinión.
 
 ## Procedimiento científico
 
@@ -42,4 +93,4 @@ Se conservan enlaces a [INE](https://www.ine.es/) y [IGAE](https://www.igae.pap.
 
 Ningún resultado se califica de «predicción validada» si no dispone de evaluación fuera de muestra. Las inferencias causales deben tener una estrategia de identificación, supuestos explícitos y análisis de sensibilidad.
 
-[Volver a España en Datos](./) · [Quiénes somos](./quienes-somos)
+[Volver a España en Datos](/dashboard-gobierno/) · [Quiénes somos](/dashboard-gobierno/quienes-somos)

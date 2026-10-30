@@ -300,33 +300,35 @@ body {
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación España en Datos">
-  <a class="idealab-brand" href="./">IDEA LAB <span class="idealab-brand-product">· España en Datos</span></a>
+  <a class="idealab-brand" href="/dashboard-gobierno/">IDEA LAB <span class="idealab-brand-product">· España en Datos</span></a>
   <div class="idealab-nav-links">
-    <a class="idealab-nav-priority" href="./#mapa-dinero">Mapa del dinero</a>
-    <a href="./#resumen">Indicadores</a>
-    <a class="is-active" href="./finanzas-publicas">Finanzas públicas</a>
-    <a href="./metodologia">Metodología</a>
-    <a href="./actualizaciones">Actualización</a>
-    <a href="./quienes-somos">Quiénes somos</a>
+    <a href="/dashboard-gobierno/" class="il-nav-start">Inicio</a>
+    <a class="idealab-nav-priority" href="/dashboard-gobierno/#mapa-dinero">Mapa del dinero</a>
+    <a href="/dashboard-gobierno/#resumen">Indicadores</a>
+    <a class="is-active" href="/dashboard-gobierno/finanzas-publicas">Finanzas públicas</a>
+    <a href="/dashboard-gobierno/metodologia">Metodología</a>
+    <a href="/dashboard-gobierno/actualizaciones">Actualización</a>
+    <a href="/dashboard-gobierno/quienes-somos">Quiénes somos</a>
     <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">En X</a>
   </div>
   <details class="idealab-nav-mobile">
     <summary aria-label="Abrir menú de navegación">Menú <span aria-hidden="true">☰</span></summary>
     <div class="idealab-nav-mobile-panel">
-      <a href="./#mapa-dinero">Mapa del dinero</a>
-      <a href="./#resumen">Indicadores</a>
-      <a href="./finanzas-publicas" aria-current="page">Finanzas públicas</a>
-      <a href="./#economia">Economía</a>
-      <a href="./#empleo">Empleo</a>
-      <a href="./#vivienda">Vivienda</a>
-      <a href="./#estado">Sector público</a>
-      <a href="./#pensiones">Pensiones</a>
-      <a href="./#sociedad">Sociedad</a>
-      <a href="./#mundo">Mundo</a>
+      <a href="/dashboard-gobierno/">Inicio</a>
+      <a href="/dashboard-gobierno/#mapa-dinero">Mapa del dinero</a>
+      <a href="/dashboard-gobierno/#resumen">Indicadores</a>
+      <a href="/dashboard-gobierno/finanzas-publicas" aria-current="page">Finanzas públicas</a>
+      <a href="/dashboard-gobierno/#economia">Economía</a>
+      <a href="/dashboard-gobierno/#empleo">Empleo</a>
+      <a href="/dashboard-gobierno/#vivienda">Vivienda</a>
+      <a href="/dashboard-gobierno/#estado">Sector público</a>
+      <a href="/dashboard-gobierno/#pensiones">Pensiones</a>
+      <a href="/dashboard-gobierno/#sociedad">Sociedad</a>
+      <a href="/dashboard-gobierno/#mundo">Mundo</a>
       <div class="idealab-nav-mobile-heading">Observatorio</div>
-      <a href="./metodologia">Metodología</a>
-      <a href="./actualizaciones">Actualización</a>
-      <a href="./quienes-somos">Quiénes somos</a>
+      <a href="/dashboard-gobierno/metodologia">Metodología</a>
+      <a href="/dashboard-gobierno/actualizaciones">Actualización</a>
+      <a href="/dashboard-gobierno/quienes-somos">Quiénes somos</a>
       <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">En X ↗</a>
     </div>
   </details>
@@ -347,7 +349,7 @@ if (financesMobileMenu) {
 }
 ```
 
-<div style="margin: 0.6rem auto 1rem; max-width: 1400px; padding: 0.55rem 0.85rem; border: 1px solid #e3e6ea; border-radius: 10px; font-size: 0.84rem; color:#344054; background: #f8fafc;">Datos históricos en proceso de revisión. Algunas series están excluidas por metadatos ambiguos. <a href="./metodologia">Fuentes y limitaciones</a>.</div>
+<div style="margin: 0.6rem auto 1rem; max-width: 1400px; padding: 0.55rem 0.85rem; border: 1px solid #e3e6ea; border-radius: 10px; font-size: 0.84rem; color:#344054; background: #f8fafc;">Datos históricos en proceso de revisión. Algunas series están excluidas por metadatos ambiguos. <a href="/dashboard-gobierno/metodologia">Fuentes y limitaciones</a>.</div>
 
 <div class="pf-hero">
   <div class="pf-kicker">ESPAÑA EN DATOS · UN PRODUCTO DE IDEA LAB</div>
