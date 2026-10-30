@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": "boe",
+      "name": "BOE · Sumario oficial",
+      "url": "https://www.boe.es/rss/boe.php",
+      "max_items": 10
+    },
+    {
+      "id": "ecb",
+      "name": "BCE · Comunicados",
+      "url": "https://www.ecb.europa.eu/rss/press.html",
+      "max_items": 8
+    }
+  ]
+}
