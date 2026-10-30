@@ -1354,6 +1354,96 @@ html {
   .il-finance-coverage.is-cofog-table tbody {grid-template-columns:repeat(2,minmax(0,1fr))!important;}
 }
 
+
+/* Tax figures use the same density as KPIs and COFOG, preserving official labels. */
+.tax-name-mobile,.tax-name-detail {display:none;}
+@media(min-width:390px) and (max-width:768px){
+  .il-finance-coverage.is-tax-table tbody {
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:6px!important;
+  }
+  .il-finance-coverage.is-tax-table tbody tr {
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    justify-content:flex-start!important;
+    gap:3px!important;
+    min-width:0!important;
+    padding:8px 6px!important;
+    border-radius:8px!important;
+  }
+  .il-finance-coverage.is-tax-table tbody td {
+    min-width:0!important;
+    margin:0!important;
+    line-height:1.18!important;
+    overflow-wrap:anywhere!important;
+  }
+  .il-finance-coverage.is-tax-table tbody td:first-child {
+    font-size:.69rem!important;
+    font-weight:800!important;
+    color:#0b2447!important;
+    margin-bottom:2px!important;
+  }
+  .il-finance-coverage.is-tax-table tbody td:nth-child(2) {
+    font-size:.59rem!important;
+    line-height:1.15!important;
+    color:#64748b!important;
+    margin:0!important;
+  }
+  .il-finance-coverage.is-tax-table tbody td:nth-child(3) {
+    font-size:.81rem!important;
+    font-weight:850!important;
+    font-variant-numeric:tabular-nums;
+    color:#0b2447!important;
+    margin-top:auto!important;
+    padding-top:5px!important;
+    white-space:nowrap!important;
+    letter-spacing:-.03em;
+  }
+  .il-finance-coverage.is-tax-table tbody td:nth-child(3)::before {
+    content:""!important;
+  }
+  .il-finance-coverage.is-tax-table tbody td:nth-child(3)::after {
+    content:" M€";
+    font-size:.55rem;
+    font-weight:650;
+    color:#64748b;
+    letter-spacing:0;
+  }
+  .il-finance-coverage.is-tax-table .tax-name-full {display:none;}
+  .il-finance-coverage.is-tax-table .tax-name-mobile {display:block;}
+  .il-finance-coverage.is-tax-table .tax-name-detail {
+    display:block;
+    margin-top:3px;
+    font-size:.56rem;
+    font-weight:500;
+    color:#51627b;
+  }
+  .il-finance-coverage.is-tax-table .tax-name-detail summary {
+    min-height:24px;
+    display:flex;align-items:center;
+    cursor:pointer;
+    color:#365477;
+    text-decoration:underline;
+    text-underline-offset:2px;
+  }
+  .il-finance-coverage.is-tax-table .tax-name-detail summary:focus-visible {
+    outline:2px solid #b89b5e;outline-offset:2px;
+  }
+  .il-finance-coverage.is-tax-table .tax-name-detail span {
+    display:block;
+    padding:2px 0 4px;
+    font-size:.59rem;
+    line-height:1.25;
+    overflow-wrap:anywhere;
+  }
+}
+@media(max-width:389px) {
+  .il-finance-coverage.is-tax-table tbody {
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación del observatorio España en Datos">
@@ -2735,10 +2825,47 @@ if(highlightedTaxes.length) {
   table.append(thead);
   const tbody=document.createElement("tbody");
   const format=new Intl.NumberFormat("es-ES",{maximumFractionDigits:0});
+  // Short names are DISPLAY ONLY. The official figure name remains available
+  // in the desktop table, mobile details and underlying source data.
+  const compactTaxNames = new Map([
+    ["IVA (ingresos SEC en cuentas del Estado)", "IVA"],
+    ["IRPF (ingresos SEC en cuentas del Estado)", "IRPF"],
+    ["IRPF — entregas a cuenta régimen común", "IRPF · anticipos"],
+    ["Impuesto sobre Sociedades (cuentas del Estado)", "Sociedades"],
+    ["IRPF — Diputaciones Forales País Vasco", "IRPF · forales PV"],
+    ["IVA — Diputaciones Forales País Vasco", "IVA · forales PV"],
+    ["IRPF — liquidación definitiva 2022", "IRPF · liq. 2022"],
+    ["Sucesiones y Donaciones", "Sucesiones"],
+    ["Impuesto sobre Primas de Seguros", "Primas seguros"]
+  ]);
   for(const item of highlightedTaxes){
     const tr=document.createElement("tr");
-    for (const value of [item.tax_figure,item.subsector,format.format(Number(item.value_mill_eur))]){
-      const td=document.createElement("td");td.textContent=String(value);tr.append(td);
+    const officialName=String(item.tax_figure);
+    const shortName=compactTaxNames.get(officialName) || officialName;
+    const nameCell=document.createElement("td");
+    const full=document.createElement("span");
+    full.className="tax-name-full";
+    full.textContent=officialName;
+    nameCell.append(full);
+    const mobile=document.createElement("span");
+    mobile.className="tax-name-mobile";
+    mobile.textContent=shortName;
+    nameCell.append(mobile);
+    if(shortName !== officialName){
+      const more=document.createElement("details");
+      more.className="tax-name-detail";
+      const summary=document.createElement("summary");
+      summary.textContent="Detalle";
+      const official=document.createElement("span");
+      official.textContent=officialName;
+      more.append(summary,official);
+      nameCell.append(more);
+    }
+    tr.append(nameCell);
+    for(const value of [item.subsector,format.format(Number(item.value_mill_eur))]){
+      const td=document.createElement("td");
+      td.textContent=String(value);
+      tr.append(td);
     }
     tbody.append(tr);
   }
