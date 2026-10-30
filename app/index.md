@@ -1057,6 +1057,126 @@ html {
   .kpi-value {font-size:1.05rem!important;}
 }
 
+/* Mobile density v3 — portada y 10 funciones COFOG; afecta solo a la presentación. */
+.il-hero-short {display:none;}
+.il-data-notice {
+  max-width:1400px;margin:.6rem auto 1rem;padding:.55rem .85rem;
+  border:1px solid #e3e6ea;border-radius:10px;font-size:.84rem;
+  color:#344054;background:#f8fafc;line-height:1.45;
+}
+@media (max-width:768px) {
+  .il-data-notice {
+    margin:5px 0 9px!important;padding:6px 9px!important;
+    font-size:.7rem!important;line-height:1.35!important;border-radius:8px;
+  }
+  .hero {padding:8px 0 7px!important;margin:0 0 4px!important;}
+  .hero-kicker {font-size:.6rem!important;line-height:1.2!important;letter-spacing:.065em!important;}
+  .hero h1 {
+    font-size:clamp(1.75rem,7.2vw,2.15rem)!important;
+    line-height:1.09!important;margin:6px 0!important;letter-spacing:-.025em;
+  }
+  .il-hero-long {display:none;}
+  .il-hero-short {display:inline;}
+  .hero-subtitle {font-size:.78rem!important;line-height:1.35!important;margin:0!important;}
+  .hero-actions {display:flex!important;align-items:center;gap:10px!important;margin:7px 0 0!important;}
+  /* Mapa del dinero ya está en el menú superior. Evitar duplicar ese CTA. */
+  .hero-actions a:first-child {display:none!important;}
+  .hero-actions a {
+    min-height:33px!important;display:inline-flex!important;align-items:center;
+    padding:4px 6px!important;border:0!important;background:transparent!important;
+    color:var(--idealab-blue)!important;font-size:.72rem!important;
+    font-weight:700!important;text-decoration:underline!important;
+    text-underline-offset:3px;
+  }
+  .hero-meta {
+    display:flex!important;gap:3px 12px!important;flex-wrap:wrap!important;
+    margin:3px 0 6px!important;padding:5px 0!important;
+    font-size:.68rem!important;line-height:1.3!important;
+  }
+  .hero-meta span:last-child {flex-basis:100%;}
+  .il-sankey-spotlight {
+    margin:8px 0 6px!important;padding:8px 0 0!important;
+    border-top-width:2px!important;
+  }
+  .il-spotlight-top {gap:5px!important;}
+  .il-spotlight-kicker {font-size:.6rem!important;letter-spacing:.06em!important;margin-bottom:2px!important;}
+  .il-spotlight-top h2 {
+    font-size:clamp(1.3rem,5.1vw,1.55rem)!important;
+    line-height:1.15!important;margin:2px 0 5px!important;
+  }
+  .il-spotlight-top p {font-size:.76rem!important;line-height:1.37!important;margin:0 0 4px!important;}
+  .il-sankey-cta {padding:7px 10px!important;font-size:.73rem!important;
+    border-radius:7px!important;margin:3px 0!important;min-height:36px;
+    display:inline-flex;align-items:center;justify-content:center;}
+  .il-sankey-meta {
+    margin:4px 0 6px!important;padding:6px 8px!important;
+    font-size:.68rem!important;line-height:1.3!important;border-radius:7px!important;
+  }
+  .il-spotlight-footnote {font-size:.69rem!important;line-height:1.35!important;
+    margin:3px 0 10px!important;}
+  .il-finance-coverage {
+    border-radius:9px!important;padding:10px!important;
+    margin:8px 0 12px!important;
+  }
+  .il-finance-coverage h3 {font-size:.94rem!important;line-height:1.18!important;
+    margin:0 0 4px!important;}
+  .il-finance-coverage p {font-size:.73rem!important;line-height:1.34!important;
+    margin:3px 0 8px!important;}
+  .il-finance-coverage:is(.is-cofog-table,.is-tax-table) tbody {
+    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:6px!important;
+  }
+  .il-finance-coverage:is(.is-cofog-table,.is-tax-table) tbody tr {
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    grid-template-rows:auto auto!important;
+    align-content:start;align-items:end;gap:5px 3px!important;
+    min-width:0!important;min-height:0!important;
+    padding:8px!important;border-radius:8px!important;
+  }
+  .il-finance-coverage:is(.is-cofog-table,.is-tax-table) tbody td {
+    min-width:0!important;overflow-wrap:anywhere;
+    line-height:1.23!important;padding:0!important;margin:0!important;
+    border:0!important;
+  }
+  .il-finance-coverage:is(.is-cofog-table,.is-tax-table) tbody td:first-child {
+    grid-column:1/-1!important;font-size:.73rem!important;
+    line-height:1.2!important;font-weight:800!important;
+    margin:0!important;color:var(--idealab-navy)!important;
+    align-self:start;
+  }
+  .il-finance-coverage.is-cofog-table tbody td:nth-child(2) {
+    grid-column:1!important;font-size:.72rem!important;font-weight:750!important;
+    color:#475569!important;white-space:normal!important;
+  }
+  .il-finance-coverage.is-cofog-table tbody td:nth-child(2)::before {content:""!important;}
+  .il-finance-coverage.is-cofog-table tbody td:nth-child(2)::after {
+    content:" M€";font-size:.62rem;color:#64748b;font-weight:600;
+  }
+  .il-finance-coverage.is-cofog-table tbody td:nth-child(3) {
+    grid-column:2!important;font-size:.8rem!important;font-weight:850!important;
+    color:var(--idealab-navy)!important;text-align:right!important;
+    white-space:nowrap!important;
+  }
+  .il-finance-coverage.is-cofog-table tbody td:nth-child(3)::before {content:""!important;}
+  .il-finance-coverage.is-tax-table tbody td:nth-child(2) {
+    grid-column:1/-1!important;font-size:.65rem!important;color:#64748b!important;
+    line-height:1.2!important;
+  }
+  .il-finance-coverage.is-tax-table tbody td:nth-child(2)::before {content:""!important;}
+  .il-finance-coverage.is-tax-table tbody td:nth-child(3) {
+    grid-column:1/-1!important;font-size:.86rem!important;
+    font-weight:850!important;color:var(--idealab-navy)!important;
+  }
+  .il-finance-coverage.is-tax-table tbody td:nth-child(3)::before {
+    content:"M€ · "!important;font-size:.62rem!important;color:#64748b!important;
+  }
+}
+@media (max-width:359px) {
+  .il-finance-coverage:is(.is-cofog-table,.is-tax-table) tbody {grid-template-columns:1fr!important;}
+  .hero h1 {font-size:1.7rem!important;}
+}
+
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación del observatorio España en Datos">
@@ -1122,7 +1242,7 @@ if (idealabMobileMenu) {
 }
 ```
 
-<div style="margin: 0.6rem auto 1rem; max-width: 1400px; padding: 0.55rem 0.85rem; border: 1px solid #e3e6ea; border-radius: 10px; font-size: 0.84rem; color:#344054; background: #f8fafc;">Datos históricos en proceso de revisión. Algunas series están excluidas por metadatos ambiguos. <a href="./metodologia">Fuentes y limitaciones</a>.</div>
+<div class="il-data-notice" role="note"><strong>Datos históricos.</strong> Algunas series están en revisión o excluidas por metadatos ambiguos. <a href="./metodologia">Fuentes y límites</a>.</div>
 
 ```js
 import {KpiCard} from "./components/kpi-card.js";
@@ -2311,7 +2431,7 @@ const indicatorCount = availableIndicators.length;
   <div class="hero-kicker">UN PRODUCTO DE IDEA LAB · OBSERVATORIO DE ESPAÑA</div>
   <h1>España en Datos</h1>
   <div class="hero-subtitle">
-    Nuestro observatorio económico, social e institucional de España. Reunimos, contrastamos y visualizamos datos de fuentes oficiales para ofrecer una mirada rigurosa y comprensible de la realidad.
+    <span class="il-hero-long">Nuestro observatorio económico, social e institucional de España. Reunimos, contrastamos y visualizamos datos de fuentes oficiales para ofrecer una mirada rigurosa y comprensible de la realidad.</span><span class="il-hero-short">Economía, sociedad y sector público de España con datos de fuentes oficiales.</span>
   </div>
   <div class="hero-actions">
     <a href="#mapa-dinero">Explorar el mapa del dinero</a>
