@@ -1,21 +1,37 @@
-# Idea Lab · Dashboard del Gobierno
+# IDEA LAB · Dashboard de indicadores de España
 
-Este repositorio contiene **únicamente los archivos estáticos aprobados para publicación** del observatorio de indicadores económicos, sociales y de finanzas públicas de España.
+Web pública e independiente para divulgar estadísticas económicas, sociales y de finanzas públicas con fuentes y fechas verificables.
 
-## Qué es y qué no es
+## Sitio
 
-- Visualizaciones estadísticas de datos históricos con referencia a fuentes oficiales.
-- Proyecto independiente de investigación y divulgación.
-- No es una web gubernamental, ni representa a ningún organismo público.
-- No formula puntuaciones, clasificaciones ni juicios generales sobre gobiernos.
-- La fecha de referencia de cada indicador debe respetarse.
-- Ninguna actualización puede divulgar datos personales, secretos o documentos de trabajo privados.
+**URL tras activar GitHub Pages:** https://idealab2026.github.io/dashboard-gobierno/
 
-## Arquitectura y costes
+El sitio completo está en `docs/`. Son archivos estáticos HTML, CSS, JavaScript y CSV, **sin backend, sin claves ni dependencias externas obligatorias**.
 
-- GitHub Pages en repositorio público, plan gratuito.
-- Ningún servicio facturable ni almacenamiento de claves en la web.
-- No requiere acceso al Drive privado para que la web cargue.
-- El laboratorio y sus datos de trabajo permanecen en un repositorio diferente y privado.
+Páginas:
+- `index.html`: indicadores nacionales y series históricas interactivas;
+- `finanzas-publicas.html`: ingresos, gastos, necesidad de financiación y clasificación funcional;
+- `metodologia.html`: fuentes, límites, trazabilidad y revisión estadística.
 
-Este repositorio se prepara para publicar exclusivamente artefactos estáticos; los ficheros de publicación se generan y auditan antes de incluirse aquí.
+## Activar publicación (GitHub Free)
+
+1. Abrir https://github.com/idealab2026/dashboard-gobierno/settings/pages
+2. **Build and deployment → Source: Deploy from a branch**.
+3. **Branch: main**, **Folder: /docs** → Save.
+4. Esperar a que GitHub muestre **Your site is live at** y verificar el enlace.
+
+No se necesita GitHub Pro, npm, GitHub Actions ni base de datos. La cuenta debe mantenerse sin facturación habilitada.
+
+## Conjuntos de datos
+
+- `docs/data/observations.csv`: 351 observaciones históricas y calculadas con metadatos de procedencia.
+- `docs/data/public-finance.csv`: 99 registros de las finanzas públicas históricas.
+- `docs/data/finance-sources.csv`: 7 referencias de fuentes.
+
+**Nota de calidad:** el exportador excluyó 252 filas del alquiler con dimensión geográfica perdida. La fuente privada mantiene los registros originales para reparación. No se presenta como actualizado en tiempo real.
+
+## Separación
+
+Este repositorio es público y **no contiene** los secretos, el código de ingesta, la configuración del Drive, ni los documentos privados del laboratorio. No tiene acceso a ningún repositorio personal o del taller. Su contenido puede analizarse y descargarse libremente; no se concede automáticamente una licencia de reutilización del código.
+
+No representa a ningún gobierno ni publica calificaciones políticas. Distingue observaciones estadísticas, cálculos y metodología.
