@@ -1,6 +1,7 @@
 import copy
 import unittest
 from pathlib import Path
+import datetime as dt
 import sys
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import update_ine_ecp320 as mod
@@ -18,6 +19,17 @@ class PopulationSyncTests(unittest.TestCase):
         with self.assertRaises(mod.OfficialDataError):mod.parse_series(p)
         p["COD"]=mod.CODE;p["Nombre"]="Total Nacional. Hombres. Población"
         with self.assertRaises(mod.OfficialDataError):mod.parse_series(p)
+    def test_quarterly_series_only_includes_january(self):
+        def point(y,m,v):
+            date=dt.datetime(y,m,1,tzinfo=dt.timezone.utc)
+            return {"Anyo":y,"Fecha":int(date.timestamp()*1000),"Valor":v}
+        payload={"COD":"ECP320","Nombre":mod.TITLE,"Data":[
+            point(2024,1,48619695),point(2024,4,48701130),
+            point(2024,7,48821936),point(2024,10,48999880),
+            point(2025,1,49128297),point(2025,10,49500617),
+            point(2026,1,49596376),point(2026,7,49801559)
+        ]}
+        self.assertEqual(mod.parse_series(payload),{2024:48619695,2025:49128297,2026:49596376})
     def test_same_values_never_modify(self):
         originals=copy.deepcopy(self.rows)
         rows,new=mod.apply_official(self.history,self.columns,originals)
@@ -31,7 +43,8 @@ class PopulationSyncTests(unittest.TestCase):
         self.assertEqual(len(rows),len(self.rows)+2)
         actual=[x for x in rows if x["year"]==str(nextyear) and x["indicator_id"]=="poblacion_residente"]
         self.assertEqual(len(actual),1)
-        self.assertEqual(actual[0]["source"],"INE · ECP320 (serie nacional fijada)")
+        self.assertEqual(actual[0]["source"],"INE · ECP320 (serie nacional, 1 de enero)")
+        self.assertEqual(actual[0]["status"],"provisional")
         self.assertEqual(actual[0]["value"],str(newer[nextyear]))
         growth=[x for x in rows if x["year"]==str(nextyear) and x["indicator_id"]=="crecimiento_poblacion"]
         self.assertEqual(len(growth),1)
