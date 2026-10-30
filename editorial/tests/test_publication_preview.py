@@ -20,6 +20,16 @@ class PublicationPreviewTests(unittest.TestCase):
         self.assertIn("NO PUBLICADO EN X", output)
         self.assertIn("https://twitter.com/intent/tweet?text=", output)
 
+    def test_trusted_sankey_link_is_allowed(self):
+        sankey = json.loads((Path(__file__).resolve().parents[1] / "drafts" / "2026-10-30-presentacion-sankey.json").read_text(encoding="utf-8"))
+        validated_text, count = validate(sankey)
+        self.assertIn("idealab2026.github.io/dashboard-gobierno/#mapa-dinero", validated_text)
+        self.assertLessEqual(count, 280)
+
+    def test_rejects_external_link(self):
+        with self.assertRaises(ValueError):
+            validate({**DRAFT, "text": "https://otro-dominio.example/"})
+
     def test_rejects_unapproved(self):
         with self.assertRaises(ValueError):
             validate({**DRAFT, "status": "auto_publish"})
