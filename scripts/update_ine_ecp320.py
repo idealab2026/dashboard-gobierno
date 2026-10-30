@@ -26,7 +26,7 @@ STATUS=ROOT/"app"/"data"/"official-sync-status.json"
 CODE="ECP320"
 TITLE="Total Nacional. Todas las edades. Total. Población. Número."
 SERIES_URL="https://servicios.ine.es/wstempus/js/ES/DATOS_SERIE/ECP320?nult=8"
-TABLE_URL="https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/56934?nult=8"
+TABLE_URL="https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/56934?nult=2"
 REFERENCE_URL="https://ine.es/jaxiT3/Tabla.htm?t=56934"
 UTC=dt.timezone.utc
 
@@ -123,7 +123,7 @@ def retrieve():
                 payload=matching[0]
             return parse_series(payload),hashlib.sha256(raw).hexdigest(),url
         except (OSError,TimeoutError,ValueError,UnicodeError,json.JSONDecodeError,OfficialDataError) as e:
-            errors.append(type(e).__name__)
+            errors.append(f"{url.split('/')[-1]}:{type(e).__name__}:{str(e)[:160]}")
     raise OfficialDataError("Official INE endpoints unavailable or incompatible: "+", ".join(errors))
 
 def synchronize(fetch=retrieve):
