@@ -15,6 +15,8 @@
 4. Opcional: `python3 editorial/audit_x.py /ruta/privada/Publicaciones.csv --json`.
 5. Guardar el informe en el Drive de IDEA LAB si se necesita histórico documental. **No subir el CSV al repositorio público.**
 
+El Google Sheet privado contiene `Perfil`, `Publicaciones`, `Últimas`, `Resumen`, `Formatos`, `Seguimiento` y `Metodologia`. `Últimas` consolida el valor de la **última fila añadida** para cada `post_id` (por eso las lecturas deben añadirse por orden cronológico); `Resumen` y `Formatos` agregan esas últimas lecturas sin sumar instantáneas duplicadas. `Seguimiento` calcula la cobertura frente al objetivo de 20–30 publicaciones y deja el siguiente corte documentado. Si se detecta una corrección histórica, se añade una nueva lectura rectificativa en la última fila para ese post.
+
 La pestaña `Publicaciones` es append-only: una fila por post y fecha de lectura, con columnas `fecha_observacion,post_id,fecha_post,formato,tema,extracto,visualizaciones,me_gusta,reposts,respuestas,url,fuente,cobertura`. El script toma **la última observación por post** y compara primera/última cuando hay más de una fecha. No suma varias lecturas del mismo post.
 
 ## Prueba reproducible en GitHub Actions
