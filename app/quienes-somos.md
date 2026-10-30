@@ -27,6 +27,10 @@ footer: IDEA LAB · Investigación, análisis y divulgación
 .il-about-actions a:first-child{background:var(--il-ink);color:white}
 .il-about-note{background:var(--il-paper);padding:1rem 1.2rem;border:1px solid var(--il-border);border-radius:10px;font-size:.9rem;color:var(--il-muted)}
 @media(max-width:640px){.il-about-grid{grid-template-columns:1fr}.il-about section{padding:1.3rem 0}}
+
+/* Long-form paragraphs are justified; cards and navigation remain legible. */
+.il-about p {text-align:justify;text-align-last:left;hyphens:auto;-webkit-hyphens:auto;}
+
 </style>
 
 <main class="il-about">
