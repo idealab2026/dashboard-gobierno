@@ -236,12 +236,55 @@ body {
 .idealab-nav-links{min-width:0;justify-content:flex-end;flex-wrap:wrap;white-space:normal;overflow:visible;gap:.45rem .85rem}
 .idealab-nav-links a{white-space:nowrap}
 @media(max-width:900px){.idealab-nav-links{justify-content:flex-start}}
+
+/* El mismo patrón móvil de navegación utilizado en la portada. */
+.idealab-nav-mobile{display:none;}
+@media(max-width:768px){
+  html,body{max-width:100%;overflow-x:clip;}
+  .observablehq{box-sizing:border-box;max-width:100%;padding-inline:12px;}
+  .idealab-nav{position:sticky;top:0;z-index:1050;display:flex!important;
+    flex-direction:row!important;align-items:center!important;justify-content:space-between!important;
+    flex-wrap:nowrap!important;gap:8px!important;min-height:54px;padding:8px 9px!important;
+    background:rgba(255,255,255,.98);box-shadow:0 1px 5px rgba(11,36,71,.06);}
+  .idealab-brand{font-size:.84rem!important;white-space:nowrap;letter-spacing:0!important;}
+  .idealab-nav-links{display:contents!important;}
+  .idealab-nav-links>:not(.idealab-nav-priority){display:none!important;}
+  .idealab-nav-links .idealab-nav-priority{display:inline-flex;min-height:40px;align-items:center;
+    margin-left:auto;flex:none;justify-content:center;border:1px solid #d8dfeb;border-radius:9px;
+    padding:0 9px;background:#f6f8fb;color:#0b2447!important;
+    font-size:.76rem!important;font-weight:800!important;text-decoration:none;}
+  .idealab-nav-mobile{display:block;position:relative;flex:none;}
+  .idealab-nav-mobile>summary{list-style:none;display:flex;align-items:center;gap:6px;
+    min-height:40px;padding:0 10px;border-radius:9px;border:1px solid #0b2447;
+    background:#0b2447;color:#fff;font-family:inherit;font-weight:800;font-size:.79rem;cursor:pointer;}
+  .idealab-nav-mobile>summary::-webkit-details-marker{display:none;}
+  .idealab-nav-mobile>summary:focus-visible,.idealab-nav-mobile-panel a:focus-visible{outline:3px solid #b89b5e;outline-offset:2px;}
+  .idealab-nav-mobile-panel{position:absolute;right:0;top:calc(100% + 10px);
+    width:min(320px,calc(100vw - 24px));display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:3px 5px;max-height:calc(100dvh - 78px);overflow-y:auto;overscroll-behavior:contain;
+    background:white;border:1px solid #d9e0ea;border-radius:13px;padding:11px;
+    box-shadow:0 14px 32px rgba(11,36,71,.18);z-index:1400;}
+  .idealab-nav-mobile-panel a{display:flex;align-items:center;min-height:40px;
+    padding:8px 9px;border-radius:8px;text-decoration:none;color:#1d3555!important;
+    font-size:.79rem;font-weight:650;overflow-wrap:anywhere;}
+  .idealab-nav-mobile-panel a:hover{background:#f1f5f9;}
+  .idealab-nav-mobile-heading{grid-column:1/-1;padding:8px 8px 3px;margin-top:4px;
+    border-top:1px solid #e7ebf0;color:#8b6c35;font-size:.65rem;font-weight:800;letter-spacing:.09em;}
+  .pf-hero{padding:1rem 0 .75rem;}
+  .pf-hero h1{font-size:clamp(1.65rem,6vw,2.2rem);line-height:1.15;}
+  .pf-summary-grid{gap:9px;grid-template-columns:repeat(2,minmax(0,1fr));}
+  .pf-summary-card{padding:12px 10px;}
+  .pf-after-map{grid-template-columns:minmax(0,1fr);}
+  .pf-section-heading{scroll-margin-top:68px;}
+  .pf-explorer-host{min-width:0;max-width:100%;}
+}
+
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación España en Datos">
   <a class="idealab-brand" href="./">IDEA LAB · España en Datos</a>
   <div class="idealab-nav-links">
-    <a href="./#mapa-dinero">Mapa del dinero</a>
+    <a class="idealab-nav-priority" href="./#mapa-dinero">Mapa del dinero</a>
     <a href="./#resumen">Indicadores</a>
     <a class="is-active" href="./finanzas-publicas">Finanzas públicas</a>
     <a href="./metodologia">Metodología</a>
@@ -249,7 +292,42 @@ body {
     <a href="./quienes-somos">Quiénes somos</a>
     <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">En X</a>
   </div>
+  <details class="idealab-nav-mobile">
+    <summary aria-label="Abrir menú de navegación">Menú <span aria-hidden="true">☰</span></summary>
+    <div class="idealab-nav-mobile-panel">
+      <a href="./#mapa-dinero">Mapa del dinero</a>
+      <a href="./#resumen">Indicadores</a>
+      <a href="./finanzas-publicas" aria-current="page">Finanzas públicas</a>
+      <a href="./#economia">Economía</a>
+      <a href="./#empleo">Empleo</a>
+      <a href="./#vivienda">Vivienda</a>
+      <a href="./#estado">Sector público</a>
+      <a href="./#pensiones">Pensiones</a>
+      <a href="./#sociedad">Sociedad</a>
+      <a href="./#mundo">Mundo</a>
+      <div class="idealab-nav-mobile-heading">Observatorio</div>
+      <a href="./metodologia">Metodología</a>
+      <a href="./actualizaciones">Actualización</a>
+      <a href="./quienes-somos">Quiénes somos</a>
+      <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">En X ↗</a>
+    </div>
+  </details>
 </nav>
+
+```js
+const financesMobileMenu = document.querySelector(".idealab-nav-mobile");
+if (financesMobileMenu) {
+  financesMobileMenu.addEventListener("click", event => {
+    if (event.target.closest("a")) financesMobileMenu.open = false;
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") financesMobileMenu.open = false;
+  });
+  document.addEventListener("click", event => {
+    if (!financesMobileMenu.contains(event.target)) financesMobileMenu.open = false;
+  });
+}
+```
 
 <div style="margin: 0.6rem auto 1rem; max-width: 1400px; padding: 0.55rem 0.85rem; border: 1px solid #e3e6ea; border-radius: 10px; font-size: 0.84rem; color:#344054; background: #f8fafc;">Datos históricos en proceso de revisión. Algunas series están excluidas por metadatos ambiguos. <a href="./metodologia">Fuentes y limitaciones</a>.</div>
 
