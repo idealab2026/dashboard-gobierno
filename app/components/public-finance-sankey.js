@@ -302,6 +302,39 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       .pf-chart {overflow-x:auto; overflow-y:hidden;}
       .pf-chart svg {min-width:760px;}
     }
+
+    .pf-scroll-hint {display:none;}
+    @media (max-width: 768px) {
+      .pf-explorer,.pf-layout {width:100%;max-width:100%;min-width:0;}
+      .pf-toolbar {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:7px;padding:.45rem 0 .6rem;}
+      .pf-toolbar-spacer {display:none;}
+      .pf-toolbar button,.pf-toolbar a,.pf-toolbar select {
+        min-height:41px;min-width:0;display:inline-flex;align-items:center;
+        justify-content:center;box-sizing:border-box;text-align:center;
+        font-size:.72rem;padding:.5rem .5rem;
+      }
+      .pf-badge {grid-column:1/-1;justify-content:center;font-size:.7rem;}
+      .pf-chart {width:100%;max-width:100%;overflow-x:auto!important;overflow-y:hidden!important;
+        -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
+        touch-action:pan-x pan-y;scrollbar-width:thin;scrollbar-color:#94a3b8 #edf2f7;
+        padding:.35rem 0 .7rem;border:1px solid #e2e8f0;border-radius:11px;
+        background:#fafcfe;}
+      .pf-chart svg {width:100%;min-width:790px!important;max-width:none!important;
+        display:block;height:auto;overflow:visible;}
+      .pf-scroll-hint {display:flex;gap:7px;align-items:center;justify-content:center;
+        margin:0 0 .55rem;padding:.45rem .6rem;border-radius:8px;
+        color:#53657a;background:#edf3f7;font-size:.74rem;font-weight:700;}
+      .pf-drawer {top:0;bottom:0;width:min(100vw,480px);
+        max-height:100dvh;border-radius:0;}
+      .pf-drawer-inner {height:100%;max-height:100dvh;overflow-y:auto;
+        overscroll-behavior:contain;box-sizing:border-box;padding:15px 13px 25px;}
+      .pf-close {min-width:42px;min-height:42px;font-size:1.5rem!important;}
+      .pf-table {display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+      .pf-table th,.pf-table td {min-width:72px;overflow-wrap:anywhere;}
+      .pf-footnote {font-size:.72rem;line-height:1.45;}
+      .pf-detail-actions a,.pf-detail-actions button {min-height:42px;max-width:100%;}
+    }
     @media print {
       .pf-toolbar {display:none;}
       .pf-chart {overflow:visible; min-height:0;}
@@ -355,7 +388,12 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
   root.append(toolbar);
 
   const layout = htmlEl("div", "pf-layout");
+  const scrollHint = htmlEl("p", "pf-scroll-hint");
+  scrollHint.textContent = "↔ Desliza el gráfico horizontalmente para explorar todas las ramas";
   const chart = htmlEl("main", "pf-chart");
+  chart.tabIndex = 0;
+  chart.setAttribute("role", "region");
+  chart.setAttribute("aria-label", "Sankey del dinero público; desliza horizontalmente en móvil para ver todas las ramas");
   const backdrop = htmlEl("div", "pf-drawer-backdrop");
   const drawer = htmlEl("aside", "pf-drawer");
   const drawerInner = htmlEl("div", "pf-drawer-inner");
@@ -366,7 +404,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
   const detail = htmlEl("div");
   drawerInner.append(closeButton, detail);
   drawer.append(drawerInner);
-  layout.append(chart);
+  layout.append(scrollHint, chart);
   root.append(layout, backdrop, drawer);
 
   const footnote = htmlEl("div", "pf-footnote");
