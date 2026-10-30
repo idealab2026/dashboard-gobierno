@@ -22,7 +22,7 @@ def validate(draft: dict) -> tuple[str, int]:
     if not isinstance(content, str) or not content.strip():
         raise ValueError("Texto vacío")
     allowed_urls = {"https://idealab2026.github.io/dashboard-gobierno/#mapa-dinero"}
-    seen_urls = re.findall(r"https?://[^\\s]+", content)
+    seen_urls = re.findall(r"https?://[^\s]+", content)
     if any(url not in allowed_urls for url in seen_urls):
         raise ValueError("Solo se permite el enlace público oficial al Sankey IDEA LAB")
     n = len(content)
