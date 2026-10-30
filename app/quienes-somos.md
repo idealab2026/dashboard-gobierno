@@ -67,18 +67,18 @@ footer: IDEA LAB · Investigación, análisis y divulgación
 </style>
 
 <nav class="il-site-navigation" aria-label="Navegación del observatorio">
-  <a class="il-site-brand" href="/dashboard-gobierno/" aria-label="IDEA LAB · Volver al inicio">IDEA LAB</a>
-  <a class="il-site-home" href="/dashboard-gobierno/">← Inicio</a>
+  <a class="il-site-brand" href="/" aria-label="IDEA LAB · Volver al inicio">IDEA LAB</a>
+  <a class="il-site-home" href="/">← Inicio</a>
   <details class="il-site-menu">
     <summary aria-label="Abrir menú del observatorio">Menú ☰</summary>
     <div class="il-site-menu-links">
-      <a href="/dashboard-gobierno/">Inicio</a>
-      <a href="/dashboard-gobierno/#mapa-dinero">Mapa del dinero</a>
-      <a href="/dashboard-gobierno/#resumen">Indicadores</a>
-      <a href="/dashboard-gobierno/finanzas-publicas.html">Finanzas públicas</a>
-      <a href="/dashboard-gobierno/actualizaciones.html">Actualización</a>
-      <a href="/dashboard-gobierno/metodologia.html">Metodología</a>
-      <a href="/dashboard-gobierno/quienes-somos.html">Quiénes somos</a>
+      <a href="/">Inicio</a>
+      <a href="/#mapa-dinero">Mapa del dinero</a>
+      <a href="/#resumen">Indicadores</a>
+      <a href="/finanzas-publicas.html">Finanzas públicas</a>
+      <a href="/actualizaciones.html">Actualización</a>
+      <a href="/metodologia.html">Metodología</a>
+      <a href="/quienes-somos.html">Quiénes somos</a>
     </div>
   </details>
 </nav>
@@ -101,7 +101,7 @@ footer: IDEA LAB · Investigación, análisis y divulgación
       <div class="il-about-card">
         <h3>España en Datos</h3>
         <p>Es uno de nuestros productos: un <strong>observatorio económico, social e institucional de España</strong>. Integramos indicadores, series históricas y visualizaciones; destacamos un mapa interactivo del dinero público. Indicamos la fecha de referencia y el grado de validación de cada fuente.</p>
-        <a href="/dashboard-gobierno/#mapa-dinero">Explorar el observatorio</a>
+        <a href="/#mapa-dinero">Explorar el observatorio</a>
       </div>
       <div class="il-about-card">
         <h3>LAREALIDAD · Canal editorial</h3>
@@ -114,7 +114,7 @@ footer: IDEA LAB · Investigación, análisis y divulgación
   <section>
     <h2>Cómo trabajamos</h2>
     <p>Partimos de preguntas concretas, localizamos fuentes primarias, comprobamos unidades, periodos y cobertura, y documentamos nuestras transformaciones. Publicamos conclusiones proporcionadas a la evidencia disponible y explicitamos las incertidumbres o discrepancias detectadas.</p>
-    <p>Mostramos el <a href="/dashboard-gobierno/metodologia.html">procedimiento de análisis y validación</a> y el <a href="/dashboard-gobierno/actualizaciones.html">estado de actualización de las fuentes</a>. Las series históricas no se presentan como cifras actuales sin una comprobación adicional.</p>
+    <p>Mostramos el <a href="/metodologia.html">procedimiento de análisis y validación</a> y el <a href="/actualizaciones.html">estado de actualización de las fuentes</a>. Las series históricas no se presentan como cifras actuales sin una comprobación adicional.</p>
   </section>
 
   <section>
@@ -125,7 +125,7 @@ footer: IDEA LAB · Investigación, análisis y divulgación
   </section>
 
   <div class="il-about-actions">
-    <a href="/dashboard-gobierno/">Entrar en España en Datos</a>
+    <a href="/">Entrar en España en Datos</a>
     <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">Seguir nuestro canal en X</a>
   </div>
 </main>
