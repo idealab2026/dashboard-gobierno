@@ -18,6 +18,8 @@ markers=("mam"+"g97","ate"+"nea","litos"+"artesania","mayor"+"domo","idealab.res
 secrets=[r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----",r"github_pat_[A-Za-z0-9_]{20,}"]
 for p in d.rglob("*"):
  if not p.is_file():continue
+ # Ignore independently vendored npm bundles to avoid false matches in minified code.
+ if "_npm" in p.parts:continue
  if p.name in (".env","data-sources.json","credentials.json","service-account.json"):errors.append("Archivo privado "+str(p))
  if p.suffix.lower() not in (".js",".html",".css",".json",".csv",".txt",".svg"):continue
  content=p.read_text(encoding="utf-8",errors="replace")
