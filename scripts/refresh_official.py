@@ -91,5 +91,8 @@ def main():
     print("IDEALAB_SOURCE_AUDIT",successes,"/",len(results),"official links reachable")
     if successes<len(results):
         print("::warning::Source registry has "+str(len(results)-successes)+" links requiring review. No figures were replaced.")
+        for item in results:
+            if item["status"]!="reachable":
+                print("SOURCE_REVIEW",item["status"],item["url"])
 
 if __name__=="__main__":main()
