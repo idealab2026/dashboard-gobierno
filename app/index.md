@@ -818,6 +818,20 @@ html {
   .dashboard-section { break-before: auto; }
 }
 
+/* Prominencia editorial del Sankey original, antes del resumen KPI. */
+.idealab-nav-priority {color: #b68a3f !important; font-weight: 850 !important;}
+.il-sankey-spotlight {margin:2.1rem 0 .65rem; scroll-margin-top:100px; border-top:3px solid #b89b5e; padding:1.25rem 0 0;}
+.il-spotlight-top {display:flex; justify-content:space-between; align-items:end; gap:1.5rem; flex-wrap:wrap;}
+.il-spotlight-kicker {font-size:.69rem;letter-spacing:.13em;font-weight:850;color:#987333;margin-bottom:.45rem;}
+.il-spotlight-top h2 {margin:0 0 .45rem; font-size:clamp(1.5rem,2.9vw,2.3rem);color:#0b2447;letter-spacing:-.03em;}
+.il-spotlight-top p {max-width:840px; margin:.3rem 0 .65rem;color:#556277;font-size:.91rem;line-height:1.5;}
+.il-sankey-cta {background:#0b2447;color:#fff !important;border-radius:9px;text-decoration:none;padding:.78rem 1rem;font-size:.8rem;font-weight:800;white-space:nowrap;margin:0 0 .35rem;}
+.il-sankey-cta:hover {background:#19376d;text-decoration:none;}
+.il-sankey-meta {font-size:.77rem;color:#65758a;background:#f8f5ef;padding:.7rem .9rem;border:1px solid #e9e0c9;border-radius:9px;margin:.5rem 0 .7rem;}
+.il-spotlight-footnote {font-size:.76rem;color:#687789;line-height:1.4;margin:.3rem 0 1.5rem;}
+.il-sankey-spotlight + .pf-explorer {margin:0 0 .3rem;max-width:100%;}
+@media(max-width:560px){.il-sankey-spotlight{margin-top:1.2rem}.il-sankey-meta{font-size:.71rem}.il-sankey-cta{width:100%;text-align:center}}
+
 </style>
 
 <nav class="idealab-nav">
@@ -827,6 +841,7 @@ html {
   </a>
 
   <div class="idealab-nav-links">
+    <a class="idealab-nav-priority" href="#mapa-dinero">Mapa del dinero</a>
     <a href="#resumen">Resumen</a>
     <a href="#economia">Economía</a>
     <a href="#empleo">Empleo</a>
@@ -1926,6 +1941,44 @@ meta.innerHTML = `
 
 display(meta);
 ```
+
+<section id="mapa-dinero" class="il-sankey-spotlight">
+  <div class="il-spotlight-top">
+    <div>
+      <div class="il-spotlight-kicker">LA VISUALIZACIÓN PRINCIPAL · FINANZAS PÚBLICAS</div>
+      <h2>¿De dónde sale el dinero y en qué se gasta?</h2>
+      <p>Explora el recorrido de los recursos públicos: ingresos, financiación y funciones de gasto. Selecciona cada rama para consultar importes, fuentes y metodología.</p>
+    </div>
+    <a href="./finanzas-publicas" class="il-sankey-cta">Ver análisis completo ↗</a>
+  </div>
+  <div class="il-sankey-meta">Ejercicio histórico <strong>2024</strong> · Sector consolidado S.13 · Datos sujetos a revisión · No se asignan impuestos a gastos concretos.</div>
+</section>
+
+```js
+import {PublicFinanceExplorer} from "./components/public-finance-sankey.js";
+
+const spotlightFinanceRaw = await FileAttachment("./data/public-finance.csv").csv({typed:true});
+const spotlightSources = await FileAttachment("./data/public-finance-sources.csv").csv({typed:true});
+const spotlightTaxes = await FileAttachment("./data/public-finance-tax-figures.csv").csv({typed:true});
+const spotlightFinance = spotlightFinanceRaw
+  .map(d => ({...d, year:Number(d.year), value:Number(d.value)}))
+  .filter(d => Number.isFinite(d.year) && Number.isFinite(d.value));
+const spotlightYears = [...new Set(spotlightFinance
+  .filter(d => d.parent_code === "S13.GASTO" && d.side === "gasto" && String(d.level) === "1")
+  .map(d => d.year))].sort((a,b) => b-a);
+const spotlightDataUrl = await FileAttachment("./data/public-finance.csv").url();
+const spotlightWorkbookUrl = await FileAttachment("./data/public-finance.xlsx").url();
+if (!spotlightYears.length) {
+  throw new Error("Sankey: no existe ningún ejercicio con cierre de gasto público completo.");
+}
+const spotlightSankey = PublicFinanceExplorer(
+  spotlightFinance, spotlightSources, spotlightTaxes,
+  {year:spotlightYears[0],dataUrl:spotlightDataUrl,workbookUrl:spotlightWorkbookUrl}
+);
+display(spotlightSankey);
+```
+
+<div class="il-spotlight-footnote">La necesidad de financiación (déficit) se representa separada de los ingresos no financieros. <a href="./metodologia">Consulta las limitaciones</a> y <a href="./actualizaciones">las fechas de actualización</a>.</div>
 
 ```js
 // 1. Imprimimos el título y la descripción arriba de todo (ocupando el ancho completo)
