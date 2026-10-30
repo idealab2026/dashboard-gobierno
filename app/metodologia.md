@@ -55,10 +55,10 @@ toc: true
       <a href="/dashboard-gobierno/">Inicio</a>
       <a href="/dashboard-gobierno/#mapa-dinero">Mapa del dinero</a>
       <a href="/dashboard-gobierno/#resumen">Indicadores</a>
-      <a href="/dashboard-gobierno/finanzas-publicas">Finanzas públicas</a>
-      <a href="/dashboard-gobierno/actualizaciones">Actualización</a>
-      <a href="/dashboard-gobierno/metodologia">Metodología</a>
-      <a href="/dashboard-gobierno/quienes-somos">Quiénes somos</a>
+      <a href="/dashboard-gobierno/finanzas-publicas.html">Finanzas públicas</a>
+      <a href="/dashboard-gobierno/actualizaciones.html">Actualización</a>
+      <a href="/dashboard-gobierno/metodologia.html">Metodología</a>
+      <a href="/dashboard-gobierno/quienes-somos.html">Quiénes somos</a>
     </div>
   </details>
 </nav>
@@ -66,7 +66,7 @@ toc: true
 
 # Cómo trabajamos
 
-**Somos IDEA LAB, una iniciativa independiente de investigación y divulgación.** Desarrollamos **España en Datos**, nuestro observatorio económico, social e institucional. Los indicadores que mostramos incluyen bases históricas y no deben confundirse con una fotografía completamente actualizada de España. Conoce [quiénes somos](/dashboard-gobierno/quienes-somos) y cómo distinguimos datos, interpretación y opinión.
+**Somos IDEA LAB, una iniciativa independiente de investigación y divulgación.** Desarrollamos **España en Datos**, nuestro observatorio económico, social e institucional. Los indicadores que mostramos incluyen bases históricas y no deben confundirse con una fotografía completamente actualizada de España. Conoce [quiénes somos](/dashboard-gobierno/quienes-somos.html) y cómo distinguimos datos, interpretación y opinión.
 
 ## Procedimiento científico
 
@@ -93,4 +93,4 @@ Se conservan enlaces a [INE](https://www.ine.es/) y [IGAE](https://www.igae.pap.
 
 Ningún resultado se califica de «predicción validada» si no dispone de evaluación fuera de muestra. Las inferencias causales deben tener una estrategia de identificación, supuestos explícitos y análisis de sensibilidad.
 
-[Volver a España en Datos](/dashboard-gobierno/) · [Quiénes somos](/dashboard-gobierno/quienes-somos)
+[Volver a España en Datos](/dashboard-gobierno/) · [Quiénes somos](/dashboard-gobierno/quienes-somos.html)
