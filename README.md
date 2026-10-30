@@ -1,6 +1,8 @@
-# IDEA LAB · Observatorio de España
+# IDEA LAB · España en Datos
 
-Web pública gratuita e independiente de divulgación estadística: https://idealab2026.github.io/dashboard-gobierno/
+**IDEA LAB** es una iniciativa independiente de investigación, análisis y divulgación. **España en Datos** es uno de nuestros productos: un observatorio económico, social e institucional de España, desarrollado como web pública gratuita de divulgación estadística: https://idealab2026.github.io/dashboard-gobierno/
+
+La sección [Quiénes somos](https://idealab2026.github.io/dashboard-gobierno/quienes-somos) presenta nuestra misión, métodos, productos e independencia; el canal editorial de IDEA LAB en X es [@LARREALIDAD](https://x.com/LARREALIDAD).
 
 ## Qué está publicado
 
