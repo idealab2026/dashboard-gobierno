@@ -7,7 +7,7 @@ toc: true
 
 # Cómo trabajamos
 
-**Idea Lab es un laboratorio de investigación privado.** Los indicadores que muestra esta versión son una base histórica y no deben confundirse con una fotografía actualizada de España.
+**Somos IDEA LAB, una iniciativa independiente de investigación y divulgación.** Desarrollamos **España en Datos**, nuestro observatorio económico, social e institucional. Los indicadores que mostramos incluyen bases históricas y no deben confundirse con una fotografía completamente actualizada de España. Conoce [quiénes somos](./quienes-somos) y cómo distinguimos datos, interpretación y opinión.
 
 ## Procedimiento científico
 
@@ -34,4 +34,4 @@ Se conservan enlaces a [INE](https://www.ine.es/) y [IGAE](https://www.igae.pap.
 
 Ningún resultado se califica de «predicción validada» si no dispone de evaluación fuera de muestra. Las inferencias causales deben tener una estrategia de identificación, supuestos explícitos y análisis de sensibilidad.
 
-[Volver al panel](./)
+[Volver a España en Datos](./) · [Quiénes somos](./quienes-somos)
