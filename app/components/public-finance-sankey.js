@@ -335,6 +335,41 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       .pf-footnote {font-size:.72rem;line-height:1.45;}
       .pf-detail-actions a,.pf-detail-actions button {min-height:42px;max-width:100%;}
     }
+
+    /* Compact mobile controls: primary visualization before documentation. */
+    .pf-mobile-tools {display:none;}
+    @media(max-width:768px) {
+      .pf-toolbar {display:flex!important;gap:6px!important;align-items:center;
+        padding:2px 0 0!important;min-height:0!important;justify-content:flex-start;}
+      .pf-toolbar > button,.pf-toolbar > a,.pf-toolbar > .pf-toolbar-spacer {display:none!important;}
+      .pf-toolbar .pf-badge {display:inline-flex!important;width:auto!important;
+        margin:0!important;grid-column:auto!important;
+        padding:3px 8px!important;font-size:.66rem!important;
+        border-radius:999px!important;}
+      .pf-mobile-tools {display:block!important;margin:0 0 2px!important;
+        padding:0!important;color:#64748b;}
+      .pf-mobile-tools > summary {cursor:pointer;display:inline-flex;gap:5px;align-items:center;
+        list-style:none;min-height:32px;padding:1px 3px;font-size:.7rem;
+        color:#405773;font-weight:700;}
+      .pf-mobile-tools > summary::-webkit-details-marker {display:none;}
+      .pf-mobile-tools > summary:focus-visible {outline:2px solid #b89b5e;outline-offset:2px;}
+      .pf-mobile-tools-inner {display:flex;flex-wrap:wrap;gap:7px;
+        align-items:center;padding:7px;background:#f8fafc;border:1px solid #e3e8ee;
+        border-radius:9px;margin:0 0 5px;}
+      .pf-mobile-tools-inner > button,.pf-mobile-tools-inner > a {display:inline-flex;
+        align-items:center;justify-content:center;min-height:38px;
+        background:white;border:1px solid #d4dce7;border-radius:7px;
+        color:#173556;padding:6px 9px;font-size:.7rem;font-weight:700;text-decoration:none;
+        font-family:inherit;cursor:pointer;}
+      .pf-mobile-tools-inner > p {margin:1px 0 0;font-size:.7rem;
+        color:#58677d;line-height:1.4;width:100%;}
+      .pf-scroll-hint {margin:0 0 3px!important;padding:2px 6px!important;
+        min-height:24px!important;font-size:.67rem!important;
+        line-height:1.2!important;background:transparent!important;
+        justify-content:flex-start!important;color:#627085!important;}
+      .pf-chart {margin:0!important;}
+      .pf-footnote {display:none!important;}
+    }
     @media print {
       .pf-toolbar {display:none;}
       .pf-chart {overflow:visible; min-height:0;}
@@ -387,9 +422,32 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
   );
   root.append(toolbar);
 
+  // Mobile: keep provenance and downloads accessible, but don't let them
+  // push the actual Sankey below the first screen.
+  const mobileTools = htmlEl("details", "pf-mobile-tools");
+  const mobileSummary = htmlEl("summary");
+  mobileSummary.textContent = "ⓘ Fuentes y descargas";
+  const mobileToolsInner = htmlEl("div", "pf-mobile-tools-inner");
+  const mobileMethodologyButton = htmlEl("button");
+  mobileMethodologyButton.type = "button";
+  mobileMethodologyButton.textContent = "Metodología y fuentes";
+  const mobileCsv = htmlEl("a");
+  mobileCsv.href = options.dataUrl || "#";
+  mobileCsv.download = csvAnchor.download;
+  mobileCsv.textContent = "Descargar CSV";
+  const mobileExcel = htmlEl("a");
+  mobileExcel.href = options.workbookUrl || "#";
+  mobileExcel.download = xlsxAnchor.download;
+  mobileExcel.textContent = "Descargar Excel";
+  const mobileExplanation = htmlEl("p");
+  mobileExplanation.textContent = "Selecciona una rama para consultar importes, porcentajes y referencias. El ajuste estadístico es técnico, no un ingreso económico.";
+  mobileToolsInner.append(mobileMethodologyButton, mobileCsv, mobileExcel, mobileExplanation);
+  mobileTools.append(mobileSummary, mobileToolsInner);
+  root.append(mobileTools);
+
   const layout = htmlEl("div", "pf-layout");
   const scrollHint = htmlEl("p", "pf-scroll-hint");
-  scrollHint.textContent = "↔ Desliza el gráfico horizontalmente para explorar todas las ramas";
+  scrollHint.textContent = "↔ Desliza · Toca una rama para explorar";
   const chart = htmlEl("main", "pf-chart");
   chart.tabIndex = 0;
   chart.setAttribute("role", "region");
@@ -923,6 +981,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
   closeButton.addEventListener("click", closeDrawer);
   backdrop.addEventListener("click", closeDrawer);
   methodologyButton.addEventListener("click", openMethodology);
+  mobileMethodologyButton.addEventListener("click", () => { mobileTools.open = false; openMethodology(); });
   document.addEventListener("keydown", event => {
     if (event.key === "Escape" && root.classList.contains("is-detail-open")) {
       root.classList.remove("is-detail-open");
