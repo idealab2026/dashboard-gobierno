@@ -1466,10 +1466,10 @@ html {
         <a href="#mundo">Mundo</a>
       </div>
     </details>
-    <a href="/dashboard-gobierno/finanzas-publicas">Finanzas públicas</a>
-    <a href="/dashboard-gobierno/metodologia">Metodología</a>
-    <a href="/dashboard-gobierno/actualizaciones">Actualización</a>
-    <a href="/dashboard-gobierno/quienes-somos">Quiénes somos</a>
+    <a href="/dashboard-gobierno/finanzas-publicas.html">Finanzas públicas</a>
+    <a href="/dashboard-gobierno/metodologia.html">Metodología</a>
+    <a href="/dashboard-gobierno/actualizaciones.html">Actualización</a>
+    <a href="/dashboard-gobierno/quienes-somos.html">Quiénes somos</a>
     <a class="idealab-nav-x" href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer" aria-label="Canal editorial de IDEA LAB en X">En X</a>
   </div>
   <details class="idealab-nav-mobile">
@@ -1487,10 +1487,10 @@ html {
       <a href="#sociedad">Sociedad</a>
       <a href="#mundo">Mundo</a>
       <div class="idealab-nav-mobile-heading">Observatorio</div>
-      <a href="/dashboard-gobierno/finanzas-publicas">Finanzas públicas</a>
-      <a href="/dashboard-gobierno/metodologia">Metodología</a>
-      <a href="/dashboard-gobierno/actualizaciones">Actualización</a>
-      <a href="/dashboard-gobierno/quienes-somos">Quiénes somos</a>
+      <a href="/dashboard-gobierno/finanzas-publicas.html">Finanzas públicas</a>
+      <a href="/dashboard-gobierno/metodologia.html">Metodología</a>
+      <a href="/dashboard-gobierno/actualizaciones.html">Actualización</a>
+      <a href="/dashboard-gobierno/quienes-somos.html">Quiénes somos</a>
       <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">En X ↗</a>
     </div>
   </details>
@@ -1511,10 +1511,10 @@ if (idealabMobileMenu) {
 }
 ```
 
-<div class="il-data-notice" role="note"><strong>Datos históricos.</strong> Algunas series están en revisión o excluidas por metadatos ambiguos. <a href="/dashboard-gobierno/metodologia">Fuentes y límites</a>.</div>
+<div class="il-data-notice" role="note"><strong>Datos históricos.</strong> Algunas series están en revisión o excluidas por metadatos ambiguos. <a href="/dashboard-gobierno/metodologia.html">Fuentes y límites</a>.</div>
 <details class="il-mobile-data-disclosure">
   <summary><span aria-hidden="true">ⓘ</span> Datos históricos · Alcance y fuentes</summary>
-  <p>Algunas series están en revisión o excluidas por metadatos ambiguos. Los años y estados de cada indicador se indican en su ficha. <a href="/dashboard-gobierno/metodologia">Consultar metodología y limitaciones</a>.</p>
+  <p>Algunas series están en revisión o excluidas por metadatos ambiguos. Los años y estados de cada indicador se indican en su ficha. <a href="/dashboard-gobierno/metodologia.html">Consultar metodología y limitaciones</a>.</p>
 </details>
 
 ```js
@@ -2232,7 +2232,7 @@ const sectionDefinitions = {
 
     action: {
       label: "Explorar ingresos y gastos públicos →",
-      href: "./finanzas-publicas"
+      href: "/dashboard-gobierno/finanzas-publicas.html"
     },
 
     analysis: () => [
@@ -2708,7 +2708,7 @@ const indicatorCount = availableIndicators.length;
   </div>
   <div class="hero-actions">
     <a href="#mapa-dinero">Explorar el mapa del dinero</a>
-    <a href="/dashboard-gobierno/quienes-somos">Quiénes somos</a>
+    <a href="/dashboard-gobierno/quienes-somos.html">Quiénes somos</a>
   </div>
 </div>
 
@@ -2743,7 +2743,7 @@ display(meta);
       <h2><span class="il-map-title-desktop">¿De dónde sale el dinero y en qué se gasta?</span><span class="il-map-title-mobile">¿A dónde va el dinero público?</span></h2>
       <p>Explora el recorrido de los recursos públicos: ingresos, financiación y funciones de gasto. Selecciona cada rama para consultar importes, fuentes y metodología.</p>
     </div>
-    <a href="/dashboard-gobierno/finanzas-publicas" class="il-sankey-cta">Ver análisis completo ↗</a>
+    <a href="/dashboard-gobierno/finanzas-publicas.html" class="il-sankey-cta">Ver análisis completo ↗</a>
   </div>
   <div class="il-sankey-meta">Ejercicio histórico · Sector consolidado S.13 · Datos sujetos a revisión · No se asignan impuestos a gastos concretos.</div>
 <div class="il-map-year-mobile"><strong>2024</strong><span>IGAE · Administraciones públicas</span></div>
@@ -2875,7 +2875,7 @@ if(highlightedTaxes.length) {
 }
 ```
 
-<div class="il-spotlight-footnote">La necesidad de financiación (déficit) se representa separada de los ingresos no financieros. <a href="/dashboard-gobierno/metodologia">Consulta las limitaciones</a> y <a href="/dashboard-gobierno/actualizaciones">las fechas de actualización</a>.</div>
+<div class="il-spotlight-footnote">La necesidad de financiación (déficit) se representa separada de los ingresos no financieros. <a href="/dashboard-gobierno/metodologia.html">Consulta las limitaciones</a> y <a href="/dashboard-gobierno/actualizaciones.html">las fechas de actualización</a>.</div>
 
 ```js
 // 1. Imprimimos el título y la descripción arriba de todo (ocupando el ancho completo)
