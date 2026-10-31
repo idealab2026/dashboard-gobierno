@@ -237,7 +237,7 @@ def main() -> None:
                 'aria-pressed="true" data-classification-key="4"' not in classified_dom):
                 raise AssertionError("La barra de área económica no está seleccionada")
             filtered_count = re.search(
-                r"Mostrando (\\d+) de (\\d+) registros del índice",classified_dom
+                r"Mostrando (\d+) de (\d+) registros del índice",classified_dom
             )
             if (not filtered_count or int(filtered_count.group(2))<=0 or
                 int(filtered_count.group(2))>=337):
