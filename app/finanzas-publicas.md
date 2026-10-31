@@ -505,6 +505,7 @@ body {
       </div>
     </details>
     <a href="/finanzas-publicas.html" class="is-active" aria-current="page">Finanzas públicas</a>
+    <a href="/buscador-partidas.html">Buscar partidas</a>
     <details class="il-nav-more">
       <summary>Más</summary>
       <div class="il-nav-more-panel">
@@ -521,6 +522,7 @@ body {
       <a href="/">Inicio</a>
       <a href="/#mapa-dinero">Mapa del dinero</a>
       <a href="/finanzas-publicas.html" aria-current="page">Finanzas públicas</a>
+      <a href="/buscador-partidas.html">Buscar partidas</a>
       <div class="idealab-nav-mobile-heading">Áreas temáticas</div>
       <a class="il-areas-overview" href="/#resumen">España en un minuto</a>
       <a href="/#economia">Economía</a>
