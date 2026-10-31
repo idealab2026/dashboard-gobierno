@@ -133,6 +133,7 @@ footer: IDEA LAB · Investigación, análisis y divulgación
       <a href="/actualizaciones.html">Actualización</a>
       <a href="/metodologia.html">Metodología</a>
       <a href="/quienes-somos.html">Quiénes somos</a>
+      <a href="/idea-lab.html">IDEA LAB · Web corporativa</a>
     </div>
   </details>
 </nav>
