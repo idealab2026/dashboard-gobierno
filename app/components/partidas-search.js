@@ -111,6 +111,48 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   ])portals.append(external(title,href));
   const footnote=make("p","sf-footnote",coverage+" Los registros de distintas fuentes, ejercicios y ámbitos NO pueden sumarse: pueden representar ayudas, límites normativos, pagos o estadísticas agregadas y existir solapamientos. Ningún dato permite afirmar qué impuesto financió un proyecto concreto.");
   root.append(make("p","sf-footnote","¿No encuentras una actuación? Comprueba los portales oficiales: este catálogo no sustituye su buscador completo."),portals,footnote);
+
+  // Rutas distintas. No se calculan totales administrativos a partir de COFOG.
+  const guide=make("section","sf-investigation");
+  guide.id="investigar-por-administracion";
+  guide.append(make("h2","","Investigar por ministerio, comunidad o infraestructura"));
+  guide.append(make("p","",
+   "El Sankey cubre el sector Administraciones Públicas (S.13) por finalidad. " +
+   "Un ministerio se estudia mediante ejecución presupuestaria estatal y sección orgánica; " +
+   "una comunidad autónoma mediante COFOG regional o liquidaciones propias; " +
+   "una inversión ferroviaria exige además el programa, el operador y el ejercicio de inversión. " +
+   "Las cifras de estas vistas tienen distinta metodología y no son sumables por defecto."));
+  const cards=make("div","sf-investigation-grid");
+  const routes=[
+   ["Por ministerio",
+    "Busca sección orgánica, programa presupuestario, obligaciones reconocidas y pagos. Distingue presupuesto aprobado de gasto ejecutado.",
+    [
+     ["Ejecución presupuestaria del Estado · IGAE","https://transparencia.gob.es/publicidad-activa/por-materias/informacion-economico-presupuestaria/ejecucion"],
+     ["PGE · programas de Transportes","https://www.sepg.pap.hacienda.gob.es/Presup/PGE2024Prorroga/MaestroDocumentos/PGE-ROM/N_24P_E_R_31_117_1_1_1.htm"]
+    ]],
+   ["Por comunidad autónoma",
+    "Gasto COFOG de cada administración regional y liquidaciones consolidadas; no equivale a todo lo gastado por el Estado en ese territorio.",
+    [
+     ["IGAE · COFOG regional por comunidad","https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Paginas/iacofogCA.aspx"],
+     ["Hacienda · liquidaciones definitivas CCAA","https://serviciostelematicosext.hacienda.gob.es/SGCIEF/PublicacionLiquidaciones/aspx/menuInicio.aspx"]
+    ]],
+   ["Ferrocarriles e infraestructuras",
+    "Separar programa 453A, inversión de Adif/Renfe y gasto COFOG 04.5. Un crédito presupuestario no es inversión efectivamente realizada.",
+    [
+     ["PGE · infraestructura ferroviaria, programa 453A","https://www.sepg.pap.hacienda.gob.es/Presup/PGE2024Prorroga/MaestroDocumentos/PGE-ROM/N_24P_E_R_31_117_1_1_1.htm"],
+     ["Observatorio del Ferrocarril · inversiones 2024","https://cdn.transportes.gob.es/portal-web-transportes/ferroviario/observatorio/ofe_2024.pdf"]
+    ]]
+  ];
+  for(const [heading,summary,links] of routes){
+    const card=make("article");
+    card.append(make("h3","",heading),make("p","",summary));
+    for(const [label,href] of links)card.append(external(label,href));
+    cards.append(card);
+  }
+  guide.append(cards,make("p","",
+   "Estados de datos: partidas presupuestadas, obligaciones reconocidas, pagos, inversión realizada y gasto COFOG son conceptos distintos. " +
+   "No asignamos automáticamente importes nacionales a un ministerio, comunidad o proyecto sin clave administrativa y conciliación oficial."));
+  root.append(guide);
   const all=[...records,...aggregates].map(x=>({...x,_search:fold([x.titulo,x.pais,x.sector,x.entidad,x.organismo,x.descripcion,x.id,x.trazabilidad,x.clasificacion].join(" "))}));
   function card(item,related){
     const box=make("article","sf-record");
