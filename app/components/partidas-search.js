@@ -125,6 +125,14 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   @media(max-width:900px){.sf-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.sf-field:first-child{grid-column:1/-1}}
   @media(max-width:700px){.sf-results{grid-template-columns:1fr}.sf-controls{gap:7px}.sf-record{padding:12px}.sf-field input,.sf-field select{font-size:.83rem}}
 
+  /* Buscar primero; la lista de ejemplos no compite con los resultados. */
+  .spending-finder details.sf-examples{display:block;margin:2px 0 5px;border:0;padding:0}
+  .spending-finder .sf-examples>summary{
+    cursor:pointer;color:#5c7186;font:600 .7rem/1.4 system-ui,sans-serif;
+    list-style:revert}
+  .spending-finder .sf-example-options{display:flex;flex-wrap:wrap;gap:6px;padding:7px 0}
+  .spending-finder .sf-example-options button{border-radius:7px;padding:5px 8px}
+  .spending-finder .sf-dimension-jump{display:none}
   /* RESULTADOS V5: Una ficha, un importe, un recorrido. */
   .spending-finder .sf-controls{margin:10px 0 9px}
   .spending-finder .sf-scope{border:0;background:transparent;padding:0;margin:7px 0;
@@ -236,20 +244,26 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   const known=aggregates.find(r=>r.cofog_codigo===selectedCode);
   const scopeLabel=make("span","",selectedCode
    ? "Filtro COFOG " + selectedCode + (known?" · "+known.titulo:"") + " · subfunciones incluidas"
-   : "Cobertura: categorías COFOG del conjunto de Administraciones Públicas; ministerios y CCAA requieren fuentes distintas.");
+   : "Cobertura: España · gasto COFOG · 2024. Ministerios y CCAA se consultan por separado.");
   const clearScope=make("button","","Quitar filtro COFOG");
   clearScope.type="button";
   clearScope.hidden=!selectedCode;
   scope.append(scopeLabel,clearScope);
   root.append(scope);
-  const examples=make("div","sf-examples");examples.append(make("span","","Prueba:"));
+  const examples=make("details","sf-examples");
+  examples.append(make("summary","","Sugerencias de búsqueda"));
+  const suggested=make("div","sf-example-options");
   for(const label of ["Mantenimiento de carreteras","Carreteras","Sanidad","Hospitales","Transporte","Mujeres Paraguay","Ferrocarril Marruecos"]){
-    const b=make("button","",label);b.type="button";b.addEventListener("click",()=>{selectedCode="";clearScope.hidden=true;scopeLabel.textContent="Sin filtro COFOG · resultados temáticos no equivalen a un desglose de la función";input.value=label;type.value="";year.value="";country.value="";render();input.focus();});examples.append(b);
+    const b=make("button","",label);b.type="button";b.addEventListener("click",()=>{
+      selectedCode="";clearScope.hidden=true;
+      scopeLabel.textContent="Cobertura: conjunto de las Administraciones Públicas · COFOG";
+      input.value=label;type.value="";year.value="";country.value="";render();input.focus();
+      examples.open=false;
+    });suggested.append(b);
   }
-  root.append(examples);
-  const quickGuide=make("a","sf-dimension-jump","Consultar por ministerio, comunidad autónoma o ferrocarril");
+  examples.append(suggested);root.append(examples);
+  const quickGuide=make("a","sf-dimension-jump","Consultar por administración");
   quickGuide.href="#investigar-por-administracion";
-  root.append(quickGuide);
   clearScope.addEventListener("click",()=>{selectedCode="";clearScope.hidden=true;scopeLabel.textContent="Sin filtro COFOG · consulta el catálogo general";render();});
   const summary=make("div","sf-summary"), results=make("div","sf-results");
   root.append(summary,results);
