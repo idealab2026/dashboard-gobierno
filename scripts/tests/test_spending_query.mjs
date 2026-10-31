@@ -56,3 +56,33 @@ test("health data have official IGAE provenance and no generated project allocat
   assert.equal(health.length,7);
   assert.ok(health.every(x=>x.organismo==="IGAE"&&x.tipo==="agregado"&&x.pais==="España"));
 });
+
+const named=JSON.parse(readFileSync(new URL("../../app/data/partidas-verificadas.json",import.meta.url),"utf8")).registros;
+const all=[...items,...named];
+
+test("mantenimiento de carreteras returns the actual 453C budget program, not a fictitious COFOG maintenance figure",()=>{
+  const results=searchSpendingRecords(all,"mantenimiento de carreteras");
+  assert.equal(results.length,1);
+  assert.equal(results[0].codigo_presupuestario,"453C");
+  assert.equal(results[0].importe_eur,1208409410);
+  assert.equal(results[0].tipo,"programa");
+  assert.equal(results[0].desglose.reduce((n,p)=>n+p.importe_eur,0),1208409410);
+});
+
+test("carreteras displays actual official programs before the broader transport COFOG total",()=>{
+  const results=searchSpendingRecords(all,"carreteras");
+  assert.equal(results[0].codigo_presupuestario,"453C");
+  assert.ok(results.some(x=>x.codigo_presupuestario==="453B"));
+  assert.ok(results.some(x=>x.cofog_codigo==="04.5"));
+  assert.ok(results.indexOf(results.find(x=>x.codigo_presupuestario==="453C")) <
+            results.indexOf(results.find(x=>x.cofog_codigo==="04.5")));
+});
+
+test("new road construction, road maintenance and COFOG are not mistaken for the same budget",()=>{
+  const construction=searchSpendingRecords(all,"construcción carreteras");
+  assert.equal(construction[0].codigo_presupuestario,"453B");
+  assert.ok(!construction.some(x=>x.codigo_presupuestario==="453C"));
+  assert.ok(!searchSpendingRecords(all,"mantenimiento carreteras Andalucía").some(x=>x.codigo_presupuestario==="453C"));
+  assert.equal(searchSpendingRecords(all,"mantenimiento carreteras",{cofog:"04.5"}).length,0);
+  assert.equal(searchSpendingRecords(all,"mantenimiento carreteras",{tipo:"programa"}).length,1);
+});
