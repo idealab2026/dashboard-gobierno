@@ -81,18 +81,21 @@ def parse_ministry(code,name):
     programs=[]
     total=None
     for row in rows:
-        if not row:continue
+        if len(row)<3:continue
         label=row[0].strip().upper()
+        descriptor=row[1].strip()
+        # La tabla oficial usa de 2 a 4 subsector columns depending on
+        # whether a ministry has autonomous agencies / other entities.
+        # The final nonempty numeric cell is always the consolidated Total.
+        numeric=[cell.strip() for cell in row[2:] if cell.strip()]
         if re.fullmatch(r"[0-9][0-9A-Z]{3}",label) and label!="000X":
-            title=row[1].strip() if len(row)>1 else ""
-            if not title or len(row)<6:continue
-            amount=number(row[5])/1000
+            if not descriptor or not numeric:continue
+            amount=number(numeric[-1])/1000
             if amount>0:
-                programs.append({"code":label,"name":title,"value_mill_eur":round(amount,5)})
-        elif label=="TOTAL CONSOLIDADO":
-            total=number(row[5])/1000
+                programs.append({"code":label,"name":descriptor,"value_mill_eur":round(amount,5)})
+        elif descriptor.upper()=="TOTAL CONSOLIDADO":
+            total=number(numeric[-1])/1000 if numeric else None
     if total is None or total<=0 or not programs:
-        print("MINISTRY DIAGNOSTIC",code,"head",rows[:14],"tail",rows[-7:])
         raise ValueError(f"Sección {code}: total/programas ausentes")
     summed=sum(x["value_mill_eur"] for x in programs)
     if abs(summed-total)>0.06:
