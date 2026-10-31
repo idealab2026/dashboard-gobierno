@@ -1510,6 +1510,50 @@ html {
   .hero .hero-kicker a { color: #987333 !important; text-decoration: underline !important; }
 }
 
+
+/* Gasto consolidado e impuestos: dos paneles alineados en escritorio.
+   En pantallas estrechas se apilan sin alterar las tablas ni sus datos. */
+.il-public-finance-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  align-items: stretch;
+  margin: 12px 0 18px;
+  width: 100%;
+  min-width: 0;
+}
+.il-public-finance-pair > .il-finance-coverage {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+@media (min-width: 1100px) {
+  .il-public-finance-pair:not(.is-single) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+  }
+  .il-public-finance-pair .il-finance-coverage {
+    padding: 15px 16px;
+  }
+  .il-public-finance-pair .il-finance-coverage table {
+    width: 100%;
+    max-width: 100%;
+    table-layout: fixed;
+  }
+  .il-public-finance-pair .il-finance-coverage th,
+  .il-public-finance-pair .il-finance-coverage td {
+    padding: 8px 6px;
+  }
+  .il-public-finance-pair .il-finance-coverage th:first-child,
+  .il-public-finance-pair .il-finance-coverage td:first-child { width: 52%; overflow-wrap: anywhere; }
+  .il-public-finance-pair .il-finance-coverage th:nth-child(2),
+  .il-public-finance-pair .il-finance-coverage td:nth-child(2) { width: 27%; }
+  .il-public-finance-pair .il-finance-coverage th:nth-child(3),
+  .il-public-finance-pair .il-finance-coverage td:nth-child(3) { width: 21%; }
+  .il-public-finance-pair .is-tax-table td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; }
+}
+
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación del observatorio España en Datos">
@@ -2837,6 +2881,10 @@ const spotlightSankey = PublicFinanceExplorer(
 );
 display(spotlightSankey);
 
+const financePair = document.createElement("div");
+financePair.className = "il-public-finance-pair";
+financePair.setAttribute("aria-label", "Desglose de gasto público e impuestos");
+
 const spendingRows = spotlightFinance
   .filter(d => d.year === spotlightYears[0] && d.parent_code === "S13.GASTO" &&
     d.side === "gasto" && String(d.level) === "1")
@@ -2867,12 +2915,12 @@ if (centre && spendingRows.length === 10 && Math.abs(spendingSum-centre.value)<1
   for (const v of ["TOTAL COFOG",fmt.format(spendingSum),"100 %"]) {
     const td=document.createElement("td");td.textContent=v;td.style.fontWeight="800";total.append(td);
   }
-  tbody.append(total);table.append(tbody);section.append(table);display(section);
+  tbody.append(total);table.append(tbody);section.append(table);financePair.append(section);
 } else {
   const warning=document.createElement("div");
   warning.className="section-note";
   warning.textContent="El desglose funcional no ha superado la conciliación. No se publican porcentajes hasta corregirlo.";
-  display(warning);
+  financePair.append(warning);
 }
 
 const highlightedTaxes=(spotlightTaxes||[])
@@ -2935,8 +2983,10 @@ if(highlightedTaxes.length) {
     }
     tbody.append(tr);
   }
-  table.append(tbody);panel.append(table);display(panel);
+  table.append(tbody);panel.append(table);financePair.append(panel);
 }
+if (financePair.children.length === 1) financePair.classList.add("is-single");
+display(financePair);
 ```
 
 <div class="il-spotlight-footnote">La necesidad de financiación (déficit) se representa separada de los ingresos no financieros. <a href="/metodologia.html">Consulta las limitaciones</a> y <a href="/actualizaciones.html">las fechas de actualización</a>.</div>
