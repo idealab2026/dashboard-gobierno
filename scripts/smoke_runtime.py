@@ -350,7 +350,7 @@ def main() -> None:
                     raise AssertionError("Sankey original desapareció al profundizar "+query)
                 import re as _re
                 branches = _re.findall(r'class="ad-branch"',page)
-                min_branches = 10 if "tipo=ccaa" in query else 3
+                min_branches = 10 if "tipo=ccaa" in query else 1  # algunas secciones tienen una sola área
                 if len(branches)<min_branches:
                     raise AssertionError("Ramas originales perdidas "+query)
                 if "RuntimeError:" in page:
