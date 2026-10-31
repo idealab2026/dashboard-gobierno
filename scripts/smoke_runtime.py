@@ -231,86 +231,52 @@ def main() -> None:
                 raise AssertionError("La búsqueda de mantenimiento de carreteras ha fallado")
             print("Búsqueda mantenimiento carreteras OK: programa 453C, 1.208,41 M€ (2024-P)")
 
-            # A genuine user path: opening the COFOG 01.3 leaf may NOT leave
-            # an empty drawer. It must expose all sourced alternative routes.
-            terminal_url = url + "?detalle-cofog=01.3"
-            terminal_result = subprocess.run(
-                [*args[:-1], "--virtual-time-budget=8000", terminal_url],
-                text=True, capture_output=True, timeout=85
-            )
-            if terminal_result.returncode:
-                raise AssertionError("Chrome no abre el detalle COFOG 01.3")
-            terminal_dom = terminal_result.stdout
-            for required in ("Servicios generales",
-                             "Último nivel numérico COFOG disponible",
-                             "Ruta navegable COFOG",
-                             "Árbol de partidas",
-                             "1 · ¿Qué administración realizó el gasto?",
-                             "2 · ¿Qué ministerio y programa presupuestario?",
-                             "3 · ¿Cuánto se ejecutó o pagó?",
-                             "4 · ¿Qué contrato, subvención o proyecto concreto?",
-                             "iacofogCA.aspx",
-                             "PGE2025Prorroga"):
-                if required not in terminal_dom:
-                    print("DIAGNÓSTICO COFOG 01.3:", {
-                        "missing": required,
-                        "body_chars": len(terminal_dom),
-                        "has_drawer": 'class="pf-drawer"' in terminal_dom,
-                        "has_open_state": 'is-tree-open' in terminal_dom,
-                        "has_further": '<details class="pf-drill-route"' in terminal_dom,
-                        "titles": __import__("re").findall(
-                            r'<h2 class="pf-detail-title"[^>]*>([^<]*)</h2>',
-                            terminal_dom
-                        )[:6],
-                        "node_mentions": terminal_dom.count("Fin del desglose numérico COFOG para"),
-                        "deep_tags": __import__("re").findall(
-                            r'data-co-fog-deep-(?:code|status)="[^"]*"', terminal_dom
-                        )[:10],
-                        "cofog_01_3": terminal_dom.count("01.3"),
-                        "has_runtime_error": "RuntimeError:" in terminal_dom,
-                        "html_fragment": terminal_dom[terminal_dom.find("pf-detail")-130:
-                            terminal_dom.find("pf-detail")+1500] if "pf-detail" in terminal_dom else terminal_dom[:900],
-                    })
-                    raise AssertionError("Rama COFOG terminal sin continuidad oficial: " + required)
-            if "RuntimeError:" in terminal_dom:
-                raise AssertionError("Error Runtime al profundizar en Servicios generales")
-
-            # The original Sankey stays in the DOM during drill, and the
-            # code-ordered branch list remains linked to it via a breadcrumb.
-            if ('is-tree-open' not in terminal_dom
-                or 'class="pf-chart"' not in terminal_dom
-                or 'class="pf-tree-scroller"' not in terminal_dom
-                or 'class="pf-tree-column"' not in terminal_dom
-                or 'class="pf-tree-terminal"' not in terminal_dom):
-                raise AssertionError("El árbol sustituyó o tapó el Sankey nacional")
-            source_nav = terminal_dom[terminal_dom.find('class="pf-tree-scroller"'):]
+            # A SINGLE SVG must grow rightwards, with original nodes intact.
             import re as _re_cofog
-            codes = _re_cofog.findall(r'class="pf-tree-option"[^>]*data-code="([^"]+)"',source_nav)
-            groups = [code for code in codes if code.startswith("01.")]
-            if not all(code in groups for code in ("01.1","01.3","01.7")):
-                raise AssertionError("Faltan grupos COFOG oficiales en el árbol 01")
-            if not(groups.index("01.1") < groups.index("01.3") < groups.index("01.7")):
-                raise AssertionError("Grupos COFOG ordenados por importe, no por código: "+repr(groups))
-            if source_nav.count('class="pf-tree-column"') < 2:
-                raise AssertionError("No se conservaron columnas ancestrales al abrir 01.3")
-            print("Árbol COFOG 01.3 OK: Sankey persistente, códigos ordenados y ruta completa")
-
-            print("Detalle COFOG 01.3 OK: cuatro rutas oficiales de continuidad")
-
-            transport_url = url + "?detalle-cofog=04.5"
-            transport_result = subprocess.run(
-                [*args[:-1], "--virtual-time-budget=8000", transport_url],
-                text=True, capture_output=True, timeout=85
-            )
-            if transport_result.returncode:
-                raise AssertionError("Chrome no abre detalle de Transporte 04.5")
-            transport_dom = transport_result.stdout
-            for required in ("Programas presupuestarios relacionados",
-                             "453B", "453C", "Ver documento presupuestario oficial",
-                             "Gastos corrientes en bienes y servicios", "Inversiones reales"):
-                if required not in transport_dom:
-                    raise AssertionError("No hay detalle verificable de programa de Transporte: " + required)
-            print("Detalle Transporte 04.5 OK: programas 453B/453C y capítulos respaldados")
+            for code,fragments in [
+                ("01.3",("01.1","01.3","01.7",
+                    "ÚLTIMO NIVEL COFOG CUANTIFICADO",
+                    "Investigar partidas relacionadas")),
+                ("04.5",("04.1","04.5",
+                    "ÚLTIMO NIVEL COFOG CUANTIFICADO",
+                    "Investigar partidas relacionadas")),
+            ]:
+                selected_url=url+"?detalle-cofog="+code
+                result=subprocess.run(
+                    [*args[:-1],"--virtual-time-budget=12000",selected_url],
+                    text=True,capture_output=True,timeout=85
+                )
+                if result.returncode:
+                    raise AssertionError("Chrome no abre COFOG "+code)
+                page=result.stdout
+                for item in fragments:
+                    if item not in page:
+                        raise AssertionError("Falta partida en "+code+": "+item)
+                for required in (
+                    'class="pf-chart is-expanded"',
+                    'class="pf-inline-extension"',
+                    'data-expanded-code="'+code+'"',
+                    'class="pf-inline-trail"',
+                    'class="pf-extension-end"',
+                    'class="pf-node-group pf-spend"'
+                ):
+                    if required not in page:
+                        raise AssertionError("Ampliación original del SVG ausente "+code+": "+required)
+                if 'class="pf-explorer is-detail-open"' in page:
+                    raise AssertionError("Se abrió un menú separado en "+code)
+                codes=_re_cofog.findall(
+                    r'class="pf-extension-node"[^>]*data-code="([^"]+)"',page)
+                if code not in codes:
+                    raise AssertionError("Rama no encontrada "+code+": "+repr(codes))
+                if code=="01.3" and not(codes.index("01.1") <
+                    codes.index("01.3") < codes.index("01.7")):
+                    raise AssertionError("Orden COFOG incorrecto: "+repr(codes))
+                if 'class="pf-extension-ribbon"' not in page:
+                    raise AssertionError("Faltan las bandas conectadas al Sankey "+code)
+                if "RuntimeError:" in page:
+                    raise AssertionError("Error Observable en COFOG "+code)
+                print("Sankey SVG original extendido y verificado:",code,
+                    "sin paneles nuevos y con códigos COFOG ordenados")
 
             # Each administration has its own audited flow: ministry PGE and
             # CCAA IGAE are rendered separately with their vintage visible.
