@@ -8,6 +8,7 @@ import {canonicalFinanceCode} from "../../app/components/finance-code.js";
 import {COFOG_STRUCTURE,cofogsBelow} from "../../app/components/cofog-structure.js";
 import {OFFICIAL_BUDGET_PROGRAMS,matchingBudgetPrograms} from "../../app/components/official-budget-catalog.js";
 import {spendingLineage,sankeyDeepLink,relatedProgramLineage} from "../../app/components/spending-lineage.js";
+import {indexAdministrativeSpending} from "../../app/components/administrative-spending-index.js";
 import {compareFinanceCodes,sortedFinanceChildren,financeExpansionPath,financeExpansionColumns} from "../../app/components/finance-hierarchy.js";
 
 const source = readFileSync(new URL("../../app/data/seed/fact_finanzas_publicas_2024.csv", import.meta.url), "utf8").replace(/^\uFEFF/, "");
@@ -249,4 +250,56 @@ test("PGE thematic cross-reference is NEVER presented as an audited IGAE budget 
  assert.match(related.caution,/no constituye una porción comprobada/);
  assert.equal(related.steps.at(-1).amount_mill_eur,null);
  assert.equal(relatedProgramLineage({tipo:"programa"},items),null);
+});
+
+test("all verified ministerial programs and regional functions become distinct, individually linked cards",()=>{
+ const model={
+   ministries:[
+     {id:"17",name:"Transportes y Movilidad Sostenible",verified:true,
+       total_mill_eur:15,source_url:"https://www.sepg.pap.hacienda.gob.es/pge-seccion17",
+       flows:[
+         {code:"453A",name:"Infraestructura ferroviaria",value_mill_eur:10},
+         {code:"453C",name:"Conservación de carreteras",value_mill_eur:5}
+       ]},
+     {id:"30",name:"Igualdad",verified:true,total_mill_eur:5,
+       source_url:"https://www.sepg.pap.hacienda.gob.es/pge-seccion30",
+       flows:[{code:"453C",name:"Ejemplo de código repetido en otra sección",value_mill_eur:5}]}
+   ],
+   regions:[{
+     id:"12",name:"Comunidad de Madrid",verified:true,total_mill_eur:100,
+     source_url:"https://www.igae.pap.hacienda.gob.es/regional",
+     flows:[{code:"07",name:"Salud",value_mill_eur:72},
+            {code:"09",name:"Educación",value_mill_eur:28}]
+   }]
+ };
+ const result=indexAdministrativeSpending(model);
+ assert.equal(result.length,5);
+ assert.equal(new Set(result.map(r=>r.id)).size,5);
+ const maintenance=result.find(r=>r.id==="pge-2025p-m17-453C");
+ assert.ok(maintenance);
+ assert.equal(maintenance.importe_eur,5000000);
+ assert.equal(maintenance.importe_mill_eur,5);
+ assert.equal(maintenance.admin_hierarchy.steps.length,4);
+ assert.equal(maintenance.admin_hierarchy.steps[2].code,"4");
+ assert.equal(maintenance.admin_hierarchy.href,
+   "./administraciones.html?tipo=ministerio&id=17&nivel=programa&codigo=453C");
+ assert.match(maintenance.naturaleza_importe,/no son pagos/);
+ const health=result.find(r=>r.id==="igae-ccaa-2024-12-07");
+ assert.equal(health.importe_eur,72000000);
+ assert.equal(health.admin_hierarchy.steps.length,3);
+ assert.equal(health.admin_hierarchy.href,
+   "./administraciones.html?tipo=ccaa&id=12&nivel=funcion&codigo=07");
+ assert.match(health.admin_hierarchy.caution,/no es el gasto/i);
+ const matched=searchSpendingRecords(result,"salud",{pais:"Comunidad de Madrid"});
+ assert.deepEqual(matched.map(r=>r.id),[health.id]);
+ assert.equal(searchSpendingRecords(result,"salud",{pais:"Andalucía"}).length,0);
+});
+test("unverified and unbalanced administrative amounts never enter the search index",()=>{
+ const base={id:"1",name:"Una administración",verified:true,
+   source_url:"https://www.sepg.pap.hacienda.gob.es/prueba",
+   total_mill_eur:10,flows:[{code:"453C",name:"Conservación",value_mill_eur:8}]};
+ assert.equal(indexAdministrativeSpending({ministries:[base],regions:[]}).length,0);
+ assert.equal(indexAdministrativeSpending({ministries:[
+   {...base,total_mill_eur:8,verified:false}
+ ],regions:[]}).length,0);
 });
