@@ -69,6 +69,8 @@ jobs:
           cp app/favicon.svg dist/favicon.svg
       - name: Audit public bundle and Sankey integrity
         run: python scripts/audit_build.py
+      - name: Browser smoke test · no Observable RuntimeError and visible Sankey/KPIs
+        run: python scripts/smoke_runtime.py
       - name: Configure Pages without paid hosting
         uses: actions/configure-pages@v5
       - name: Upload static build
