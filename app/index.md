@@ -1500,7 +1500,7 @@ html {
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación del observatorio España en Datos">
-  <a class="idealab-brand" href="/" aria-label="IDEA LAB · España en Datos">
+  <a class="idealab-brand" href="https://idealab2026.github.io/" aria-label="IDEA LAB · España en Datos">
     <img class="idealab-brand-logo" src="./logo-idea-lab.svg" alt="IDEA LAB" width="154" height="37" />
     <span class="idealab-brand-product">· España en Datos</span>
   </a>
@@ -1524,6 +1524,7 @@ html {
     <a href="/metodologia.html">Metodología</a>
     <a href="/actualizaciones.html">Actualización</a>
     <a href="/quienes-somos.html">Quiénes somos</a>
+      <a href="https://idealab2026.github.io/" aria-label="Web corporativa de IDEA LAB">IDEA LAB ↗</a>
     <a class="idealab-nav-x" href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer" aria-label="Canal editorial de IDEA LAB en X">En X</a>
   </div>
   <details class="idealab-nav-mobile">
@@ -1545,6 +1546,7 @@ html {
       <a href="/metodologia.html">Metodología</a>
       <a href="/actualizaciones.html">Actualización</a>
       <a href="/quienes-somos.html">Quiénes somos</a>
+      <a href="https://idealab2026.github.io/" aria-label="Web corporativa de IDEA LAB">IDEA LAB ↗</a>
       <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">En X ↗</a>
     </div>
   </details>
@@ -2755,7 +2757,7 @@ const indicatorCount = availableIndicators.length;
 
 
 <div id="inicio" class="hero">
-  <div class="hero-kicker">UN PRODUCTO DE IDEA LAB · OBSERVATORIO DE ESPAÑA</div>
+  <div class="hero-kicker"><a href="https://idealab2026.github.io/" style="color:inherit;text-decoration:underline;text-underline-offset:4px">UN PRODUCTO DE IDEA LAB</a> · OBSERVATORIO DE ESPAÑA</div>
   <h1>España en Datos</h1>
   <div class="hero-subtitle">
     <span class="il-hero-long">Nuestro observatorio económico, social e institucional de España. Reunimos, contrastamos y visualizamos datos de fuentes oficiales para ofrecer una mirada rigurosa y comprensible de la realidad.</span><span class="il-hero-short">Economía, sociedad y sector público de España con datos de fuentes oficiales.</span>
@@ -2763,6 +2765,7 @@ const indicatorCount = availableIndicators.length;
   <div class="hero-actions">
     <a href="#mapa-dinero">Explorar el mapa del dinero</a>
     <a href="/quienes-somos.html">Quiénes somos</a>
+      <a href="https://idealab2026.github.io/" aria-label="Web corporativa de IDEA LAB">IDEA LAB ↗</a>
   </div>
 </div>
 
