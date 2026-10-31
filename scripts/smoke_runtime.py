@@ -240,6 +240,40 @@ def main() -> None:
                 raise AssertionError("RuntimeError en búsqueda sanidad")
             print("Búsqueda sanidad OK: 102.942 M€, servicios hospitalarios y subfunciones")
 
+            # A common search must show the entire verified lineage BELOW
+            # the results, with a functional deep-link to the original Sankey.
+            hospital = subprocess.run(
+                [*args[:-1], "--virtual-time-budget=10000",
+                 search_url+"?q=hospital"],
+                text=True, capture_output=True, timeout=85
+            )
+            if hospital.returncode:
+                raise AssertionError("Chrome no ejecuta q=hospital")
+            hospital_dom=hospital.stdout
+            for required in (
+                'class="sf-lineage-list"',
+                "Linaje de las partidas encontradas",
+                'id="linaje-07-3"',
+                "07 · Salud",
+                "07.3 · Servicios hospitalarios",
+                "43.650 M€",
+                "102.942 M€",
+                "07.3.1",
+                "07.3.2",
+                "07.3.3",
+                "07.3.4",
+                "Clase COFOG · importe no publicado",
+                './?detalle-cofog=07.3#mapa-dinero',
+                './?detalle-cofog=07.3.1#mapa-dinero',
+                "Explorar esta ruta en el Sankey"
+            ):
+                if required not in hospital_dom:
+                    raise AssertionError(
+                        "El linaje hospitalario no aparece en el buscador: "+required)
+            if "RuntimeError:" in hospital_dom:
+                raise AssertionError("RuntimeError en linaje hospitalario")
+            print("Linaje de búsqueda hospital verificado: S.13 → 07 → 07.3 → 4 clases sin cuantía")
+
             # Road maintenance query must lead to an actual 453C State Budget
             # program, never to a fabricated execution figure from COFOG 04.5.
             road_url = search_url + "?q=" + quote("mantenimiento de carreteras")
