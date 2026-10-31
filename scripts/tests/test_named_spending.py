@@ -51,10 +51,10 @@ class NamedSpendingTests(unittest.TestCase):
         self.assertIn('row.lado === "gasto"', page)
         self.assertIn("NO sumarlos", page)
         self.assertIn("No identifica contratos", page)
-        self.assertIn("no permite identificar el impuesto", page)
+        self.assertIn("ni permite identificar el impuesto", page)
         self.assertIn("Ningún dato permite afirmar qué impuesto", component)
         self.assertIn("Sin coincidencias en el índice disponible", component)
-        self.assertIn("no significa", component.lower() if "no significa" in component.lower() else "no significa", "no significa")
+        self.assertIn("No significa que la partida no exista", component)
         self.assertIn("datos.aecid.es/lista-de-intervenciones", component)
         self.assertIn("www.infosubvenciones.es", component)
 
