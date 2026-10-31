@@ -152,6 +152,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   .sf-record-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:5px;
     color:#778496;font:600 .7rem/1.3 system-ui,sans-serif}
   .sf-record-kind{color:#7e642e}
+  .sf-match-label{font:550 .67rem/1.3 system-ui;color:#986f2d}
   .spending-finder .sf-record h3{font:700 clamp(1.06rem,1.35vw,1.26rem)/1.25 Georgia,serif;margin:0}
   .sf-record-figure{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
   .spending-finder .sf-record .sf-amount{font:800 clamp(1.2rem,1.8vw,1.5rem)/1.1 system-ui;
@@ -336,9 +337,10 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
     const left=make("div","sf-record-intro");
     const meta=make("div","sf-record-meta");
     const kinds={intervencion:"Proyecto AECID",agregado:"Gasto público · COFOG",
-      programa:"Programa presupuestario",convocatoria:"Convocatoria",norma:"Norma de concesión"};
+      programa:"Programa de los PGE",convocatoria:"Convocatoria",norma:"Norma de concesión"};
     meta.append(make("span","sf-record-kind",kinds[item.tipo]||item.tipo),
       make("span","","· "+item.anio));
+    if(related)meta.append(make("span","sf-match-label","· Correspondencia temática COFOG"));
     if(item.tipo==="agregado" && item.cofog_codigo)
       meta.append(make("span","","· COFOG "+item.cofog_codigo));
     if(item.tipo==="programa" && item.codigo_presupuestario)
