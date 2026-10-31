@@ -1,4 +1,5 @@
 import {OFFICIAL_DRILL_ROUTES, relatedBudgetPrograms} from "./official-drill-routes.js";
+import {canonicalFinanceCode} from "./finance-code.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -137,8 +138,8 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       ...d,
       year: number(d.year),
       value: number(d.value),
-      code: text(d.code),
-      parent_code: text(d.parent_code),
+      code: canonicalFinanceCode(d.code),
+      parent_code: canonicalFinanceCode(d.parent_code),
       level: text(d.level),
       side: text(d.side),
       is_vintage_adjustment: normalizeYes(d.is_vintage_adjustment),
@@ -1104,10 +1105,8 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
   // Deep-link reproducible para QA y para compartir una subfunción concreta.
   // Nunca se abre si el código no figura en los datos del ejercicio vigente.
   const deepCode = new URLSearchParams(window.location.search).get("detalle-cofog");
-  root.dataset.coFogDeepCode = deepCode || "(sin parámetro)";
   if (deepCode && /^\d{2}(?:\.\d+)?$/.test(deepCode)) {
     const selected = rowMapForYear().get(deepCode);
-    root.dataset.coFogDeepStatus = selected ? `encontrado-${selected.side}` : "código no cargado";
     if (selected?.side === "gasto") openDetail(selected);
   }
   return root;
