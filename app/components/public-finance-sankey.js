@@ -670,137 +670,184 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     }
   }
 
-  function renderSpendingTree(row) {
-    // Progressive columns preserve the official parent/child relationship.
-    // A leaf never inherits an invented amount from a different classification.
-    root.classList.add("is-tree-open");
-    const map=rowMapForYear(), rootRow=map.get("S13.GASTO");
-    const path=[],seen=new Set();
-    let item=row;
-    while(item&&!seen.has(item.code)){
-      path.unshift(item);
-      seen.add(item.code);
-      if(item.code==="S13.GASTO")break;
-      item=item.parent_code?map.get(item.parent_code):rootRow;
-    }
-    if(path[0]?.code!=="S13.GASTO"&&rootRow)path.unshift(rootRow);
-    const head=htmlEl("header","pf-tree-head");
-    const kicker=htmlEl("span","pf-tree-kicker");
-    kicker.textContent="Árbol de partidas · COFOG "+currentYear;
-    const title=htmlEl("h2");title.textContent=rowLabel(row);
-    const description=htmlEl("p");
-    const parent=row.parent_code?map.get(row.parent_code):null;
-    description.textContent=formatMillions(row.value)+" · "+
-      formatPct(row.value,rootRow?.value||row.value)+" del gasto público"+
-      (parent&&parent.code!=="S13.GASTO"?" · "+formatPct(row.value,parent.value)+
-      " de "+rowLabel(parent):"");
-    head.append(kicker,title,description);
-    detail.append(head);
 
-    const nav=htmlEl("nav","pf-tree-crumbs");
-    nav.setAttribute("aria-label","Ruta navegable COFOG");
-    path.forEach((node,index)=>{
+  // The full national Sankey is the persistent root of every expansion.
+  function resetInlineSankey(){
+    const svg=chart.querySelector("svg");
+    if(svg){
+      svg.querySelectorAll(".pf-inline-extension").forEach(element=>element.remove());
+      svg.setAttribute("viewBox","0 0 1320 760");
+      svg.style.width="";
+      svg.style.minWidth="";
+      delete svg.dataset.expandedCode;
+    }
+    chart.classList.remove("is-expanded");
+    root.classList.remove("is-tree-open");
+    trail.hidden=true;
+    trail.replaceChildren();
+    expandHint.hidden=true;
+    chart.scrollLeft=0;
+  }
+
+  function expandInlineSankey(selected){
+    const svg=chart.querySelector("svg");
+    if(!svg)return;
+    const rows=rowsForYear();
+    const path=financeExpansionPath(rows,selected.code);
+    if(path.length<2)return;
+    const columns=financeExpansionColumns(rows,selected.code);
+    const expenseRows=rows.filter(d=>d.parent_code==="S13.GASTO"&&
+      d.side==="gasto"&&d.level==="1").sort(compareFinanceCodes);
+    const rootExpense=path[1];
+    const rootIndex=expenseRows.findIndex(item=>item.code===rootExpense.code);
+    if(rootIndex<0)return;
+
+    // Replace only the extension group; the ORIGINAL SVG nodes never unmount.
+    svg.querySelectorAll(".pf-inline-extension").forEach(element=>element.remove());
+    const sourceX=1290,nodeW=390,stageGap=145,stageStride=535;
+    const boxH=56,rowGap=15;
+    const maxCount=Math.max(1,...columns.map(column=>column.children.length));
+    const height=Math.max(760,maxCount*(boxH+rowGap)+90);
+    const width=1320+Math.max(columns.length,1)*stageStride;
+    const scale=Math.max(1,chart.clientWidth/1320);
+    svg.setAttribute("viewBox","0 0 "+width+" "+height);
+    // Explicit physical width preserves the original node text dimensions
+    // rather than shrinking the entire diagram as columns are added.
+    const physicalWidth=Math.round(width*scale);
+    svg.style.width=physicalWidth+"px";
+    svg.style.minWidth=physicalWidth+"px";
+    svg.dataset.expandedCode=selected.code;
+    chart.classList.add("is-expanded");
+    root.classList.remove("is-detail-open");
+    trail.hidden=false;
+    expandHint.hidden=false;
+    trail.replaceChildren();
+    for(const [index,item] of path.entries()){
       if(index){
-        const sep=htmlEl("span","pf-tree-chevron");
-        sep.textContent="›";nav.append(sep);
+        const separator=htmlEl("span");separator.textContent="›";trail.append(separator);
       }
-      const label=node.code==="S13.GASTO"?
-        "España · gasto consolidado":node.code+" · "+rowLabel(node);
+      const title=item.code==="S13.GASTO"?"España · gasto consolidado":
+        item.code+" · "+rowLabel(item);
       if(index===path.length-1){
-        const strong=htmlEl("strong");
-        strong.textContent=label;nav.append(strong);
+        const strong=htmlEl("strong");strong.textContent=title;trail.append(strong);
       }else{
         const back=htmlEl("button");
-        back.type="button";back.textContent=label;
-        back.addEventListener("click",()=>openDetail(node));
-        nav.append(back);
+        back.type="button";back.textContent=title;
+        back.addEventListener("click",()=>item.code==="S13.GASTO"
+          ?resetInlineSankey():openDetail(item));
+        trail.append(back);
       }
-    });
-    detail.append(nav);
+    }
+    const close=htmlEl("button","pf-trail-close");
+    close.type="button";close.textContent="Volver al mapa completo";
+    close.addEventListener("click",resetInlineSankey);
+    trail.append(close);
 
-    const viewport=htmlEl("div","pf-tree-scroller");
-    viewport.setAttribute("role","region");
-    viewport.setAttribute("aria-label","Niveles de gasto COFOG ordenados por código");
-    for(let depth=0;depth<path.length;depth++){
-      const parentRow=path[depth];
-      const candidates=detailRowsFor(parentRow);
-      if(!candidates.length)continue;
-      const col=htmlEl("section","pf-tree-column");
-      col.dataset.parentCode=parentRow.code;
-      const colTitle=htmlEl("h3","pf-tree-col-heading");
-      colTitle.textContent=parentRow.code==="S13.GASTO"?
-        "Funciones · orden COFOG":parentRow.code+" · Subfunciones";
-      const list=htmlEl("div","pf-tree-options");
-      for(const child of candidates){
-        const button=htmlEl("button","pf-tree-option");
-        button.type="button";button.dataset.code=child.code;
-        if(path[depth+1]?.code===child.code)
-          button.setAttribute("aria-current","step");
-        const code=htmlEl("span","pf-tree-code");
-        code.textContent=child.code;
-        const name=htmlEl("span","pf-tree-name");
-        name.textContent=rowLabel(child);
-        const value=htmlEl("span","pf-tree-amount");
-        value.textContent=formatMillions(child.value)+" · "+
-          formatPct(child.value,parentRow.value);
-        button.append(code,name,value);
-        button.addEventListener("click",()=>openDetail(child));
-        list.append(button);
+    const group=svgEl("g",{class:"pf-inline-extension"});
+    const ribbons=svgEl("g",{class:"pf-extension-ribbons"});
+    const nodes=svgEl("g",{class:"pf-extension-nodes"});
+    group.append(ribbons,nodes);
+    const positions=new Map([[rootExpense.code,42+rootIndex*72+boxH/2]]);
+    const initialMaximum=Math.max(1,...rows.filter(d=>
+      d.parent_code==="S13.RECURSOS"||d.parent_code==="S13.GASTO"
+    ).map(d=>d.value));
+    const flowScale=54/initialMaximum;
+    let focusX=sourceX;
+
+    for(const [columnIndex,column] of columns.entries()){
+      const {parent,children,selectedChildCode}=column;
+      const x=sourceX+stageGap+stageStride*columnIndex;
+      focusX=x;
+      const parentY=positions.get(parent.code);
+      if(!Number.isFinite(parentY))continue;
+      const heading=svgEl("text",{x,y:23,class:"pf-extension-heading"});
+      heading.textContent=(columnIndex+2)+" · "+parent.code+" · "+rowLabel(parent);
+      nodes.append(heading);
+      const incomingX=columnIndex===0?sourceX:
+        sourceX+stageStride*(columnIndex-1)+stageGap+nodeW;
+
+      if(!children.length){
+        // There is no invented third-level figure. The branch terminates
+        // inside the SVG and links to separate documentary classifications.
+        const y=Math.max(52,Math.min(height-160,parentY-55));
+        const end=svgEl("g",{class:"pf-extension-end"});
+        end.append(svgEl("rect",{x,y,width:390,height:150,rx:10}));
+        const title=svgEl("text",{
+          x:x+13,y:y+26,class:"pf-extension-end-title"
+        });
+        title.textContent="ÚLTIMO NIVEL COFOG CUANTIFICADO";
+        end.append(title);
+        for(const [n,line] of [
+          "La IGAE no publica aquí más ramas",
+          "con importes propios verificables.",
+          "Programas y contratos: fuentes distintas."
+        ].entries()){
+          const text=svgEl("text",{x:x+13,y:y+55+n*20});
+          text.textContent=line;end.append(text);
+        }
+        const anchor=svgEl("a",{
+          href:"buscador-partidas.html?cofog="+encodeURIComponent(parent.code)+
+            "&anio="+currentYear,
+          target:"_blank",rel:"noopener noreferrer"
+        });
+        const link=svgEl("text",{x:x+13,y:y+132});
+        link.textContent="Investigar partidas relacionadas →";
+        anchor.append(link);end.append(anchor);
+        ribbons.append(svgEl("path",{
+          d:makeRibbon(incomingX,parentY,x,y+75,2),
+          class:"pf-extension-ribbon"
+        }));
+        nodes.append(end);
+        continue;
       }
-      col.append(colTitle,list);
-      viewport.append(col);
-    }
 
-    const immediateChildren=detailRowsFor(row);
-    if(!immediateChildren.length){
-      const terminal=htmlEl("section","pf-tree-terminal");
-      const heading=htmlEl("strong");
-      heading.textContent="Último nivel numérico COFOG disponible";
-      const note=htmlEl("p");
-      note.textContent="No hay más subpartidas de "+row.code+
-        " verificadas en esta serie IGAE "+currentYear+
-        ". Los programas, contratos y pagos usan otras clasificaciones; "+
-        "no se atribuyen importes sin una conciliación documental.";
-      terminal.append(heading,note);viewport.append(terminal);
-    }
-    detail.append(viewport);
-    // Show the newly opened right-hand column; the breadcrumb and SVG persist.
-    viewport.scrollLeft=viewport.scrollWidth;
-
-    const src=sourceFor(row,sourceMap);
-    const source=htmlEl("p","pf-source");
-    source.append(document.createTextNode(
-      "Fuente: "+(src.organization?src.organization+" · ":"")+src.name));
-    if(src.url&&/^https?:\/\//i.test(src.url)){
-      const link=document.createElement("a");
-      link.href=src.url;link.target="_blank";link.rel="noopener noreferrer";
-      link.textContent=" · consultar documento oficial";
-      source.append(link);
-    }
-    detail.append(source);
-
-    if(!immediateChildren.length){
-      const evidence=htmlEl("details","pf-tree-evidence");
-      const summary=htmlEl("summary");
-      summary.textContent="Continuar con programas, ejecución y contratos (otras fuentes)";
-      const content=htmlEl("section","pf-detail-bridge");
-      appendFurtherInvestigation(content,row,false);
-      const link=document.createElement("a");
-      const u=new URL("buscador-partidas.html",window.location.href);
-      if(/^\d{2}(?:\.\d+)?$/.test(row.code)){
-        u.searchParams.set("cofog",row.code);
-        u.searchParams.set("anio",String(currentYear));
+      const totalHeight=children.length*(boxH+rowGap)-rowGap;
+      const firstY=Math.max(45,Math.min(
+        parentY-totalHeight/2,height-totalHeight-45));
+      for(const [childIndex,child] of children.entries()){
+        const y=firstY+childIndex*(boxH+rowGap);
+        const center=y+boxH/2;
+        positions.set(child.code,center);
+        const ribbon=svgEl("path",{
+          d:makeRibbon(incomingX,parentY,x,center,
+            Math.max(1.3,child.value*flowScale)),
+          class:"pf-extension-ribbon"
+        });
+        ribbon.addEventListener("click",()=>openDetail(child));
+        ribbons.append(ribbon);
+        const node=svgEl("g",{
+          class:"pf-extension-node",role:"button",tabindex:"0",
+          "data-code":child.code,
+          "aria-label":rowLabel(child)+" · "+formatMillions(child.value)
+        });
+        if(child.code===selectedChildCode)
+          node.setAttribute("aria-current","step");
+        node.append(svgEl("rect",{x,y,width:nodeW,height:boxH,rx:8}));
+        const label=svgEl("text",{x:x+12,y:y+19,class:"pf-extension-label"});
+        label.textContent=child.code+" · "+(wrapText(rowLabel(child),39,1)[0]||"");
+        const amount=svgEl("text",{x:x+12,y:y+43,class:"pf-extension-value"});
+        amount.textContent=formatMillions(child.value)+" · "+
+          formatPct(child.value,parent.value)+" del nivel anterior";
+        const tooltip=svgEl("title");
+        tooltip.textContent=rowLabel(child)+" · "+formatMillions(child.value);
+        node.append(label,amount,tooltip);
+        node.addEventListener("click",()=>openDetail(child));
+        node.addEventListener("keydown",event=>{
+          if(event.key==="Enter"||event.key===" "){
+            event.preventDefault();openDetail(child);
+          }
+        });
+        nodes.append(node);
       }
-      link.href=u.href;
-      link.textContent="Buscar partidas relacionadas";
-      content.prepend(link);
-      evidence.append(summary,content);detail.append(evidence);
     }
-    // Highlight original Sankey node, never recreate the chart on drill.
-    for(const node of chart.querySelectorAll(".pf-node-group")){
-      node.setAttribute("aria-pressed",
-        String(node.dataset.code===path[1]?.code));
+    svg.append(group);
+    // A subtle but persistent root highlight ties the expansion to its source.
+    for(const node of svg.querySelectorAll(".pf-node-group")){
+      node.setAttribute("aria-pressed",String(
+        node.getAttribute("data-code")===rootExpense.code));
     }
+    const target=Math.max(0,focusX*scale-chart.clientWidth*.55);
+    requestAnimationFrame(()=>chart.scrollTo({left:target,behavior:"smooth"}));
   }
 
   function openDetail(row) {
@@ -813,11 +860,12 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     currentRow = row;
     root.classList.add("is-detail-open");
     detail.replaceChildren();
-    if(row.side === "gasto" || row.code === "S13.GASTO") {
-      renderSpendingTree(row);
+    if(row.side==="gasto" && row.code!=="S13.GASTO"){
+      expandInlineSankey(row);
       return;
     }
-    root.classList.remove("is-tree-open");
+    resetInlineSankey();
+    if(row.code==="S13.GASTO")return;
 
     const yearMap = rowMapForYear();
     const parent = row.parent_code ? yearMap.get(row.parent_code) : null;
@@ -977,8 +1025,8 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     const deficit = map.get("S13.DEFICIT");
     const adjustment = map.get("ADJ.VINTAGE.2024") || rowsForYear().find(d => d.is_vintage_adjustment);
 
+    resetInlineSankey();
     root.classList.add("is-detail-open");
-    root.classList.remove("is-tree-open");
     currentRow = null;
     detail.replaceChildren();
 
@@ -1263,14 +1311,17 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     footnote.innerHTML = `<b>Interacción.</b> Pulsa un nodo o una rama para consultar el desglose, porcentaje, metodología y fuente oficial.${hasAdjustment ? " La pequeña rama de ajuste estadístico es técnica y no representa un ingreso económico." : ""}`;
   }
 
-  const closeDrawer = () => root.classList.remove("is-detail-open","is-tree-open");
+  const closeDrawer = () => {
+    root.classList.remove("is-detail-open");
+    if(chart.classList.contains("is-expanded"))resetInlineSankey();
+  };
   closeButton.addEventListener("click", closeDrawer);
   backdrop.addEventListener("click", closeDrawer);
   methodologyButton.addEventListener("click", openMethodology);
   mobileMethodologyButton.addEventListener("click", () => { mobileTools.open = false; openMethodology(); });
   document.addEventListener("keydown", event => {
     if (event.key === "Escape" && root.classList.contains("is-detail-open")) {
-      root.classList.remove("is-detail-open","is-tree-open");
+      root.classList.remove("is-detail-open");
     }
   });
 
@@ -1279,7 +1330,8 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       detail: {name: "sankey_cambio_anio"}
     }));
     currentYear = Number(yearSelect.value);
-    root.classList.remove("is-detail-open","is-tree-open");
+    root.classList.remove("is-detail-open");
+    resetInlineSankey();
     currentRow = null;
     renderChart();
   });
