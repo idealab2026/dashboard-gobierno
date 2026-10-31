@@ -46,11 +46,11 @@ export function classificationKey(item,mode){
       ?String(item.codigo_presupuestario).slice(0,1):"otros";
   if(mode==="cofog"&&item?.tipo==="agregado"){
     const code=String(item.cofog_codigo||"");
-    return /^\\d{2}(?:\\.\\d+){0,2}$/.test(code)?code.slice(0,2):"otros";
+    return /^\d{2}(?:\.\d+){0,2}$/.test(code)?code.slice(0,2):"otros";
   }
   if(mode==="ccaa"&&item?.tipo==="regional"){
     const code=String(item.codigo_funcion||"");
-    return /^\\d{2}$/.test(code)?code:"otros";
+    return /^\d{2}$/.test(code)?code:"otros";
   }
   return null;
 }
