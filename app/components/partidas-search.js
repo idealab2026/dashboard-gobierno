@@ -124,6 +124,92 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   @media(max-width:650px){.sf-investigation-grid{grid-template-columns:1fr}}
   @media(max-width:900px){.sf-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.sf-field:first-child{grid-column:1/-1}}
   @media(max-width:700px){.sf-results{grid-template-columns:1fr}.sf-controls{gap:7px}.sf-record{padding:12px}.sf-field input,.sf-field select{font-size:.83rem}}
+
+  /* RESULTADOS V5: Una ficha, un importe, un recorrido. */
+  .spending-finder .sf-controls{margin:10px 0 9px}
+  .spending-finder .sf-scope{border:0;background:transparent;padding:0;margin:7px 0;
+    color:#64768b;font-size:.73rem}
+  .spending-finder .sf-examples{gap:6px;margin:6px 0 7px;font-size:.7rem}
+  .spending-finder .sf-examples button{font-size:.7rem;padding:5px 9px}
+  .spending-finder .sf-dimension-jump{font-size:.73rem;margin:2px 0 4px}
+  .spending-finder .sf-summary{border:0;padding:0;margin:11px 0 9px;font-size:.76rem}
+  .spending-finder .sf-alias-explanation{font-weight:500;font-size:.72rem;line-height:1.4}
+  .spending-finder .sf-results{display:flex;flex-direction:column;gap:10px;max-width:none;width:100%;margin:0 0 12px}
+  .spending-finder .sf-record{width:100%;box-sizing:border-box;display:block;
+    border:1px solid #e0e6ec;border-radius:11px;padding:14px 18px;gap:0;
+    background:#fff}
+  .sf-record-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;
+    gap:10px 22px}
+  .sf-record-intro{min-width:210px;flex:1 1 330px}
+  .sf-record-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:5px;
+    color:#778496;font:600 .7rem/1.3 system-ui,sans-serif}
+  .sf-record-kind{color:#7e642e}
+  .spending-finder .sf-record h3{font:700 clamp(1.06rem,1.35vw,1.26rem)/1.25 Georgia,serif;margin:0}
+  .sf-record-figure{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+  .spending-finder .sf-record .sf-amount{font:800 clamp(1.2rem,1.8vw,1.5rem)/1.1 system-ui;
+    white-space:nowrap;color:#0b2447}
+  .sf-record-figure small{font:500 .68rem/1.35 system-ui;color:#718198;white-space:nowrap}
+  .sf-record-source{color:#64758c;font:.75rem/1.4 system-ui;margin-top:4px}
+  .sf-record-actions{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin:11px 0 0}
+  .sf-record-actions a{font:700 .75rem/1.3 system-ui;color:#20496f!important;
+    text-decoration:none!important}
+  .sf-record-actions a:hover{text-decoration:underline!important;text-underline-offset:3px}
+  .sf-record-actions .sf-record-sankey{color:#916c2f!important}
+  .spending-finder .sf-lineage-list{margin:11px 0 0;border-top:1px solid #e8edf2;padding:9px 0 0}
+  .sf-lineage-summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;
+    gap:12px;align-items:center;color:#254566;font:700 .76rem/1.4 system-ui}
+  .sf-lineage-summary::-webkit-details-marker{display:none}
+  .sf-lineage-summary:after{content:"+";font:700 1.03rem/1 system-ui;color:#8996a6}
+  .sf-lineage-list[open]>.sf-lineage-summary:after{content:"−"}
+  .sf-lineage-summary:hover{color:#9a7135}
+  .sf-lineage-body{padding-top:11px}
+  .spending-finder .sf-lineage-path{display:flex;align-items:stretch;overflow-x:auto;gap:0;
+    margin:0 0 11px;padding:0 0 3px;scrollbar-width:thin}
+  .spending-finder .sf-lineage-step{display:flex;align-items:center;flex:0 0 auto;min-width:0;max-width:none;gap:7px}
+  .spending-finder .sf-lineage-step:not(:last-child):after{
+    content:"›";font:400 1.3rem/1 system-ui;color:#ae925e;margin-right:11px}
+  .spending-finder .sf-lineage-node{display:flex;flex-direction:column;gap:2px;justify-content:center;
+    min-width:0;min-height:0;max-width:none;flex:none;padding:7px 0;
+    border:0;background:transparent;border-radius:0;color:#244668!important;text-decoration:none!important}
+  .spending-finder .sf-lineage-node strong{font:700 .75rem/1.35 system-ui;color:#244668}
+  .spending-finder .sf-lineage-node small{font:600 .67rem/1.35 system-ui;color:#7c8999}
+  .spending-finder .sf-lineage-step:last-child .sf-lineage-node{
+    border:0;background:transparent}
+  .spending-finder .sf-lineage-step:last-child .sf-lineage-node strong{color:#8b6529}
+  .spending-finder a.sf-lineage-node:hover strong{text-decoration:underline;text-underline-offset:3px}
+  .spending-finder .sf-lineage-children{border:0;margin:0;padding:0}
+  .sf-children-caption{display:block;color:#697b8f;font:600 .7rem/1.4 system-ui;margin-bottom:6px}
+  .spending-finder .sf-lineage-child-grid{display:flex;align-items:stretch;flex-wrap:wrap;gap:5px}
+  .spending-finder .sf-lineage-child{display:inline-flex;flex:0 1 auto;min-width:0;max-width:100%;
+    background:#f8fafc;border:1px solid #e0e7ed;border-radius:6px;padding:6px 8px;
+    gap:3px;color:#244769!important}
+  .spending-finder .sf-lineage-child span{font:600 .72rem/1.32 system-ui}
+  .spending-finder .sf-lineage-child small{font:.66rem/1.2 system-ui;color:#65788b}
+  .spending-finder .sf-lineage-child:hover{background:#eef5fc;border-color:#b3c6d6}
+  .sf-lineage-note{margin:8px 0 0}
+  .sf-lineage-note summary{font:500 .7rem/1.35 system-ui;color:#748398;cursor:pointer}
+  .sf-lineage-note p{margin:5px 0 0!important;font:.71rem/1.45 system-ui!important;color:#6a7a8a!important}
+  .sf-record-details{margin:9px 0 0;border-top:1px solid #f0f2f5;padding:8px 0 0}
+  .sf-record-details summary{font:500 .71rem/1.4 system-ui;color:#728299;cursor:pointer}
+  .sf-record-details p{margin:6px 0!important;font:.74rem/1.45 system-ui!important;color:#67768a!important}
+  .sf-sources-details,.spending-finder .sf-investigation{border-top:1px solid #e8edf1;
+    margin:8px 0;padding-top:8px}
+  .sf-sources-details summary,.spending-finder .sf-investigation>summary{
+    font:650 .75rem/1.4 system-ui;color:#2c5276;cursor:pointer;list-style:revert}
+  .sf-sources-details .sf-portals{margin:10px 0}
+  .spending-finder .sf-investigation p{margin:8px 0;font-size:.74rem}
+  @media(max-width:700px){
+    .spending-finder .sf-record{padding:12px 13px}
+    .sf-record-top{gap:8px}
+    .sf-record-figure{align-items:flex-start}
+    .sf-record-figure small{white-space:normal}
+    .spending-finder .sf-lineage-path{gap:0}
+    .spending-finder .sf-lineage-step{max-width:220px}
+    .spending-finder .sf-lineage-node{max-width:220px}
+    .spending-finder .sf-lineage-node strong{font-size:.7rem}
+    .spending-finder .sf-lineage-step:not(:last-child):after{margin-right:8px}
+    .spending-finder .sf-lineage-child{flex:1 1 45%}
+  }
   `;
   root.append(styles);
   const controls=make("div","sf-controls");
@@ -167,9 +253,6 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   clearScope.addEventListener("click",()=>{selectedCode="";clearScope.hidden=true;scopeLabel.textContent="Sin filtro COFOG · consulta el catálogo general";render();});
   const summary=make("div","sf-summary"), results=make("div","sf-results");
   root.append(summary,results);
-  const lineageList=make("section","sf-lineage-list");
-  lineageList.setAttribute("aria-label","Linaje del gasto público encontrado");
-  root.append(lineageList);
   const lineageId=code=>"linaje-"+String(code).replace(/[^a-zA-Z0-9-]/g,"-");
   const portals=make("div","sf-portals");
   for(const [title,href] of [
@@ -178,12 +261,16 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
     ["Contratos, convenios y subvenciones","https://transparencia.gob.es/publicidad-activa/por-materias/tramites"]
   ])portals.append(external(title,href));
   const footnote=make("p","sf-footnote",coverage+" Los registros de distintas fuentes, ejercicios y ámbitos NO pueden sumarse: pueden representar ayudas, límites normativos, pagos o estadísticas agregadas y existir solapamientos. Ningún dato permite afirmar qué impuesto financió un proyecto concreto.");
-  root.append(make("p","sf-footnote","¿No encuentras una actuación? Comprueba los portales oficiales: este catálogo no sustituye su buscador completo."),portals,footnote);
+  const sourcesDetails=make("details","sf-sources-details");
+  sourcesDetails.append(make("summary","","Fuentes y alcance del buscador"),
+    make("p","sf-footnote","El índice muestra documentos oficiales seleccionados, no todos los contratos ni proyectos del sector público."),
+    portals,footnote);
+  root.append(sourcesDetails);
 
   // Rutas distintas. No se calculan totales administrativos a partir de COFOG.
-  const guide=make("section","sf-investigation");
+  const guide=make("details","sf-investigation");
   guide.id="investigar-por-administracion";
-  guide.append(make("h2","","Investigar por ministerio, comunidad o infraestructura"));
+  guide.append(make("summary","","Investigar por ministerio, comunidad o infraestructura"));
   guide.append(make("p","",
    "El Sankey cubre el sector Administraciones Públicas (S.13) por finalidad. " +
    "Un ministerio se estudia mediante ejecución presupuestaria estatal y sección orgánica; " +
@@ -227,109 +314,124 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
    "Estados de datos: partidas presupuestadas, obligaciones reconocidas, pagos, inversión realizada y gasto COFOG son conceptos distintos. " +
    "No asignamos automáticamente importes nacionales a un ministerio, comunidad o proyecto sin clave administrativa y conciliación oficial."));
   root.append(guide);
+  quickGuide.addEventListener("click",()=>{guide.open=true;});
   const all=[...records,...aggregates].map(x=>({...x,_search:fold([x.titulo,x.pais,x.sector,x.entidad,x.organismo,x.descripcion,x.id,x.trazabilidad,x.clasificacion,x.anio].join(" "))}));
-  function card(item,related){
+  function card(item,related,openLineage=false){
     const box=make("article","sf-record");
-    const tags=make("div","sf-tags");
-    const kinds={intervencion:"Intervención AECID",agregado:"Gasto COFOG agregado",programa:"Programa de los PGE",convocatoria:"Convocatoria",norma:"Norma de concesión"};
-    tags.append(make("span","sf-tag",kinds[item.tipo]||item.tipo));
-    if(related)tags.append(make("span","sf-tag sf-tag--related","Correspondencia temática COFOG"));
-    tags.append(make("span","sf-tag",item.anio));
-    box.append(tags,make("h3","",item.titulo));
-    // COFOG se publica en millones. PGE aporta euros: presentar en M€
-    // con una decimal para preservar la diferencia entre créditos y gastos.
+    const heading=make("div","sf-record-top");
+    const left=make("div","sf-record-intro");
+    const meta=make("div","sf-record-meta");
+    const kinds={intervencion:"Proyecto AECID",agregado:"Gasto público · COFOG",
+      programa:"Programa presupuestario",convocatoria:"Convocatoria",norma:"Norma de concesión"};
+    meta.append(make("span","sf-record-kind",kinds[item.tipo]||item.tipo),
+      make("span","","· "+item.anio));
+    if(item.tipo==="agregado" && item.cofog_codigo)
+      meta.append(make("span","","· COFOG "+item.cofog_codigo));
+    if(item.tipo==="programa" && item.codigo_presupuestario)
+      meta.append(make("span","","· Programa "+item.codigo_presupuestario));
+    left.append(meta,make("h3","",item.titulo));
+    const right=make("div","sf-record-figure");
     const amountLabel=item.tipo==="agregado"
-      ? euro.format(item.importe_eur)+" M€"
-      : item.tipo==="programa"
-        ? budgetMillions.format(item.importe_eur/1000000)+" M€"
-        : euro.format(item.importe_eur)+" €";
-    const amount=make("strong","sf-amount",amountLabel);
-    box.append(amount);
-    if(item.tipo==="programa" && item.codigo_presupuestario){
-      box.append(make("span","sf-row",
-        "Programa "+item.codigo_presupuestario+" · Presupuesto prorrogado 2024-P · No equivale a gasto ejecutado"));
-    }
-    const meta=make("div","sf-row");
-    meta.append(make("strong","","Organismo: "),document.createTextNode(item.organismo||"—"));
-    if(item.pais)meta.append(document.createTextNode(" · "+item.pais));
-    if(item.entidad)meta.append(document.createTextNode(" · Entidad: "+item.entidad));
-    box.append(meta);
-    if(item.descripcion)box.append(make("p","",item.descripcion));
-    box.append(make("p","sf-row",item.naturaleza_importe||"Importe publicado (ver fuente original)."));
-    if(item.trazabilidad)box.append(make("p","sf-row",item.trazabilidad));
-    if(Array.isArray(item.desglose) && item.desglose.length){
-      const details=make("details","sf-breakdown");
-      details.append(make("summary","","Ver capítulos presupuestarios (incluidos en el total)"));
-      const table=make("table","sf-breakdown-table");
-      for(const part of item.desglose){
-        const row=make("tr");
-        const name=make("td","",part.concepto);
-        const value=make("td","sf-breakdown-amount",
-          budgetMillions.format(part.importe_eur/1000000)+" M€");
-        row.append(name,value);
-        table.append(row);
-      }
-      details.append(table,make("p","sf-row","Capítulos incluidos en el mismo programa: no sumarlos al total mostrado ni a COFOG."));
-      box.append(details);
-    }
+      ?euro.format(item.importe_eur)+" M€"
+      :item.tipo==="programa"
+        ?budgetMillions.format(item.importe_eur/1000000)+" M€"
+        :euro.format(item.importe_eur)+" €";
+    right.append(make("strong","sf-amount",amountLabel));
+    right.append(make("small","",item.tipo==="agregado"?"Gasto consolidado · "+item.anio:
+      item.tipo==="programa"?"Crédito presupuestario · "+item.anio:"Importe publicado"));
+    heading.append(left,right);box.append(heading);
+    const entity=[item.organismo,item.pais,item.entidad].filter(Boolean).join(" · ");
+    if(entity)box.append(make("div","sf-record-source",entity));
+    const actionRow=make("div","sf-record-actions");
     if(item.fuente_url && official(item.fuente_url)){
-      const a=external("Consultar documento oficial",official(item.fuente_url));a.className="sf-cta";box.append(a);
+      const a=external("Documento oficial ↗",official(item.fuente_url));
+      a.className="sf-source-link";actionRow.append(a);
     }
     const lineage=item.tipo==="agregado"?
       spendingLineage(item,aggregates):relatedProgramLineage(item,aggregates);
     if(lineage){
-      const jump=make("a","sf-jump-lineage","Ver linaje y subniveles en esta página ↓");
-      jump.href="#"+lineageId(lineage.code);
-      box.append(jump);
+      const a=make("a","sf-record-sankey","Ver en Sankey ↗");
+      a.href=lineage.href;actionRow.append(a);
+    }
+    box.append(actionRow);
+    if(lineage){
+      const panel=drawLineage(lineage,item,openLineage);
+      box.append(panel);
+    }
+    // Metodología accesible bajo demanda; evitar repetir tres párrafos de
+    // advertencias contables en la vista principal de cada resultado.
+    if(item.descripcion||item.naturaleza_importe||item.trazabilidad||
+       Array.isArray(item.desglose)&&item.desglose.length){
+      const more=make("details","sf-record-details");
+      more.append(make("summary","","Detalles del registro y metodología"));
+      if(item.descripcion)more.append(make("p","",item.descripcion));
+      if(item.naturaleza_importe)more.append(make("p","",item.naturaleza_importe));
+      if(item.trazabilidad)more.append(make("p","",item.trazabilidad));
+      if(Array.isArray(item.desglose)&&item.desglose.length){
+        const detail=make("details","sf-breakdown");
+        detail.append(make("summary","","Ver capítulos presupuestarios (incluidos en el total)"));
+        const table=make("table","sf-breakdown-table");
+        for(const part of item.desglose){
+          const row=make("tr");
+          row.append(make("td","",part.concepto),
+            make("td","sf-breakdown-amount",
+              budgetMillions.format(part.importe_eur/1000000)+" M€"));
+          table.append(row);
+        }
+        detail.append(table,make("p","sf-row",
+          "Los capítulos están contenidos en el mismo programa: no sumarlos al total ni a COFOG."));
+        more.append(detail);
+      }
+      box.append(more);
     }
     return box;
   }
-  // La ruta aparece debajo de los resultados; también se puede abrir el
-  // Sankey nacional original directamente en el código seleccionado.
-  function drawLineage(data,item){
-    const card=make("article","sf-lineage-card");
-    card.id=lineageId(data.code);
-    card.append(make("h3","",item.titulo+
-      (data.relation?" · relación temática":" · ruta COFOG "+data.code)));
-    const path=make("div","sf-lineage-path");
-    path.setAttribute("aria-label","Jerarquía COFOG desde el gasto consolidado");
+  // Árbol visual compacto, integrado con el resultado y abierto por defecto
+  // cuando la búsqueda solo devuelve una coincidencia.
+  function drawLineage(data,item,open=false){
+    const panel=make("details","sf-lineage-list");
+    panel.id=lineageId(data.code);
+    panel.open=open;
+    const summary=make("summary","sf-lineage-summary",
+      "Recorrido del gasto público · "+data.code);
+    panel.append(summary);
+    const body=make("div","sf-lineage-body");
+    const path=make("nav","sf-lineage-path");
+    path.setAttribute("aria-label","Ruta COFOG de "+item.titulo);
     for(const step of data.steps){
       const column=make("div","sf-lineage-step");
       const node=make(step.href?"a":"div","sf-lineage-node");
       if(step.href){node.href=step.href;node.title="Abrir "+step.code+" en el Sankey";}
-      const name=step.code==="S13.GASTO"?"Administraciones Públicas · S.13":
+      const label=step.code==="S13.GASTO"?"Sector público · S.13":
         step.code+" · "+step.title;
-      node.append(make("strong","",name));
-      node.append(make("small","",step.amount_mill_eur!==null
-        ?euro.format(step.amount_mill_eur)+" M€ · gasto COFOG "+data.year
-        :step.code==="S13.GASTO"?"Origen consolidado":
-          "Sin importe IGAE desglosado"));
+      node.append(make("strong","",label));
+      if(step.amount_mill_eur!==null)
+        node.append(make("small","",euro.format(step.amount_mill_eur)+" M€"));
       column.append(node);path.append(column);
     }
-    card.append(path);
+    body.append(path);
     if(data.descendants.length){
       const next=make("div","sf-lineage-children");
-      next.append(make("strong","",
-        "Siguiente nivel · "+data.descendants.length+
-        " categorías oficiales"+(data.descendants.every(d=>d.amount_mill_eur===null)
-          ?" (sin importes individuales en la fuente)":"")));
+      const count=data.descendants.length;
+      const hasAllMissing=data.descendants.every(d=>d.amount_mill_eur===null);
+      next.append(make("span","sf-children-caption",
+        "Subcategorías ("+count+")"+(hasAllMissing?" · sin importe desglosado":"")));
       const children=make("div","sf-lineage-child-grid");
       for(const d of data.descendants){
-        const link=make("a","sf-lineage-child");
-        link.href=d.href;
-        link.title="Explorar "+d.code+" en el Sankey";
-        link.append(make("strong","",d.code+" · "+d.title),
-          make("small","",d.amount_mill_eur===null
-            ?"Clase COFOG · importe no publicado"
-            :euro.format(d.amount_mill_eur)+" M€ · IGAE "+data.year));
-        children.append(link);
+        const a=make("a","sf-lineage-child");
+        a.href=d.href;a.title="Abrir "+d.code+" en el Sankey";
+        a.append(make("span","",d.code+" · "+d.title));
+        if(d.amount_mill_eur!==null)
+          a.append(make("small","",euro.format(d.amount_mill_eur)+" M€"));
+        children.append(a);
       }
-      next.append(children);card.append(next);
+      next.append(children);body.append(next);
     }
-    const cta=make("a","sf-lineage-cta","Explorar esta ruta en el Sankey →");
-    cta.href=data.href;card.append(cta);
-    card.append(make("p","sf-lineage-disclaimer",data.caution));
-    return card;
+    const note=make("details","sf-lineage-note");
+    note.append(make("summary","","Sobre la trazabilidad"),
+      make("p","",data.caution));
+    body.append(note);
+    panel.append(body);return panel;
   }
   function render(){
     const q=fold(input.value);
@@ -349,35 +451,20 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
        : "Resultados por correspondencia temática con la clasificación oficial COFOG; no son contratos ni proyectos individuales.";
       summary.append(make("span","sf-alias-explanation",explanation));
     }
-    lineageList.replaceChildren();
     if(!matching.length){
       const no=make("div","sf-noresults");
-      no.append(
-        make("strong","","Sin coincidencias en el índice disponible."),
-        make("p","","No significa que la partida no exista o que no se haya destinado dinero. Consulta las fuentes oficiales o intenta otra expresión, país u organismo.")
-      );
+      no.append(make("strong","","Sin coincidencias en el índice disponible."),
+        make("p","","No significa que la partida no exista. Prueba otra palabra o consulta las fuentes oficiales."));
       results.append(no);
-    }else for(const item of slice)results.append(card(item,item._matchKind==="cofog-alias"));
-    // Evitar una galería masiva al entrar sin buscar; bajo las coincidencias
-    // muestran solamente rutas respaldadas por un código oficial.
-    if((q || selectedCode) && matching.length){
-      const mapped=new Set(),lineages=[];
-      for(const item of matching){
+    }else{
+      const unique=new Set();
+      for(const item of slice){
         const data=item.tipo==="agregado"?
           spendingLineage(item,aggregates):relatedProgramLineage(item,aggregates);
-        if(!data||mapped.has(data.code))continue;
-        mapped.add(data.code);lineages.push({data,item});
-        if(lineages.length>=10)break;
-      }
-      if(lineages.length){
-        lineageList.append(make("h2","","Linaje de las partidas encontradas"),
-          make("p","sf-lineage-intro",
-            "Recorre la clasificación oficial desde el gasto consolidado hasta la categoría encontrada. "+
-            "Pulsa un nivel o una subcategoría para abrirlo en el Sankey principal, sin asignar importes no publicados."));
-        lineages.forEach(({data,item})=>lineageList.append(drawLineage(data,item)));
-        if(mapped.size<matching.filter(x=>x.tipo==="agregado"||x.tipo==="programa").length)
-          lineageList.append(make("p","sf-lineage-more",
-            "Se muestran hasta 10 rutas para mantener la navegación legible. Afina la búsqueda para localizar otras partidas."));
+        const key=data?.code;
+        const canExpand=Boolean(key&&!unique.has(key));
+        if(canExpand)unique.add(key);
+        results.append(card(item,item._matchKind==="cofog-alias",matching.length===1&&canExpand));
       }
     }
   }
