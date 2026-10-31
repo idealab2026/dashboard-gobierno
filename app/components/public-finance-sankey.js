@@ -397,7 +397,11 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     .pf-extension-node.is-taxonomy rect{fill:#f2f7fc;stroke:#adbfce}
     .pf-extension-node.is-taxonomy[aria-current="step"] rect{fill:#e6f0f9;stroke:#345e82;stroke-width:2.3}
     .pf-class-line{fill:none;stroke:#aab9c8;stroke-width:1.5;stroke-dasharray:5 5}
-    .pf-doc-line{fill:none;stroke:#bd9b61;stroke-width:1.2;stroke-dasharray:3 5;opacity:.6}
+    .pf-doc-line{fill:none;stroke:#b58a46;stroke-width:1.5;stroke-dasharray:4 5;opacity:.85;pointer-events:none}
+    .pf-extension-node.is-taxonomy{outline:none}
+    .pf-extension-node.is-taxonomy:focus-visible rect{stroke:#345e82;stroke-width:2.3}
+    .pf-extension-node.is-taxonomy[aria-current="step"] rect{fill:#d9eafa;stroke:#24557e;stroke-width:3}
+    .pf-extension-node.is-taxonomy[aria-current="step"] .pf-extension-label{fill:#0b2447;font-weight:850}
     .pf-extension-node a{cursor:pointer}
     .pf-extension-heading{font-size:11px}
     .pf-inline-trail{display:flex;align-items:center;gap:6px;flex-wrap:wrap;
@@ -706,6 +710,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       svg.style.width="";
       svg.style.minWidth="";
       delete svg.dataset.expandedCode;
+      delete svg.dataset.selectedClass;
     }
     chart.classList.remove("is-expanded");
     root.classList.remove("is-tree-open");
@@ -735,14 +740,15 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     const boxH=56,rowGap=15;
     const maxCount=Math.max(1,...columns.map(column=>column.children.length));
     const terminals=columns.filter(column=>!column.children.length);
-    const docCounts=terminals.map(column=>
-      matchingBudgetPrograms(column.parent.code,currentYear).length);
+    // A documentary column is drawn ONLY after the user selects a COFOG class.
+    const docCounts=selectedClass?terminals.map(()=>
+      matchingBudgetPrograms(selectedClass,currentYear).length):[];
     const taxonomyCounts=terminals.map(column=>
       cofogsBelow(column.parent.code).length);
     const height=Math.max(760,maxCount*(boxH+rowGap)+90,
       Math.max(0,...docCounts)*59+130,
       Math.max(0,...taxonomyCounts)*72+120);
-    const width=1320+(Math.max(columns.length,1)+1)*stageStride;
+    const width=1320+(Math.max(columns.length,1)+(selectedClass?1:0))*stageStride;
     const scale=Math.max(1,chart.clientWidth/1320);
     svg.setAttribute("viewBox","0 0 "+width+" "+height);
     // Explicit physical width preserves the original node text dimensions
@@ -751,6 +757,8 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     svg.style.width=physicalWidth+"px";
     svg.style.minWidth=physicalWidth+"px";
     svg.dataset.expandedCode=selected.code;
+    if(selectedClass)svg.dataset.selectedClass=selectedClass;
+    else delete svg.dataset.selectedClass;
     chart.classList.add("is-expanded");
     root.classList.remove("is-detail-open");
     trail.hidden=false;
@@ -860,16 +868,17 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
             class:"pf-class-line"
           }));
         });
+        const selectedClassIndex=classRows.findIndex(item=>item.code===selectedClass);
+        if(selectedClassIndex>=0){
         // Programas PGE relacionados, siempre etiquetados como otros datos.
-        // Sin filtro: mostrar TODO el catálogo disponible para este grupo.
-        // Con una clase marcada: mostrar su subconjunto temático.
+        // La columna NO existe hasta seleccionar una clase concreta.
+        // Nunca se visualizan todos los programas de un grupo sin elección.
         const officialPrograms=matchingBudgetPrograms(
-          selectedClass||parent.code,currentYear);
+          selectedClass,currentYear);
         const existing=relatedBudgetPrograms(parent.code,currentYear,
           options.relatedPrograms||[])
-          .filter(item=>!selectedClass ||
-            (selectedClass==="04.5.1" &&
-              ["453B","453C"].includes(item.codigo_presupuestario)));
+          .filter(item=>selectedClass==="04.5.1" &&
+            ["453B","453C"].includes(item.codigo_presupuestario));
         const dedup=new Map();
         [...officialPrograms,...existing].forEach(item=>{
           if(!dedup.has(item.codigo_presupuestario))
@@ -888,9 +897,13 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
         note.textContent="Presupuesto estatal prorrogado · NO suma ni reparte COFOG";
         nodes.append(note);
         const cardH=47,cardGap=10;
+        const selectedY=firstY+selectedClassIndex*(classH+classGap)+classH/2;
         const startY=programs.length
-          ? Math.max(58,Math.min(firstY,height-programs.length*(cardH+cardGap)-30))
-          : Math.max(75,Math.min(firstY,height-155));
+          ? Math.max(58,Math.min(
+              selectedY-(programs.length*(cardH+cardGap)-cardGap)/2,
+              height-programs.length*(cardH+cardGap)-30
+            ))
+          : Math.max(75,Math.min(selectedY-52,height-155));
         if(!programs.length){
           const empty=svgEl("g",{class:"pf-extension-end"});
           empty.append(svgEl("rect",{
@@ -936,14 +949,16 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
           box.append(title,val);link.append(box);nodes.append(link);
           // No painted flow: cross-taxonomy associations are only dotted.
           ribbons.append(svgEl("path",{
-            d:"M "+(x+nodeW)+" "+(firstY+classH/2)+
-              " C "+(x+nodeW+70)+" "+(firstY+classH/2)+
+            d:"M "+(x+nodeW)+" "+selectedY+
+              " C "+(x+nodeW+70)+" "+selectedY+
               " "+(nextX-70)+" "+(yy+cardH/2)+
               " "+nextX+" "+(yy+cardH/2),
-            class:"pf-doc-line"
+            class:"pf-doc-line",
+            "data-source-code":selectedClass
           }));
         }
         focusX=nextX;
+        }
         continue;
       }
 
