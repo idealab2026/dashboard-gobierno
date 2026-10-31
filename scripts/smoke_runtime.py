@@ -128,6 +128,23 @@ def main() -> None:
             if "RuntimeError:" in filtered_dom:
                 raise AssertionError("Error Observable al abrir consulta prefiltrada")
             print("Búsqueda profunda desde portada OK en Chrome")
+
+            # Fail publication if the ordinary synonym "sanidad" shows an empty result.
+            health_url = search_url + "?q=sanidad"
+            health = subprocess.run(
+                [*args[:-1], "--virtual-time-budget=8000", health_url],
+                text=True, capture_output=True, timeout=85
+            )
+            if health.returncode:
+                raise AssertionError("Chrome no ejecuta q=sanidad")
+            health_dom = health.stdout
+            if ('Sin coincidencias en el índice disponible' in health_dom or
+                    '102.942' not in health_dom or
+                    'Servicios hospitalarios' not in health_dom):
+                raise AssertionError("La búsqueda por sanidad no devuelve gasto sanitario oficial 2024")
+            if "RuntimeError:" in health_dom:
+                raise AssertionError("RuntimeError en búsqueda sanidad")
+            print("Búsqueda sanidad OK: 102.942 M€, servicios hospitalarios y subfunciones")
         finally:
             server.shutdown()
             server.server_close()
