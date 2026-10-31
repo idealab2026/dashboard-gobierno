@@ -17,7 +17,10 @@ class IDEAAssetsTests(unittest.TestCase):
                 self.assertTrue(svg.tag.endswith("svg"))
                 self.assertIn("IDEA LAB", source)
                 self.assertNotIn("<script", source.lower())
-                self.assertNotIn("http://", source.lower())
+                # XML SVG namespace uses the canonical http:// URL and is safe.
+                # Only block externally fetched resources or hyperlinks.
+                self.assertNotIn('href="http://', source.lower())
+                self.assertNotIn('href="https://', source.lower())
 
     def test_logo_present_in_all_public_headers(self):
         for page in PAGES:
