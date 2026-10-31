@@ -160,7 +160,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
    "Estados de datos: partidas presupuestadas, obligaciones reconocidas, pagos, inversión realizada y gasto COFOG son conceptos distintos. " +
    "No asignamos automáticamente importes nacionales a un ministerio, comunidad o proyecto sin clave administrativa y conciliación oficial."));
   root.append(guide);
-  const all=[...records,...aggregates].map(x=>({...x,_search:fold([x.titulo,x.pais,x.sector,x.entidad,x.organismo,x.descripcion,x.id,x.trazabilidad,x.clasificacion].join(" "))}));
+  const all=[...records,...aggregates].map(x=>({...x,_search:fold([x.titulo,x.pais,x.sector,x.entidad,x.organismo,x.descripcion,x.id,x.trazabilidad,x.clasificacion,x.anio].join(" "))}));
   function card(item,related){
     const box=make("article","sf-record");
     const tags=make("div","sf-tags");
@@ -197,7 +197,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
       (selectedCode?" · COFOG "+selectedCode+" y subfunciones":"")));
     const aliasMatch=q&&matching.some(item=>item._matchKind==="cofog-alias");
     if(aliasMatch){
-      const explanation=/\\bsanidad\\b/.test(q)
+      const explanation=/\bsanidad\b/.test(q)
        ? "Sanidad corresponde a la función oficial COFOG 07 «Salud»; se muestran su total y subfunciones, sin sumar dos veces."
        : "Resultados por correspondencia temática con la clasificación oficial COFOG; no son contratos ni proyectos individuales.";
       summary.append(make("span","sf-alias-explanation",explanation));
