@@ -1,6 +1,7 @@
 /* Buscador público de gastos verificables. Sin dependencias ni telemetría. */
 import {searchSpendingRecords, normalizeSpending} from "./spending-query.js";
 import {spendingLineage,relatedProgramLineage} from "./spending-lineage.js";
+import {coverageSummary,COVERAGE_MODES,matchesClassification} from "./spending-coverage.js";
 const fold = normalizeSpending;
 const euro = new Intl.NumberFormat("es-ES", {maximumFractionDigits:0});
 // de-DE fuerza agrupación también en 4 cifras: 1.208,41 en lugar de 1208,41.
@@ -228,6 +229,69 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
     color:#1c3d5f;background:#fff;border-radius:7px;font:750 .78rem/1.35 system-ui;
     min-height:42px;padding:9px 15px}
   .spending-finder .sf-load-more:hover{border-color:#a88b56;background:#fcf9f3}
+
+  /* Cobertura del índice: un registro = una ficha; las métricas NO suman euros. */
+  .spending-finder .sf-coverage{
+    margin:6px 0 17px;padding:15px 17px 13px;border-radius:10px;
+    border:1px solid #dfe6ee;background:#fbfcfe;min-width:0}
+  .sf-coverage-head{display:flex;align-items:baseline;justify-content:space-between;
+    flex-wrap:wrap;gap:5px 14px;margin:0 0 11px}
+  .sf-coverage-head strong{font:800 1rem/1.2 system-ui,sans-serif;color:#0b2447}
+  .sf-coverage-head small{font:500 .69rem/1.4 system-ui,sans-serif;color:#697d93}
+  .sf-coverage-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:8px;padding:0 0 12px;border-bottom:1px solid #e5eaf0}
+  .sf-stat{display:flex;flex-direction:column;min-width:0;gap:4px;padding:2px 0}
+  .sf-stat strong{font:800 clamp(1.25rem,2vw,1.75rem)/1.06 system-ui,sans-serif;
+    color:#0b2447;font-variant-numeric:tabular-nums}
+  .sf-stat small{font:600 .67rem/1.3 system-ui,sans-serif;color:#71839a}
+  .sf-stat-primary strong{color:#a47c30}
+  .sf-class-tabs{display:flex;flex-wrap:wrap;align-items:center;gap:5px;
+    padding:10px 0 7px}
+  .sf-class-tabs button{border:1px solid transparent;border-radius:5px;
+    background:transparent;color:#5f748a;cursor:pointer;
+    padding:7px 9px;font:650 .71rem/1.25 system-ui,sans-serif}
+  .sf-class-tabs button[aria-pressed="true"]{
+    background:#0b2447;border-color:#0b2447;color:#fff}
+  .sf-class-tabs button:not([aria-pressed="true"]):hover{background:#edf2f6}
+  .sf-class-tabs button:focus-visible,
+  .sf-bar-choice:focus-visible,.sf-class-clear:focus-visible{
+    outline:2px solid #b58b47;outline-offset:2px}
+  .sf-class-chart{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:5px 15px}
+  .sf-bar-choice{display:flex;flex-direction:column;gap:3px;
+    padding:6px 7px;border:1px solid transparent;border-radius:6px;
+    background:transparent;color:#1f3c5a;text-align:left;min-width:0;
+    cursor:pointer}
+  .sf-bar-choice:hover{border-color:#d7e1ea;background:#fff}
+  .sf-bar-choice[aria-pressed="true"]{
+    border-color:#c1a064;background:#fff8e9}
+  .sf-bar-label{display:flex;align-items:center;justify-content:space-between;
+    gap:10px;width:100%;min-width:0}
+  .sf-bar-label span{overflow-wrap:anywhere;
+    font:650 .72rem/1.35 system-ui,sans-serif}
+  .sf-bar-label strong{flex:none;font:800 .74rem/1.35 system-ui,sans-serif;
+    font-variant-numeric:tabular-nums}
+  .sf-bar-track{display:block;width:100%;height:5px;border-radius:4px;
+    background:#e9edf2;overflow:hidden}
+  .sf-bar-fill{display:block;height:100%;min-width:1px;border-radius:4px;
+    background:#b79c65}
+  .sf-bar-choice[aria-pressed="true"] .sf-bar-fill{background:#0b2447}
+  .sf-coverage-footer{display:flex;align-items:center;justify-content:space-between;
+    flex-wrap:wrap;gap:5px 14px;margin-top:10px}
+  .sf-coverage-caption{font:500 .66rem/1.4 system-ui;color:#738398}
+  .sf-class-clear{border:0;background:transparent;cursor:pointer;color:#22537e;
+    font:750 .69rem/1.3 system-ui,sans-serif;text-decoration:underline}
+  .sf-class-clear[hidden]{display:none}
+  @media(max-width:760px){
+    .spending-finder .sf-coverage{padding:11px 12px}
+    .sf-coverage-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+    .sf-coverage-head strong{font-size:.91rem}
+    .sf-class-chart{grid-template-columns:minmax(0,1fr);gap:2px}
+    .sf-class-tabs button{font-size:.68rem;padding:6px 7px}
+  }
+  @media(max-width:370px){
+    .sf-coverage-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
   /* V6: breadcrumb arriba y tarjeta navegable debajo; información sólo tras pulsar. */
   .spending-finder .sf-results{
     display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,470px),1fr));
@@ -316,7 +380,87 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   const countries=[...new Set(records.map(x=>x.pais).filter(Boolean)
    .concat(records.filter(x=>x.tipo==="regional").map(x=>x.entidad)))].sort((a,b)=>a.localeCompare(b,"es"));
   const country=select("País / región",[["","Todos los destinos"],...countries.map(y=>[y,y]),["España", "España"]].filter((x,i,a)=>a.findIndex(y=>y[0]===x[0])===i));
-  root.append(controls);
+  const indexCoverage=coverageSummary([...records,...aggregates]);
+  const formatCount=new Intl.NumberFormat("es-ES");
+  let coverageMode="tipo",activeClassification=null;
+  const coveragePanel=make("section","sf-coverage");
+  coveragePanel.setAttribute("aria-label","Cobertura del índice de gastos públicos");
+  const coverageHeading=make("div","sf-coverage-head");
+  coverageHeading.append(
+    make("strong","","Cobertura del índice"),
+    make("small","","Registros oficiales catalogados · no importes sumables"));
+  const coverageStats=make("div","sf-coverage-stats");
+  for(const [value,label,primary] of [
+    [indexCoverage.total,"Registros",true],
+    [indexCoverage.programCount,"Programas PGE",false],
+    [indexCoverage.regionalCount,"Funciones CCAA",false],
+    [indexCoverage.nationalCount,"COFOG nacional",false],
+    [indexCoverage.documentCount,"Documentos",false]
+  ]){
+    const stat=make("div","sf-stat"+(primary?" sf-stat-primary":""));
+    stat.append(make("strong","",formatCount.format(value)),make("small","",label));
+    coverageStats.append(stat);
+  }
+  const coverageTabs=make("div","sf-class-tabs");
+  coverageTabs.setAttribute("role","group");
+  coverageTabs.setAttribute("aria-label","Clasificación del gráfico");
+  for(const mode of COVERAGE_MODES){
+    const tab=make("button","",mode.title);
+    tab.type="button";tab.dataset.mode=mode.id;
+    tab.addEventListener("click",()=>{
+      coverageMode=mode.id;activeClassification=null;
+      visibleCount=PAGE_SIZE;renderCoverage();render();
+    });
+    coverageTabs.append(tab);
+  }
+  const coverageBars=make("div","sf-class-chart");
+  coverageBars.setAttribute("role","group");
+  coverageBars.setAttribute("aria-label","Recuento por clasificación; pulsa una barra para filtrar");
+  const coverageFooter=make("div","sf-coverage-footer");
+  const coverageCaption=make("span","sf-coverage-caption","");
+  const clearClassification=make("button","sf-class-clear","Quitar filtro del gráfico");
+  clearClassification.type="button";clearClassification.hidden=true;
+  clearClassification.addEventListener("click",()=>{
+    activeClassification=null;visibleCount=PAGE_SIZE;renderCoverage();render();
+  });
+  coverageFooter.append(coverageCaption,clearClassification);
+  coveragePanel.append(coverageHeading,coverageStats,coverageTabs,coverageBars,coverageFooter);
+  root.append(coveragePanel,controls);
+  function renderCoverage(){
+    for(const tab of coverageTabs.children){
+      tab.setAttribute("aria-pressed",String(tab.dataset.mode===coverageMode));
+    }
+    const mode=COVERAGE_MODES.find(m=>m.id===coverageMode);
+    const categories=indexCoverage.groups[coverageMode]||[];
+    const max=Math.max(1,...categories.map(x=>x.count));
+    coverageBars.replaceChildren();
+    for(const group of categories){
+      const active=activeClassification?.mode===coverageMode &&
+        activeClassification?.key===group.key;
+      const row=make("button","sf-bar-choice");
+      row.type="button";
+      row.dataset.classificationKey=group.key;
+      row.setAttribute("aria-pressed",String(active));
+      row.setAttribute("aria-label",
+        group.label+": "+formatCount.format(group.count)+" registros. Filtrar resultados.");
+      const label=make("span","sf-bar-label");
+      label.append(make("span","",group.label),
+        make("strong","",formatCount.format(group.count)));
+      const track=make("span","sf-bar-track");
+      const fill=make("span","sf-bar-fill");
+      fill.style.width=(100*group.count/max).toFixed(2)+"%";
+      track.append(fill);row.append(label,track);
+      row.addEventListener("click",()=>{
+        activeClassification=active?null:{mode:coverageMode,key:group.key};
+        type.value="";visibleCount=PAGE_SIZE;
+        renderCoverage();render();
+      });
+      coverageBars.append(row);
+    }
+    coverageCaption.textContent=mode.caption+
+      " Recuento del índice completo, no solo de la búsqueda.";
+    clearClassification.hidden=!activeClassification;
+  }
   const focusCode=/^\d{2}(?:\.\d+)?$/.test(String(initialCofog)) ? String(initialCofog) : "";
   let selectedCode=focusCode;
   const scope=make("div","sf-scope");
@@ -336,7 +480,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
     const b=make("button","",label);b.type="button";b.addEventListener("click",()=>{
       selectedCode="";clearScope.hidden=true;
       scopeLabel.textContent="Cobertura: conjunto de las Administraciones Públicas · COFOG";
-      input.value=label;type.value="";year.value="";country.value="";render();input.focus();
+      input.value=label;type.value="";year.value="";country.value="";activeClassification=null;visibleCount=PAGE_SIZE;renderCoverage();render();input.focus();
       examples.open=false;
     });suggested.append(b);
   }
@@ -518,9 +662,12 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   }
   function render(){
     const q=fold(input.value);
-    const matching=searchSpendingRecords(all,input.value,{
+    const found=searchSpendingRecords(all,input.value,{
       cofog:selectedCode,tipo:type.value,anio:year.value,pais:country.value
     });
+    const matching=activeClassification?
+      found.filter(item=>matchesClassification(
+        item,activeClassification.mode,activeClassification.key)):found;
     results.replaceChildren();
     const slice=matching.slice(0,visibleCount);
     summary.replaceChildren();
@@ -563,9 +710,11 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   });
   for(const el of [input,type,year,country])
     el.addEventListener(el===input?"input":"change",()=>{
+      activeClassification=null;
       visibleCount=PAGE_SIZE;
-      render();
+      renderCoverage();render();
     });
+  renderCoverage();
   render();
   return root;
 }
