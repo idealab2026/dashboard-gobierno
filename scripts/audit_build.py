@@ -58,6 +58,9 @@ for page in pages:
  origin="https://idealab2026.github.io/dashboard-gobierno/"+("" if page=="index.html" else page)
  for href in parser.hrefs:
   if href.startswith(("#","mailto:","tel:","javascript:")):continue
+  # The corporate IDEA LAB homepage is an intentional, trusted parent-site link.
+  # All other same-origin links must remain inside this product's Pages base path.
+  if href == "https://idealab2026.github.io/":continue
   target=urlparse(urljoin(origin,href))
   if target.netloc!="idealab2026.github.io":continue
   path=unquote(target.path)
