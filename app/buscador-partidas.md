@@ -276,7 +276,7 @@ if (financesMobileMenu) {
 <section class="il-finder-hero">
   <div class="il-finder-kicker">Observatorio · Investigación del gasto público</div>
   <h1>Buscar partidas y proyectos</h1>
-  <p>Localiza actuaciones con nombre propio, subvenciones, convocatorias y conceptos del gasto público. Cada resultado indica su fuente oficial y qué representa realmente el importe. Un gasto agregado no demuestra que se financiara un proyecto concreto, ni permite identificar el impuesto que lo sufragó.</p>
+  <p>Localiza actuaciones, convocatorias, categorías de gasto y enlaces a liquidaciones oficiales. Si llegas desde el Sankey, conservamos el código COFOG y el ejercicio para mostrar su desglose funcional disponible. Para estudiar ministerios, comunidades autónomas o infraestructuras, utiliza las rutas oficiales diferenciadas que aparecen más abajo. Un gasto agregado no demuestra que se financiara un proyecto concreto, ni permite identificar el impuesto que lo sufragó.</p>
 </section>
 
 <div class="il-finder-guide">
@@ -305,6 +305,7 @@ const aggregateRows = financeRows
     entidad: "",
     organismo: "IGAE",
     sector: "COFOG " + String(row.codigo),
+    cofog_codigo: String(row.codigo),
     clasificacion: row.clasificacion,
     descripcion: String(row.definicion || "") || "Gasto público clasificado por función según COFOG.",
     fuente_url: row.url_verificable,
@@ -315,7 +316,9 @@ const finder = createSpendingSearch({
   records: catalogue.registros,
   aggregates: aggregateRows,
   coverage: catalogue.cobertura + " " + aggregateRows.length + " categorías y subcategorías COFOG del ejercicio 2024.",
-  initialQuery: new URLSearchParams(window.location.search).get("q") || ""
+  initialQuery: new URLSearchParams(window.location.search).get("q") || "",
+  initialCofog: new URLSearchParams(window.location.search).get("cofog") || "",
+  initialYear: new URLSearchParams(window.location.search).get("anio") || ""
 });
 display(finder);
 ```

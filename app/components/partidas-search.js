@@ -16,7 +16,7 @@ const external = (label, href) => {
   a.href=href;a.target="_blank";a.rel="noopener noreferrer";
   return a;
 };
-export function createSpendingSearch({records = [], aggregates = [], coverage = "", initialQuery = ""} = {}) {
+export function createSpendingSearch({records = [], aggregates = [], coverage = "", initialQuery = "", initialCofog = "", initialYear = ""} = {}) {
   const root=make("section","spending-finder");
   root.id="partidas-buscador";
   const styles=make("style");
@@ -47,7 +47,22 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   .sf-noresults strong{display:block;margin-bottom:6px;color:var(--sf-navy)}
   .sf-noresults p{font-size:.85rem}
   .sf-portals{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;font-size:.81rem;font-weight:700}
-  .sf-footnote{font-size:.78rem;color:#637187;line-height:1.5;margin:8px 0}
+  .sf-footnote{font-size:.78rem;color:#637187;line-height:1.5;margin:8px 0;text-align:justify;text-align-last:left}
+  .sf-scope{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:11px 12px;margin:7px 0 12px;border:1px solid #d2ddeb;background:#f4f8fc;border-radius:9px;font-size:.81rem;color:#264260}
+  .sf-scope strong{color:#0b2447}
+  .sf-dimension-jump{display:inline-block;margin:3px 0 10px;font-size:.82rem;font-weight:760;color:#16436e;text-decoration:underline;text-underline-offset:3px}
+  .sf-dimension-jump:focus-visible{outline:2px solid #b89b5e;outline-offset:3px}
+  .sf-scope button{border:1px solid #aebed2;background:#fff;border-radius:7px;padding:7px 9px;font-size:.76rem;font-weight:750;color:#0b2447;cursor:pointer}
+  .sf-investigation{margin:18px 0 12px}
+  .sf-investigation h2{font:700 1.4rem Georgia,serif;margin:10px 0;color:#0b2447}
+  .sf-investigation p{font-size:.86rem;color:#53647b;line-height:1.55;text-align:justify;text-align-last:left;width:100%;max-width:none}
+  .sf-investigation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .sf-investigation-grid article{border:1px solid #dfe5ed;border-radius:10px;padding:12px;min-width:0}
+  .sf-investigation-grid h3{font:700 .98rem Georgia,serif;color:#0b2447;margin:2px 0 8px}
+  .sf-investigation-grid a{display:block;font-size:.78rem;line-height:1.45;font-weight:650;color:#16436e;margin:9px 0;overflow-wrap:anywhere}
+  .sf-investigation-grid small{font-size:.75rem;color:#62728a;line-height:1.4;display:block}
+  @media(max-width:900px){.sf-investigation-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:650px){.sf-investigation-grid{grid-template-columns:1fr}}
   @media(max-width:900px){.sf-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.sf-field:first-child{grid-column:1/-1}}
   @media(max-width:700px){.sf-results{grid-template-columns:1fr}.sf-controls{gap:7px}.sf-record{padding:12px}.sf-field input,.sf-field select{font-size:.83rem}}
   `;
@@ -66,14 +81,31 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   const type=select("Tipo de registro",[["","Todos"],["intervencion","Proyectos AECID"],["agregado","Gasto agregado IGAE"],["convocatoria","Convocatorias"],["norma","Normas de concesión"]]);
   const years=[...new Set([...records,...aggregates].map(x=>String(x.anio)).filter(Boolean))].sort((a,b)=>b.localeCompare(a));
   const year=select("Año",[["","Todos los años"],...years.map(y=>[y,y])]);
+  if (years.includes(String(initialYear))) year.value=String(initialYear);
   const countries=[...new Set(records.map(x=>x.pais).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"es"));
   const country=select("País / región",[["","Todos los destinos"],...countries.map(y=>[y,y]),["España", "España"]].filter((x,i,a)=>a.findIndex(y=>y[0]===x[0])===i));
   root.append(controls);
+  const focusCode=/^\d{2}(?:\.\d+)?$/.test(String(initialCofog)) ? String(initialCofog) : "";
+  let selectedCode=focusCode;
+  const scope=make("div","sf-scope");
+  const known=aggregates.find(r=>r.cofog_codigo===selectedCode);
+  const scopeLabel=make("span","",selectedCode
+   ? "Filtro COFOG " + selectedCode + (known?" · "+known.titulo:"") + " · subfunciones incluidas"
+   : "Cobertura: categorías COFOG del conjunto de Administraciones Públicas; ministerios y CCAA requieren fuentes distintas.");
+  const clearScope=make("button","","Quitar filtro COFOG");
+  clearScope.type="button";
+  clearScope.hidden=!selectedCode;
+  scope.append(scopeLabel,clearScope);
+  root.append(scope);
   const examples=make("div","sf-examples");examples.append(make("span","","Prueba:"));
   for(const label of ["Transporte","Mujeres Paraguay","Ayuda militar exterior","Ferrocarril Marruecos","Charlas feministas"]){
-    const b=make("button","",label);b.type="button";b.addEventListener("click",()=>{input.value=label;type.value="";year.value="";country.value="";render();input.focus();});examples.append(b);
+    const b=make("button","",label);b.type="button";b.addEventListener("click",()=>{selectedCode="";clearScope.hidden=true;scopeLabel.textContent="Sin filtro COFOG · resultados temáticos no equivalen a un desglose de la función";input.value=label;type.value="";year.value="";country.value="";render();input.focus();});examples.append(b);
   }
   root.append(examples);
+  const quickGuide=make("a","sf-dimension-jump","Consultar por ministerio, comunidad autónoma o ferrocarril");
+  quickGuide.href="#investigar-por-administracion";
+  root.append(quickGuide);
+  clearScope.addEventListener("click",()=>{selectedCode="";clearScope.hidden=true;scopeLabel.textContent="Sin filtro COFOG · consulta el catálogo general";render();});
   const summary=make("div","sf-summary"), results=make("div","sf-results");
   root.append(summary,results);
   const portals=make("div","sf-portals");
@@ -84,6 +116,48 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   ])portals.append(external(title,href));
   const footnote=make("p","sf-footnote",coverage+" Los registros de distintas fuentes, ejercicios y ámbitos NO pueden sumarse: pueden representar ayudas, límites normativos, pagos o estadísticas agregadas y existir solapamientos. Ningún dato permite afirmar qué impuesto financió un proyecto concreto.");
   root.append(make("p","sf-footnote","¿No encuentras una actuación? Comprueba los portales oficiales: este catálogo no sustituye su buscador completo."),portals,footnote);
+
+  // Rutas distintas. No se calculan totales administrativos a partir de COFOG.
+  const guide=make("section","sf-investigation");
+  guide.id="investigar-por-administracion";
+  guide.append(make("h2","","Investigar por ministerio, comunidad o infraestructura"));
+  guide.append(make("p","",
+   "El Sankey cubre el sector Administraciones Públicas (S.13) por finalidad. " +
+   "Un ministerio se estudia mediante ejecución presupuestaria estatal y sección orgánica; " +
+   "una comunidad autónoma mediante COFOG regional o liquidaciones propias; " +
+   "una inversión ferroviaria exige además el programa, el operador y el ejercicio de inversión. " +
+   "Las cifras de estas vistas tienen distinta metodología y no son sumables por defecto."));
+  const cards=make("div","sf-investigation-grid");
+  const routes=[
+   ["Por ministerio",
+    "Busca sección orgánica, programa presupuestario, obligaciones reconocidas y pagos. Distingue presupuesto aprobado de gasto ejecutado.",
+    [
+     ["Ejecución presupuestaria del Estado · IGAE","https://transparencia.gob.es/publicidad-activa/por-materias/informacion-economico-presupuestaria/ejecucion"],
+     ["PGE · programas de Transportes","https://www.sepg.pap.hacienda.gob.es/Presup/PGE2024Prorroga/MaestroDocumentos/PGE-ROM/N_24P_E_R_31_117_1_1_1.htm"]
+    ]],
+   ["Por comunidad autónoma",
+    "Gasto COFOG de cada administración regional y liquidaciones consolidadas; no equivale a todo lo gastado por el Estado en ese territorio.",
+    [
+     ["IGAE · COFOG regional por comunidad","https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Paginas/iacofogCA.aspx"],
+     ["Hacienda · liquidaciones definitivas CCAA","https://serviciostelematicosext.hacienda.gob.es/SGCIEF/PublicacionLiquidaciones/aspx/menuInicio.aspx"]
+    ]],
+   ["Ferrocarriles e infraestructuras",
+    "Separar programa 453A, inversión de Adif/Renfe y gasto COFOG 04.5. Un crédito presupuestario no es inversión efectivamente realizada.",
+    [
+     ["PGE · infraestructura ferroviaria, programa 453A","https://www.sepg.pap.hacienda.gob.es/Presup/PGE2024Prorroga/MaestroDocumentos/PGE-ROM/N_24P_E_R_31_117_1_1_1.htm"],
+     ["Observatorio del Ferrocarril · inversiones 2024","https://cdn.transportes.gob.es/portal-web-transportes/ferroviario/observatorio/ofe_2024.pdf"]
+    ]]
+  ];
+  for(const [heading,summary,links] of routes){
+    const card=make("article");
+    card.append(make("h3","",heading),make("p","",summary));
+    for(const [label,href] of links)card.append(external(label,href));
+    cards.append(card);
+  }
+  guide.append(cards,make("p","",
+   "Estados de datos: partidas presupuestadas, obligaciones reconocidas, pagos, inversión realizada y gasto COFOG son conceptos distintos. " +
+   "No asignamos automáticamente importes nacionales a un ministerio, comunidad o proyecto sin clave administrativa y conciliación oficial."));
+  root.append(guide);
   const all=[...records,...aggregates].map(x=>({...x,_search:fold([x.titulo,x.pais,x.sector,x.entidad,x.organismo,x.descripcion,x.id,x.trazabilidad,x.clasificacion].join(" "))}));
   function card(item,related){
     const box=make("article","sf-record");
@@ -111,6 +185,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   function render(){
     const q=fold(input.value), tokens=q.split(" ").filter(Boolean);
     const matching=all.filter(x=>
+      (!selectedCode || x.tipo==="agregado" && (x.cofog_codigo===selectedCode || x.cofog_codigo?.startsWith(selectedCode+"."))) &&
       (!type.value||x.tipo===type.value) &&
       (!year.value||String(x.anio)===year.value) &&
       (!country.value || x.pais===country.value) &&
@@ -123,7 +198,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
     results.replaceChildren();
     const slice=matching.slice(0,70);
     summary.replaceChildren();
-    summary.append(make("span","",matching.length+" resultados en el índice parcial"+(matching.length>70?" · primeros 70":"")));
+    summary.append(make("span","",matching.length+" resultados en el índice parcial"+(matching.length>70?" · primeros 70":"")+(selectedCode?" · COFOG "+selectedCode+" y subfunciones":"")));
     if(q&&matching.some(x=>!x._exact))summary.append(make("span","", "Los resultados temáticos no prueban financiación de la actividad buscada"));
     if(!matching.length){
       const no=make("div","sf-noresults");no.append(make("strong","","Sin coincidencias en el índice disponible."),make("p","", "No significa que la partida no exista o que no se haya destinado dinero. Consulta las fuentes oficiales o intenta otra expresión, país u organismo."));results.append(no);
