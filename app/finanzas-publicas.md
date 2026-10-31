@@ -470,6 +470,14 @@ body {
   .il-site-navigation .il-site-home {font-size:.70rem!important;padding-inline:7px!important;}
 }
 
+
+/* Desplegables: sin hueco entre el disparador y el panel.
+   Así el ratón puede pasar al panel sin disparar el cierre. */
+@media (min-width:1101px) and (hover:hover) {
+  .idealab-nav .idealab-nav-areas-panel,
+  .idealab-nav .il-nav-more-panel {top:100%!important;margin-top:0!important;}
+}
+
 </style>
 
 
@@ -531,6 +539,49 @@ body {
 </nav>
 
 ```js
+
+const pointerCanHover = window.matchMedia("(hover: hover) and (pointer: fine)");
+const desktopNav = window.matchMedia("(min-width: 1101px)");
+const navDropdowns = [...document.querySelectorAll(".idealab-nav .idealab-nav-areas, .idealab-nav .il-nav-more")];
+const closeNavDropdowns = except => {
+  for (const item of navDropdowns) if (item !== except) item.open = false;
+};
+for (const item of navDropdowns) {
+  item.addEventListener("pointerenter", event => {
+    if (event.pointerType !== "mouse" || !pointerCanHover.matches || !desktopNav.matches) return;
+    closeNavDropdowns(item);
+    item.open = true;
+  });
+  item.addEventListener("pointerleave", event => {
+    if (event.pointerType === "mouse") item.open = false;
+  });
+  item.addEventListener("focusout", event => {
+    if (!item.contains(event.relatedTarget)) item.open = false;
+  });
+  item.querySelector("summary")?.addEventListener("click", event => {
+    // Con ratón la apertura es por hover; no cerrar al clicar el título.
+    if (pointerCanHover.matches && desktopNav.matches && event.detail > 0) event.preventDefault();
+  });
+  item.addEventListener("click", event => {
+    if (event.target.closest("a")) item.open = false;
+  });
+}
+document.addEventListener("pointerdown", event => {
+  if (!navDropdowns.some(item => item.contains(event.target))) closeNavDropdowns();
+});
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") closeNavDropdowns();
+});
+const compactNav = document.querySelector(".idealab-nav-mobile");
+if (compactNav) {
+  compactNav.addEventListener("pointerenter", event => {
+    if (event.pointerType === "mouse" && pointerCanHover.matches && !desktopNav.matches) compactNav.open = true;
+  });
+  compactNav.addEventListener("pointerleave", event => {
+    if (event.pointerType === "mouse") compactNav.open = false;
+  });
+}
+
 const financesMobileMenu = document.querySelector(".idealab-nav-mobile");
 if (financesMobileMenu) {
   financesMobileMenu.addEventListener("click", event => {
