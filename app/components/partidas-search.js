@@ -16,7 +16,7 @@ const external = (label, href) => {
   a.href=href;a.target="_blank";a.rel="noopener noreferrer";
   return a;
 };
-export function createSpendingSearch({records = [], aggregates = [], coverage = ""} = {}) {
+export function createSpendingSearch({records = [], aggregates = [], coverage = "", initialQuery = ""} = {}) {
   const root=make("section","spending-finder");
   root.id="partidas-buscador";
   const styles=make("style");
@@ -59,7 +59,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
     element.id=id;const l=make("label","",label);l.htmlFor=id;cell.append(l,element);controls.append(cell);
     return element;
   };
-  const input=make("input");input.type="search";input.placeholder="Ej. ferrocarril, Paraguay, igualdad, transporte…";input.autocomplete="off";field("Buscar por proyecto, organismo, lugar o concepto",input);
+  const input=make("input");input.type="search";input.placeholder="Ej. ferrocarril, Paraguay, igualdad, transporte…";input.autocomplete="off";input.value=typeof initialQuery==="string"?initialQuery.slice(0,180):"";field("Buscar por proyecto, organismo, lugar o concepto",input);
   const select=(label,opts)=>{
     const el=make("select");for(const [v,t] of opts){const o=make("option","",t);o.value=v;el.append(o);}field(label,el);return el;
   };
