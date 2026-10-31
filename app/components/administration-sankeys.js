@@ -75,6 +75,69 @@ export function AdministrationSankeys(data, options={}){
  .ad-footnote{margin:12px 0;padding:10px 13px;background:#f6f8fb;border-left:3px solid #b89b5e;color:#57687a;font:.76rem/1.55 system-ui;text-align:justify;text-align-last:left}
  .ad-empty{padding:20px;border:1px dashed #cbd5e1;border-radius:10px;color:#52647b}
  .ad-source{color:#1b5077;font-size:.79rem;font-weight:750}
+
+ /* Master-detail: maintain the original Sankey SVG while exploring hierarchy. */
+ .ad-stage{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start;
+   width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+ .ad-stage.is-drilling{grid-template-columns:minmax(0,1fr) minmax(330px,395px)}
+ .ad-stage>.ad-flow-wrap{min-width:0;max-width:100%;width:100%}
+ .ad-stage>.ad-drill-panel{min-width:0;position:sticky;top:12px;align-self:start;
+   max-height:calc(100vh - 32px);overflow-y:auto;overscroll-behavior:contain;
+   border:1px solid #d6e0eb;border-radius:13px;background:#fff;
+   box-shadow:0 12px 30px rgba(9,33,65,.10);box-sizing:border-box}
+ .ad-drill-panel[hidden],.ad-drill-scrim[hidden]{display:none!important}
+ .ad-drill-head{display:flex;align-items:flex-start;justify-content:space-between;
+   gap:10px;padding:15px 16px 12px;border-bottom:1px solid #e2e9f0;
+   background:#f8fafc;position:sticky;top:0;z-index:2}
+ .ad-drill-head .ad-drill-heading{font:750 .93rem/1.3 system-ui;color:#0b2447}
+ .ad-drill-head small{display:block;color:#62748c;font:.72rem/1.4 system-ui;margin-top:3px}
+ .ad-drill-close{flex:none;min-width:36px;min-height:36px;border:1px solid #cad7e3;
+   border-radius:8px;background:#fff;color:#193453;cursor:pointer;font-size:1.2rem}
+ .ad-drill-body{padding:12px 16px 18px;min-width:0}
+ .ad-breadcrumbs{display:flex;flex-wrap:wrap;align-items:center;gap:4px;
+   margin:0 0 13px;min-width:0}
+ .ad-breadcrumbs button{padding:5px 4px;border:0;border-radius:4px;background:transparent;
+   cursor:pointer;color:#245982;font:700 .73rem/1.4 system-ui}
+ .ad-breadcrumbs button:hover{text-decoration:underline}
+ .ad-breadcrumbs strong{font:750 .73rem/1.45 system-ui;color:#0b2447}
+ .ad-crumb-sep{color:#8a97a9}
+ .ad-drill-section h3{margin:6px 0 10px;font:700 1.2rem/1.32 Georgia,serif;color:#0b2447}
+ .ad-drill-section h4{font:750 .84rem/1.4 system-ui;color:#243f5a;margin:14px 0 8px}
+ .ad-drill-section p{font:.79rem/1.62 system-ui;color:#586a80;max-width:none;
+   text-align:justify;text-align-last:left;margin:7px 0 12px}
+ .ad-drill-total{display:block;font:800 1.24rem/1.5 system-ui;color:#102c4c;margin:6px 0}
+ .ad-drill-kicker{display:block;font:750 .67rem/1.4 system-ui;letter-spacing:.08em;
+   text-transform:uppercase;color:#9d742e;margin-bottom:6px}
+ .ad-drill-options{display:flex;flex-direction:column;gap:7px}
+ .ad-drill-option,.ad-subgroup{display:flex;justify-content:space-between;
+   align-items:flex-start;gap:12px;width:100%;box-sizing:border-box;
+   border:1px solid #dbe4ed;border-radius:9px;padding:10px 11px;
+   text-align:left;background:#fff;cursor:pointer;color:#183f65;
+   font:700 .76rem/1.45 system-ui}
+ .ad-drill-option:hover,.ad-drill-option:focus-visible,
+ .ad-subgroup:hover,.ad-subgroup:focus-visible{
+   background:#edf5fb;border-color:#5f87aa;outline:2px solid transparent}
+ .ad-drill-option strong{white-space:nowrap;font-variant-numeric:tabular-nums;
+   color:#0b2447;font-size:.77rem}
+ .ad-drill-option small{display:block;font:.69rem/1.4 system-ui;color:#718096;margin-top:3px}
+ .ad-drill-final{padding:12px;border:1px solid #d8e2ec;border-radius:10px;background:#f7f9fc}
+ .ad-drill-final h3{overflow-wrap:anywhere}
+ .ad-official-links{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+ .ad-official-links a{display:block;border:1px solid #dce5ed;background:#fff;
+   padding:9px 10px;border-radius:8px;text-decoration:none;color:#205a87;
+   font:700 .74rem/1.45 system-ui;overflow-wrap:anywhere}
+ .ad-official-links a:hover{text-decoration:underline}
+ .ad-branch[aria-pressed="true"] rect{stroke:#a27a3a;stroke-width:3;fill:#fff8e8}
+ .ad-drill-scrim{display:none}
+ @media(max-width:980px){
+   .ad-stage.is-drilling{grid-template-columns:minmax(0,1fr)}
+   .ad-stage>.ad-drill-panel{position:fixed;z-index:1100;right:0;top:0;
+     bottom:0;width:min(92vw,440px);max-height:100dvh;border-radius:12px 0 0 12px;
+     box-shadow:-12px 0 32px rgba(7,28,53,.25)}
+   .ad-drill-scrim:not([hidden]){display:block;position:fixed;inset:0;z-index:1099;
+     width:100vw;height:100dvh;background:rgba(11,28,52,.35);border:0;cursor:pointer}
+ }
+
  .ad-breadcrumbs{display:flex;align-items:center;gap:5px;flex-wrap:wrap;min-width:0}
  .ad-crumb{border:0!important;padding:5px 7px!important;background:transparent!important;
   color:#214a79!important;font-size:.76rem!important;cursor:pointer;text-align:left}
@@ -126,9 +189,20 @@ export function AdministrationSankeys(data, options={}){
  const metadata=mk("div","ad-metadata");
  const graphic=mk("div","ad-flow-wrap");
  const actions=mk("div","ad-actions");
- const details=mk("div","ad-details");
+ const stage=mk("div","ad-stage");
+ const drawer=mk("aside","ad-drill-panel");
+ drawer.id="ad-drill-panel";
+ drawer.tabIndex=-1;
+ drawer.setAttribute("role","region");
+ drawer.setAttribute("aria-label","Desglose de la partida seleccionada");
+ drawer.hidden=true;
+ const scrim=mk("button","ad-drill-scrim");
+ scrim.type="button";
+ scrim.setAttribute("aria-label","Cerrar el detalle y volver al Sankey");
+ scrim.hidden=true;
  const note=mk("p","ad-footnote");
- root.append(metadata,graphic,actions,details,note);
+ stage.append(graphic,drawer);
+ root.append(metadata,actions,stage,scrim,note);
  const params=new URLSearchParams(window.location.search);
  let mode=options.mode==="regions"?"regions":options.mode==="ministries"?"ministries":params.get("tipo")==="ccaa"?"regions":"ministries",selectedGroup=null;
  let selectedLeaf=null;
@@ -187,10 +261,9 @@ export function AdministrationSankeys(data, options={}){
   }
   return el;
  }
- function reveal(){
-   // El gráfico anterior puede ser mucho más alto; mantener el nivel nuevo visible.
-   if(typeof graphic.scrollIntoView==="function")
-     graphic.scrollIntoView({block:"nearest",behavior:"instant"});
+
+ function getChosen(){
+   return (data[mode]||[]).find(x=>x.id===selectedIds[mode])||null;
  }
  function sourceAnchor(url,title){
    const safe=safeLink(url);
@@ -199,176 +272,227 @@ export function AdministrationSankeys(data, options={}){
    link.href=safe;link.target="_blank";link.rel="noopener noreferrer";
    return link;
  }
- function showFinal(chosen,branch,kind){
-   selectedLeaf=branch;
-   render();
-   reveal();
+ function drillGroup(chosen){
+   if(!chosen||!selectedGroup)return null;
+   return mode==="ministries"
+     ? groupMinistry(chosen.flows).find(x=>x.code===selectedGroup)||null
+     : chosen.flows.find(x=>x.code===selectedGroup)||null;
  }
+ function closeDrill(){
+   selectedGroup=null;selectedLeaf=null;
+   renderDrawer();
+ }
+ scrim.addEventListener("click",closeDrill);
+ root.addEventListener("keydown",ev=>{
+   if(ev.key==="Escape"&&!drawer.hidden){ev.preventDefault();closeDrill();}
+ });
  function openBranch(branch){
-   const chosen=(data[mode]||[]).find(x=>x.id===selectedIds[mode]);
-   if(!chosen)return;
-   if(mode==="ministries"){
-     if(!selectedGroup){selectedGroup=branch.code;selectedLeaf=null;render();}
-     else showFinal(chosen,branch,"programa");
-   }else{
-     if(!selectedGroup){selectedGroup=branch.code;selectedLeaf=null;render();}
-     else showFinal(chosen,branch,"subfuncion");
-   }
-   reveal();
+   // Do not call render(): it would tear down the original Sankey and
+   // replace it by a smaller one, breaking geographical context.
+   selectedGroup=branch.code;selectedLeaf=null;
+   renderDrawer();
  }
- function addInfo(text,style="ad-terminal-info"){
-   const p=mk("p",style,text);
-   graphic.append(p);return p;
+ function openLeaf(branch){
+   selectedLeaf=branch;
+   renderDrawer();
  }
- function addOfficialLinks(chosen){
+ function sectionLinks(chosen,body){
    const links=mk("div","ad-official-links");
-   const original=sourceAnchor(chosen.source_url,mode==="ministries"?
-      "Presupuestos oficiales de este ministerio":"COFOG oficial de la comunidad autónoma (IGAE, 2024)");
+   const original=sourceAnchor(chosen.source_url,
+      mode==="ministries"?"Consultar tabla ministerial en Hacienda":
+      "Consultar tabla autonómica COFOG en IGAE");
    if(original)links.append(original);
    if(mode==="regions"){
-     const a=mk("a","ad-source","Presupuestos autonómicos por programas (Hacienda, 2026)");
+     // These are alternative classification routes, not numeric children.
+     const a=mk("a","ad-source","Consultar presupuestos y programas autonómicos en Hacienda");
      a.href="https://serviciostelematicosext.hacienda.gob.es/SGCIEF/PublicacionPresupuestos/aspx/inicio.aspx";
-     a.rel="noopener noreferrer";a.target="_blank";links.append(a);
-     const b=mk("a","ad-source","Clasificación COFOG: definición de funciones y grupos");
-     b.href="https://www.hacienda.gob.es/es-ES/CDI/Paginas/ContabilidadNacional/COFOG/Clasificacion-funcional-del-gasto-de-las-Administraciones-Publicas.aspx";
-     b.rel="noopener noreferrer";b.target="_blank";links.append(b);
+     a.rel="noopener noreferrer";a.target="_blank";
+     links.append(a);
    }
-   if(links.children.length)graphic.append(links);
+   body.append(links);
+ }
+ function renderDrawer(){
+   const chosen=getChosen(),group=drillGroup(chosen);
+   const open=Boolean(chosen&&group);
+   root.dataset.drillLevel=open?(selectedLeaf?"terminal":"detalle"):"general";
+   root.dataset.drillCode=open?(selectedLeaf?.code||selectedGroup):"";
+   stage.classList.toggle("is-drilling",open);
+   drawer.hidden=!open;
+   scrim.hidden=!open;
+   drawer.replaceChildren();
+   // Highlight the branch in the original SVG instead of removing it.
+   for(const node of graphic.querySelectorAll(".ad-branch")){
+     node.setAttribute("aria-pressed",
+       String(open&&node.dataset.code===selectedGroup));
+   }
+   if(!open)return;
+
+   const header=mk("div","ad-drill-head");
+   const title=mk("div");
+   title.append(mk("div","ad-drill-heading","Explorar el desglose"));
+   title.append(mk("small","",chosen.name+" · "+chosen.year_label));
+   const close=mk("button","ad-drill-close","×");close.type="button";
+   close.setAttribute("aria-label","Cerrar el desglose y mantener el Sankey");
+   close.addEventListener("click",closeDrill);
+   header.append(title,close);
+   const body=mk("div","ad-drill-body");
+   const crumbs=mk("nav","ad-breadcrumbs");
+   crumbs.setAttribute("aria-label","Ruta de la partida");
+   const back=mk("button","","Vista general");
+   back.type="button";back.onclick=closeDrill;crumbs.append(back);
+   crumbs.append(mk("span","ad-crumb-sep","›"));
+   if(selectedLeaf){
+     const section=mk("button","",group.name);
+     section.type="button";section.onclick=()=>{
+       selectedLeaf=null;renderDrawer();
+     };
+     crumbs.append(section,mk("span","ad-crumb-sep","›"));
+     crumbs.append(mk("strong","",selectedLeaf.name));
+   }else{
+     crumbs.append(mk("strong","",group.name));
+   }
+   body.append(crumbs);
+   const detail=mk("section","ad-drill-section");
+   if(selectedLeaf){
+     const item=selectedLeaf;
+     const panel=mk("div","ad-drill-final");
+     panel.append(mk("span","ad-drill-kicker",mode==="ministries"?
+       "Último programa cuantificado en la fuente":"Subfunción COFOG · importe no publicado en esta fuente"));
+     panel.append(mk("h3","",item.code+" · "+item.name));
+     if(mode==="ministries"){
+       panel.append(mk("strong","ad-drill-total",money(item.value_mill_eur)));
+       panel.append(mk("p","",
+         "Crédito presupuestario del programa "+item.code+" ("+chosen.year_label+
+         "). No son pagos ni obligaciones reconocidas. Para capítulos económicos, contratos y ejecución detallada es necesario consultar las fuentes oficiales correspondientes."));
+     }else{
+       panel.append(mk("strong","ad-drill-total","Importe territorial no disponible"));
+       panel.append(mk("p","",
+         "La serie autonómica COFOG 2024 publica el importe de la función "+
+         group.code+" ("+money(group.value_mill_eur)+"), pero no desglosa cuánto "+
+         "corresponde a "+item.name+" ("+item.code+"). No se atribuye ninguna "+
+         "parte del total autonómico sin datos verificables."));
+     }
+     detail.append(panel);
+   }else if(mode==="ministries"){
+     detail.append(mk("span","ad-drill-kicker","Área de gasto · siguiente nivel"));
+     detail.append(mk("h3","",group.name));
+     detail.append(mk("strong","ad-drill-total",money(group.value_mill_eur)));
+     detail.append(mk("p","",
+       "Selecciona un programa presupuestario real del área. Los importes "+
+       "suman el total de esta rama y no son gasto ejecutado."));
+     detail.append(mk("h4","","Programas presupuestarios"));
+     const list=mk("div","ad-drill-options");
+     const programs=[...group.items].sort((a,b)=>
+       b.value_mill_eur-a.value_mill_eur);
+     for(const item of programs){
+       const button=mk("button","ad-drill-option");
+       button.type="button";button.dataset.programCode=item.code;
+       const name=mk("span","",item.code+" · "+item.name);
+       const amount=mk("strong","",money(item.value_mill_eur));
+       button.append(name,amount);
+       button.addEventListener("click",()=>openLeaf(item));
+       list.append(button);
+     }
+     detail.append(list);
+   }else{
+     detail.append(mk("span","ad-drill-kicker","Función COFOG · desglose territorial"));
+     detail.append(mk("h3","",group.code+" · "+group.name));
+     detail.append(mk("strong","ad-drill-total",money(group.value_mill_eur)));
+     detail.append(mk("p","",
+       "Importe contabilizado para esta función en "+chosen.name+
+       ". Las subfunciones siguientes corresponden a la clasificación "+
+       "COFOG oficial, pero la fuente autonómica utilizada no publica "+
+       "importes individuales para ellas."));
+     const groups=Array.isArray(data.cofog_group_labels?.[selectedGroup])?
+       data.cofog_group_labels[selectedGroup]:[];
+     if(groups.length){
+       detail.append(mk("h4","","Subfunciones oficiales · sin importes autonómicos"));
+       const list=mk("div","ad-drill-options");
+       for(const item of groups){
+         const button=mk("button","ad-subgroup",item.code+" · "+item.name);
+         button.type="button";
+         button.setAttribute("aria-label",
+           "Explorar subfunción "+item.code+" · "+item.name+
+           "; importe autonómico no disponible");
+         button.addEventListener("click",()=>openLeaf(item));
+         list.append(button);
+       }
+       detail.append(list);
+     }else{
+       detail.append(mk("p","",
+         "No existen subfunciones verificadas en el índice para esta función. "+
+         "Consulta la fuente oficial para continuar."));
+     }
+   }
+   body.append(detail);
+   sectionLinks(chosen,body);
+   drawer.append(header,body);
+   // Keep the same SVG node throughout drilling. Only the drawer is replaced.
+   drawer.scrollTop=0;
  }
  function render(){
-   if(!embedded)tabs.querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected",String(x===tabButtons[mode])));
+   if(!embedded)tabs.querySelectorAll("button").forEach(x=>
+     x.setAttribute("aria-selected",String(x===tabButtons[mode])));
    select.replaceChildren();
    const list=data[mode]||[];
-   if(!selectedIds[mode]||!list.some(x=>x.id===selectedIds[mode]))selectedIds[mode]=list[0]?.id||null;
-   for(const entity of list){const o=mk("option","",entity.name);o.value=entity.id;o.selected=entity.id===selectedIds[mode];select.append(o)}
-   const chosen=list.find(x=>x.id===selectedIds[mode]);
+   if(!selectedIds[mode]||!list.some(x=>x.id===selectedIds[mode]))
+     selectedIds[mode]=list[0]?.id||null;
+   for(const entity of list){
+     const option=mk("option","",entity.name);
+     option.value=entity.id;option.selected=entity.id===selectedIds[mode];
+     select.append(option);
+   }
+   const chosen=getChosen();
    period.textContent=chosen?.year_label||"No hay importes oficiales cargados";
    root.dataset.administrationMode=mode;
    root.dataset.administrationId=chosen?.id||"";
-   root.dataset.drillLevel=selectedLeaf?"terminal":selectedGroup?"detalle":"general";
-   root.dataset.drillCode=selectedLeaf?.code||selectedGroup||"";
-   metadata.replaceChildren();graphic.replaceChildren();actions.replaceChildren();details.replaceChildren();
+   metadata.replaceChildren();graphic.replaceChildren();actions.replaceChildren();
    if(!chosen||!chosen.verified||!Array.isArray(chosen.flows)||!chosen.flows.length){
-     graphic.append(mk("p","ad-empty","No se ha validado todavía una cifra oficial conciliada para esta administración. No se representa un Sankey sin datos."));
-     note.textContent="La ausencia de desglose no implica gasto cero.";
+     closeDrill();
+     graphic.append(mk("p","ad-empty",
+       "No hay importes oficiales conciliados para esta administración."));
+     note.textContent="La ausencia de información no significa gasto cero.";
      return;
    }
    const title=mk("div"),h2=mk("h2","",chosen.name);
-   const p=mk("p","",chosen.year_label+" · "+chosen.amount_kind);
-   title.append(h2,p);metadata.append(title,mk("strong","",money(chosen.total_mill_eur)));
-   const crumbs=mk("nav","ad-breadcrumbs");crumbs.setAttribute("aria-label","Ruta del desglose");
-   const home=mk("button","ad-crumb","Vista general");
-   home.type="button";home.onclick=()=>{selectedGroup=null;selectedLeaf=null;render();};
-   crumbs.append(home);
-   let groupInfo=null;
-   if(selectedGroup){
-     if(mode==="ministries"){
-       groupInfo=groupMinistry(chosen.flows).find(x=>x.code===selectedGroup);
-     }else{
-       groupInfo=chosen.flows.find(x=>x.code===selectedGroup);
-     }
-     if(!groupInfo){selectedGroup=null;selectedLeaf=null;return render();}
-     const level=mk("button","ad-crumb",groupInfo.name);
-     level.type="button";level.onclick=()=>{selectedLeaf=null;render();};
-     crumbs.append(mk("span","ad-crumb-sep","›"),level);
-   }
-   if(selectedLeaf)crumbs.append(mk("span","ad-crumb-sep","›"),
-     mk("strong","ad-crumb-last",selectedLeaf.name));
-   actions.append(crumbs);
-   const cta=sourceAnchor(chosen.source_url,"Fuente original");
-   if(cta)actions.append(cta);
-   if(selectedLeaf){
-     const final=mk("section","ad-terminal");
-     const top=mk("div","ad-terminal-header");
-     top.append(mk("span","ad-terminal-kicker",
-       mode==="ministries"?"Último nivel cuantificado disponible · programa":"Subfunción COFOG · sin importe autonómico publicado aquí"));
-     top.append(mk("h3","",selectedLeaf.code+" · "+selectedLeaf.name));
-     if(mode==="ministries"){
-       top.append(mk("strong","ad-terminal-amount",money(selectedLeaf.value_mill_eur)));
-     }else{
-       top.append(mk("strong","ad-terminal-amount","Importe territorial no disponible"));
-     }
-     final.append(top);
-     const text=mode==="ministries"?
-       "Crédito presupuestario del programa "+selectedLeaf.code+" en "+chosen.year_label+
-       ". Este es el último nivel con importe verificado en la tabla ministerial cargada. Para capítulos económicos, partidas detalladas, ejecución y contratos debe consultarse la documentación oficial correspondiente. No son pagos ni obligaciones reconocidas.":
-       "La subfunción "+selectedLeaf.code+" pertenece a "+groupInfo.name+
-       ". La serie autonómica COFOG 2024 utilizada aquí publica el importe de la función "+groupInfo.code+
-       " ("+money(groupInfo.value_mill_eur)+"), pero no desglosa ese total por subfunción. Por tanto, no puede deducirse cuánto corresponde a "+selectedLeaf.name+".";
-     final.append(mk("p","",text));graphic.append(final);
-     addOfficialLinks(chosen);
-     note.textContent=chosen.note+" "+data.not_comparable;
-     return;
-   }
-   if(selectedGroup && mode==="regions"){
-     const panel=mk("section","ad-region-drill");
-     panel.append(mk("h3","",groupInfo.code+" · "+groupInfo.name+" · "+money(groupInfo.value_mill_eur)));
-     panel.append(mk("p","","Último nivel con importe territorial de esta serie IGAE: función COFOG. Puedes explorar las subfunciones oficiales, pero sus importes individuales no se publican aquí. No se reparte proporcionalmente el total regional."));
-     graphic.append(panel);
-     const groups=Array.isArray(data.cofog_group_labels?.[selectedGroup])?
-         data.cofog_group_labels[selectedGroup]:[];
-     if(groups.length){
-       const title=mk("h4","ad-next-title","Subfunciones oficiales · estructura, sin importes autonómicos");
-       graphic.append(title);
-       const list=mk("div","ad-subgroups");
-       for(const item of groups){
-         const b=mk("button","ad-subgroup",item.code+" · "+item.name);
-         b.type="button";b.setAttribute("aria-label","Explorar subfunción "+item.code+" "+item.name+"; importe autonómico no disponible");
-         b.onclick=()=>showFinal(chosen,item,"subfuncion");
-         list.append(b);
-       }
-       graphic.append(list);
-     }else{
-       addInfo("La fuente autonómica 2024 no permite profundizar más en esta función con importes verificados.");
-     }
-     addOfficialLinks(chosen);
-     note.textContent=chosen.note+" "+data.not_comparable;
-     return;
-   }
-   if(selectedGroup && mode==="ministries"){
-     const programs=groupInfo.items;
-     if(!programs?.length)throw Error("Sin programas oficiales en el área");
-     const sectionTotal=groupInfo.value_mill_eur;
-     const intro=mk("p","ad-stage-explainer",
-       "Área "+groupInfo.name+" · "+money(sectionTotal)+". Cada rama siguiente es un programa presupuestario real de este ministerio; pulsa para ver su importe y documento oficial.");
-     graphic.append(intro);
-     graphic.append(drawFlow({
-         name:groupInfo.name,total_mill_eur:sectionTotal
-       },programs));
-     note.textContent="Los programas suman exactamente el área seleccionada. "+
-       chosen.note+" "+data.not_comparable;
-     return;
-   }
-   const rootBranches=mode==="ministries"?groupMinistry(chosen.flows):chosen.flows;
-   graphic.append(drawFlow(chosen,rootBranches));
-   const descriptor=mk("p","ad-stage-explainer",
+   title.append(h2,mk("p","",chosen.year_label+" · "+chosen.amount_kind));
+   metadata.append(title,mk("strong","",money(chosen.total_mill_eur)));
+   graphic.append(mk("p","ad-stage-explainer",
      mode==="ministries"?
-      "Pulsa un área de gasto para ver sus programas; después pulsa un programa para abrir su ficha.":
-      "Pulsa una función COFOG para conocer su desglose documental disponible. Las subfunciones sin importes autonómicos se identificarán expresamente.");
-   graphic.prepend(descriptor);
+       "Pulsa una rama para abrir sus programas en el panel lateral, sin perder el Sankey principal.":
+       "Pulsa una función para abrir las subfunciones disponibles en el panel lateral."));
+   graphic.append(drawFlow(chosen,
+     mode==="ministries"?groupMinistry(chosen.flows):chosen.flows));
+   const source=sourceAnchor(chosen.source_url,"Consultar documento original del organismo");
+   if(source)actions.append(source);
    note.textContent=chosen.note+" "+data.not_comparable;
+   renderDrawer();
  }
- // Enlace reproducible para comprobar en navegador niveles concretos, sin
- // simular un clic ni alterar cifras: ?nivel=funcion&codigo=07, etc.
+ // Direct links are reproducible, but the complete original Sankey is kept.
  if(!embedded){
    const code=params.get("codigo"),level=params.get("nivel");
    const selected=(data[mode]||[]).find(x=>x.id===selectedIds[mode]);
-   if(selected && code && level){
+   if(selected&&code&&level){
      if(mode==="ministries"){
-       const area=groupMinistry(selected.flows);
-       if(level==="area" && area.some(x=>x.code===code))selectedGroup=code;
-       if(level==="programa"){
+       const group=groupMinistry(selected.flows);
+       if(level==="area"&&group.some(x=>x.code===code))
+         selectedGroup=code;
+       else if(level==="programa"){
          const program=selected.flows.find(x=>x.code===code);
-         if(program){selectedGroup=program.code.charAt(0);selectedLeaf=program;}
+         if(program){
+           selectedGroup=program.code.charAt(0);
+           selectedLeaf=program;
+         }
        }
      }else{
-       if(level==="funcion" && selected.flows.some(x=>x.code===code))selectedGroup=code;
-       if(level==="subfuncion"){
-         const groups=Object.entries(data.cofog_group_labels||{}).flatMap(([parent,items])=>
-           items.map(item=>({...item,parent})));
-         const found=groups.find(x=>x.code===code);
-         if(found && selected.flows.some(x=>x.code===found.parent)){
-           selectedGroup=found.parent;selectedLeaf=found;
+       if(level==="funcion"&&selected.flows.some(x=>x.code===code))
+         selectedGroup=code;
+       else if(level==="subfuncion"){
+         const matches=Object.entries(data.cofog_group_labels||{}).
+           flatMap(([parent,items])=>items.map(item=>({...item,parent})));
+         const item=matches.find(x=>x.code===code);
+         if(item&&selected.flows.some(x=>x.code===item.parent)){
+           selectedGroup=item.parent;selectedLeaf=item;
          }
        }
      }
