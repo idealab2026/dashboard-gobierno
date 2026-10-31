@@ -219,9 +219,15 @@ def main() -> None:
                     print("DIAGNÓSTICO COFOG 01.3:", {
                         "missing": required,
                         "body_chars": len(terminal_dom),
-                        "has_drawer": "pf-drawer" in terminal_dom,
-                        "has_open_state": "is-detail-open" in terminal_dom,
-                        "has_further": "pf-drill-route" in terminal_dom,
+                        "has_drawer": 'class="pf-drawer"' in terminal_dom,
+                        "has_open_state": 'class="pf-explorer is-detail-open"' in terminal_dom,
+                        "has_further": '<details class="pf-drill-route"' in terminal_dom,
+                        "titles": __import__("re").findall(
+                            r'<h2 class="pf-detail-title"[^>]*>([^<]*)</h2>',
+                            terminal_dom
+                        )[:6],
+                        "node_mentions": terminal_dom.count("Fin del desglose numérico COFOG para"),
+                        "cofog_01_3": terminal_dom.count("01.3"),
                         "has_runtime_error": "RuntimeError:" in terminal_dom,
                         "html_fragment": terminal_dom[terminal_dom.find("pf-detail")-130:
                             terminal_dom.find("pf-detail")+1500] if "pf-detail" in terminal_dom else terminal_dom[:900],
