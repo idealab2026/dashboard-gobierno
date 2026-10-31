@@ -1518,7 +1518,7 @@ html {
     <span class="idealab-brand-product">· España en Datos</span>
   </a>
   <div class="idealab-nav-links">
-    <a href="/dashboard-gobierno/" class="il-nav-start">Inicio</a>
+    <a href="/" class="il-nav-start">Inicio</a>
     <a class="idealab-nav-priority" href="#mapa-dinero">Mapa del dinero</a>
     <a href="#resumen">Indicadores</a>
     <details class="idealab-nav-areas">
@@ -1543,7 +1543,7 @@ html {
   <details class="idealab-nav-mobile">
     <summary aria-label="Abrir menú de navegación">Menú <span aria-hidden="true">☰</span></summary>
     <div class="idealab-nav-mobile-panel">
-      <a href="/dashboard-gobierno/">Inicio</a>
+      <a href="/">Inicio</a>
       <a href="#mapa-dinero">Mapa del dinero</a>
       <a href="#resumen">Indicadores</a>
       <div class="idealab-nav-mobile-heading">Áreas temáticas</div>
