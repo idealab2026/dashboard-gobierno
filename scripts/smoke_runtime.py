@@ -245,7 +245,7 @@ def main() -> None:
                     "07.3.1", "07.3.2", "07.3.3", "07.3.4",
                     "Sin programas indexados para esta clase")),
                 ("09.1",("09.1.1", "09.1.2", "NIVEL 3 COFOG")),
-            ]::
+            ]:
                 selected_url=url+"?detalle-cofog="+code
                 result=subprocess.run(
                     [*args[:-1],"--virtual-time-budget=12000",selected_url],
