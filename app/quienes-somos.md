@@ -240,3 +240,9 @@ footer: IDEA LAB · Investigación, análisis y divulgación
     <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">Seguir nuestro canal en X</a>
   </div>
 </main>
+
+```js
+// Analítica de visitas y eventos: permanece desactivada sin cuenta IDEA LAB configurada.
+import {installSiteAnalytics} from "./components/site-analytics.js";
+installSiteAnalytics();
+```
