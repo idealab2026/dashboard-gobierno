@@ -560,9 +560,6 @@ const rawPublicFinance = await FileAttachment("./data/public-finance.csv").csv({
 const rawSources = await FileAttachment("./data/public-finance-sources.csv").csv({typed: true});
 const rawTaxFigures = await FileAttachment("./data/public-finance-tax-figures.csv").csv({typed: true});
 
-const publicFinanceDataUrl = await FileAttachment("./data/public-finance.csv").url();
-const publicFinanceWorkbookUrl = await FileAttachment("./data/public-finance.xlsx").url();
-
 const publicFinance = rawPublicFinance
   .map(d => ({...d, year:Number(d.year), value:Number(d.value)}))
   .filter(d => Number.isFinite(d.year) && Number.isFinite(d.value));
@@ -636,11 +633,7 @@ const explorer = PublicFinanceExplorer(
   publicFinance,
   rawSources,
   rawTaxFigures,
-  {
-    year: displayYear,
-    dataUrl: publicFinanceDataUrl,
-    workbookUrl: publicFinanceWorkbookUrl
-  }
+  {year: displayYear}
 );
 ```
 
