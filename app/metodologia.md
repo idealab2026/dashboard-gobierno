@@ -190,3 +190,9 @@ Se conservan enlaces a [INE](https://www.ine.es/) y [IGAE](https://www.igae.pap.
 Ningún resultado se califica de «predicción validada» si no dispone de evaluación fuera de muestra. Las inferencias causales deben tener una estrategia de identificación, supuestos explícitos y análisis de sensibilidad.
 
 [Volver a España en Datos](/) · [Quiénes somos](/quienes-somos.html)
+
+```js
+// Analítica de visitas y eventos: permanece desactivada sin cuenta IDEA LAB configurada.
+import {installSiteAnalytics} from "./components/site-analytics.js";
+installSiteAnalytics();
+```
