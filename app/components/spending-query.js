@@ -13,7 +13,7 @@ export const COFOG_ALIASES = Object.freeze({
   farmaceutica: "07.1",
   ferrocarril: "04.5", ferrocarriles: "04.5", ferroviario: "04.5",
   ferroviaria: "04.5", tren: "04.5", trenes: "04.5", transporte: "04.5",
-  transportes: "04.5",
+  transportes: "04.5", carretera: "04.5", carreteras: "04.5", vial: "04.5", viales: "04.5",
   educacion: "09", educativo: "09", educativa: "09", colegios: "09",
   colegio: "09", ensenanza: "09", escuelas: "09", escuela: "09",
   universidad: "09.4", universidades: "09.4",
@@ -71,7 +71,7 @@ export function searchSpendingRecords(items, query, options = {}) {
     const codeDepth = code.split(".").length - 1;
     const relevance = terms.length
       ? (directHits * 25) + (synonymHits * 20)
-        + (item.tipo === "agregado" ? 120 - codeDepth * 13 : 15)
+        + (item.tipo === "agregado" ? 120 - codeDepth * 13 : item.tipo === "programa" ? 195 : 15)
       : (item.tipo === "agregado" ? 120 - codeDepth * 13 : 300);
     matches.push({
       ...item,
