@@ -838,7 +838,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
           const selectedCode=item.code;
           const node=svgEl("g",{
             class:"pf-extension-node is-taxonomy",role:"button",tabindex:"0",
-            "data-code":selectedCode,
+            "data-code":selectedCode,"data-anchor-y":center,
             "aria-label":selectedCode+" · "+item.title+
               " · nivel de clasificación sin importe publicado"
           });
@@ -954,7 +954,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
               " "+(nextX-70)+" "+(yy+cardH/2)+
               " "+nextX+" "+(yy+cardH/2),
             class:"pf-doc-line",
-            "data-source-code":selectedClass
+            "data-source-code":selectedClass,"data-source-y":selectedY
           }));
         }
         focusX=nextX;
