@@ -26,6 +26,19 @@ class PublicationPreviewTests(unittest.TestCase):
         self.assertIn("idealab2026.github.io/dashboard-gobierno/#mapa-dinero", validated_text)
         self.assertLessEqual(count, 280)
 
+    def test_midas_intro_is_truthful_and_ready_for_review(self):
+        draft = json.loads((Path(__file__).resolve().parents[1] / "drafts" / "2026-10-31-midas-competicion-sintetica.json").read_text(encoding="utf-8"))
+        text, count = validate(draft)
+        self.assertLessEqual(count, 280)
+        self.assertIn("23 estrategias", text)
+        self.assertIn("48 sesiones simuladas", text)
+        self.assertIn("Datos sintéticos", text)
+        self.assertIn("#AlgoTrading", text)
+        self.assertIn("#QuantTrading", text)
+        self.assertIn("https://idealab2026.github.io/laboratorio-cuantitativo/", text)
+        self.assertEqual(draft["status"], "review_pending")
+        self.assertIn("NO PUBLICADO EN X", render(draft))
+
     def test_rejects_external_link(self):
         with self.assertRaises(ValueError):
             validate({**DRAFT, "text": "https://otro-dominio.example/"})
