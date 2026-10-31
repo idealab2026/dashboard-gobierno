@@ -1,0 +1,34 @@
+name: IDEA LAB · Contrato de analítica sin credenciales
+
+on:
+  pull_request:
+    paths:
+      - 'app/components/site-analytics.js'
+      - 'app/components/public-finance-sankey.js'
+      - 'app/*.md'
+      - 'scripts/tests/test_site_analytics.mjs'
+      - '.github/workflows/site-analytics-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analytics-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout sin credenciales persistidas
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Preparar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Pruebas de normalización, eventos y privacidad
+        run: node --test scripts/tests/test_site_analytics.mjs
+      - name: Dependencias de compilación
+        run: npm ci
+      - name: Verificar que todas las páginas compilan
+        run: npm run build
