@@ -165,6 +165,7 @@ def parse_regions():
              "note":"Administración regional S.1312. No incluye todo el gasto de Estado y ayuntamientos ejecutado en esta comunidad."
             })
         if abs(sum(r["total_mill_eur"] for r in result)-national_total)>0.2:
+            print("CCAA RECONCILIATION",{"regional_total":national_total,"sum_17_ccaa":sum(r["total_mill_eur"] for r in result),"diff":sum(r["total_mill_eur"] for r in result)-national_total,"regional":[(r["name"],r["total_mill_eur"]) for r in result]})
             raise ValueError("Suma de CCAA diferente del total regional oficial")
     return result
 
