@@ -72,8 +72,11 @@ class AdministrationSankeysContract(unittest.TestCase):
         self.assertIn('ministrySelect.addEventListener("change"',source)
         self.assertIn('regionSelect.addEventListener("change"',source)
         self.assertIn('sankeyHost.replaceChildren(spotlightSankey)',source)
-        self.assertIn('sankeyHost.replaceChildren(AdministrationSankeys(',source)
+        self.assertIn('sankeyHost.replaceChildren(isMinistry',source)
+        self.assertIn('MinistryBudgetTree(administrationSankeyData',source)
+        self.assertIn(':AdministrationSankeys(administrationSankeyData',source)
         self.assertIn('embedded:true,mode,selectedId:chosen.id',source)
+        self.assertIn('onSelectMinistry:(nextId)=>',source)
         self.assertIn('if(!embedded)root.append(tabs)',widget)
         self.assertIn('if(!embedded)root.append(chooser)',widget)
 
@@ -81,7 +84,7 @@ class AdministrationSankeysContract(unittest.TestCase):
         source=(ROOT/"app/index.md").read_text(encoding="utf-8")
         self.assertIn('regionSelect.value=""',source)
         self.assertIn('ministrySelect.value=""',source)
-        self.assertIn('mode==="ministries"?"2025-P":"2024"',source)
+        self.assertIn('isMinistry?"2025-P":"2024"',source)
         self.assertIn('No es el desglose de ingresos del Estado español',source)
         self.assertIn('const spotlightSankey = PublicFinanceExplorer(',source)
         self.assertLess(source.index('id="il-ministry-sankey"'),source.index('const spotlightSankey = PublicFinanceExplorer('))
@@ -111,6 +114,28 @@ class AdministrationSankeysContract(unittest.TestCase):
         leaf=widget.split('function openLeaf(branch){',1)[1].split('function sectionLinks(',1)[0]
         self.assertIn('renderDrawer()',leaf)
         self.assertNotIn('render();',leaf)
+
+
+    def test_homepage_ministry_keeps_all_nodes_and_drills_inline(self):
+        source=(ROOT/"app/components/ministry-budget-tree.js").read_text(encoding="utf-8")
+        home=(ROOT/"app/index.md").read_text(encoding="utf-8")
+        self.assertIn("function groupsOf(m)",source)
+        self.assertIn("const total=ministries.reduce(",source)
+        self.assertIn("ministry-budget-tree",source)
+        self.assertIn("root.dataset.drillLevel=",source)
+        self.assertIn('if(chosen){',source)
+        self.assertIn('if(area){',source)
+        self.assertIn('if(selected){',source)
+        self.assertIn('wrap.replaceChildren(el)',source)
+        self.assertIn('data-ministry-id',source)
+        self.assertIn('data-area',source)
+        self.assertIn('data-program',source)
+        self.assertIn('requestAnimationFrame(()=>wrap.scrollTo(',source)
+        self.assertIn('Suma de secciones',source)
+        self.assertIn('No es gasto público consolidado S.13',source)
+        self.assertIn('MinistryBudgetTree(administrationSankeyData',home)
+        self.assertNotIn('ad-drill-panel',source)
+        self.assertNotIn('renderDrawer()',source)
 
 
     def test_regional_cofog_subgroups_never_inherit_national_amounts(self):
