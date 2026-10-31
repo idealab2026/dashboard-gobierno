@@ -1510,7 +1510,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
   // Deep-link reproducible para QA y para compartir una subfunción concreta.
   // Nunca se abre si el código no figura en los datos del ejercicio vigente.
   const deepCode = new URLSearchParams(window.location.search).get("detalle-cofog");
-  if (deepCode && /^\d{2}(?:\.\d+)?$/.test(deepCode)) {
+  if (deepCode && /^\d{2}(?:\.\d+){0,2}$/.test(deepCode)) {
     const selected = rowMapForYear().get(deepCode);
     if (selected?.side === "gasto") openDetail(selected);
     else if(cofogsFind(deepCode)){
