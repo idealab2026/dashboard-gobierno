@@ -1,7 +1,8 @@
 /** Coverage counts, not monetary sums: one indexed observation is one row.
  * Classifications are different lenses and MUST NOT be added together. */
 const TYPE_LABELS={
-  programa:"Programas PGE",
+  programa:"Programas PGE · secciones verificadas",
+  programa_documental:"Programas con ficha documental",
   regional:"Funciones de CCAA",
   agregado:"Categorías COFOG · España",
   intervencion:"Intervenciones AECID",
@@ -38,10 +39,16 @@ export const COVERAGE_MODES=Object.freeze([
   {id:"ccaa",title:"COFOG · CCAA",
     caption:"Funciones de 17 administraciones regionales, no todo el gasto territorial."}
 ]);
-const recordType=x=>Object.prototype.hasOwnProperty.call(TYPE_LABELS,x?.tipo)?x.tipo:"otro";
+const recordType=x=>{
+  // Two selected documentary programme sheets also have tipo="programa".
+  // They are NOT two extra distinct budget programmes in the PGE index.
+  if(x?.tipo==="programa")
+    return x.codigo_seccion&&x.admin_hierarchy?"programa":"programa_documental";
+  return Object.prototype.hasOwnProperty.call(TYPE_LABELS,x?.tipo)?x.tipo:"otro";
+};
 export function classificationKey(item,mode){
   if(mode==="tipo")return recordType(item);
-  if(mode==="area"&&item?.tipo==="programa")
+  if(mode==="area"&&recordType(item)==="programa")
     return AREA_LABELS[String(item.codigo_presupuestario||"").slice(0,1)]
       ?String(item.codigo_presupuestario).slice(0,1):"otros";
   if(mode==="cofog"&&item?.tipo==="agregado"){
