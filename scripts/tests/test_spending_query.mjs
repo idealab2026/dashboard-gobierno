@@ -5,7 +5,7 @@ import {dsvFormat} from "d3-dsv";
 import {searchSpendingRecords, normalizeSpending} from "../../app/components/spending-query.js";
 import {OFFICIAL_DRILL_ROUTES, relatedBudgetPrograms} from "../../app/components/official-drill-routes.js";
 import {canonicalFinanceCode} from "../../app/components/finance-code.js";
-import {compareFinanceCodes,sortedFinanceChildren} from "../../app/components/finance-hierarchy.js";
+import {compareFinanceCodes,sortedFinanceChildren,financeExpansionPath,financeExpansionColumns} from "../../app/components/finance-hierarchy.js";
 
 const source = readFileSync(new URL("../../app/data/seed/fact_finanzas_publicas_2024.csv", import.meta.url), "utf8").replace(/^\uFEFF/, "");
 const items = dsvFormat(";").parse(source)
@@ -153,4 +153,34 @@ test("COFOG hierarchy respects strict parent relationships and excludes analytic
  assert.deepEqual(sortedFinanceChildren(rows,"01").map(x=>x.code),["01.1","01.7"]);
  assert.deepEqual(sortedFinanceChildren(rows,"01",{includeAnalytic:true}).map(x=>x.code),["01.1","01.2","01.7"]);
  assert.deepEqual(sortedFinanceChildren(rows,"04").map(x=>x.code),["04.5"]);
+});
+
+test("horizontal Sankey expansion keeps every ancestor and sibling in code order",()=>{
+ const rows=[
+  {code:"S13.GASTO",parent_code:"",value:725001},
+  {code:"04",parent_code:"S13.GASTO",value:80908},
+  {code:"04.5",parent_code:"04",value:28634},
+  {code:"04.1",parent_code:"04",value:21124},
+  {code:"04.3",parent_code:"04",value:12000},
+  {code:"04.2",parent_code:"04",value:7156}
+ ];
+ assert.deepEqual(financeExpansionPath(rows,"04.5").map(r=>r.code),
+  ["S13.GASTO","04","04.5"]);
+ assert.deepEqual(financeExpansionColumns(rows,"04.5").map(s=>s.parent.code),
+  ["04","04.5"]);
+ assert.deepEqual(financeExpansionColumns(rows,"04.5")[0].children.map(r=>r.code),
+  ["04.1","04.2","04.3","04.5"]);
+ assert.deepEqual(financeExpansionColumns(rows,"04.5")[1].children,[]);
+ assert.deepEqual(financeExpansionPath(rows,"99"),[]);
+});
+
+test("the national Sankey maintains one SVG and does not rely on a side tree",()=>{
+ const source=readFileSync(new URL("../../app/components/public-finance-sankey.js",import.meta.url),"utf8");
+ assert.ok(source.includes('function expandInlineSankey(selected)'));
+ assert.ok(source.includes('svg.querySelectorAll(".pf-inline-extension").forEach(element=>element.remove())'));
+ assert.ok(source.includes('svg.append(group)'));
+ assert.ok(source.includes('chart.classList.add("is-expanded")'));
+ assert.ok(source.includes('chart.scrollTo({left:target,behavior:"smooth"})'));
+ assert.ok(source.includes('expandInlineSankey(row);'));
+ assert.ok(!source.includes('function renderSpendingTree(row)'));
 });
