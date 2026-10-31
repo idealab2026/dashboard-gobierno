@@ -100,7 +100,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   scope.append(scopeLabel,clearScope);
   root.append(scope);
   const examples=make("div","sf-examples");examples.append(make("span","","Prueba:"));
-  for(const label of ["Transporte","Mujeres Paraguay","Ayuda militar exterior","Ferrocarril Marruecos","Charlas feministas"]){
+  for(const label of ["Sanidad","Hospitales","Transporte","Mujeres Paraguay","Ferrocarril Marruecos","Charlas feministas"]){
     const b=make("button","",label);b.type="button";b.addEventListener("click",()=>{selectedCode="";clearScope.hidden=true;scopeLabel.textContent="Sin filtro COFOG · resultados temáticos no equivalen a un desglose de la función";input.value=label;type.value="";year.value="";country.value="";render();input.focus();});examples.append(b);
   }
   root.append(examples);
