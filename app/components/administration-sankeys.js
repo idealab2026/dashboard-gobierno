@@ -99,8 +99,10 @@ export function AdministrationSankeys(data){
  const details=mk("div","ad-details");
  const note=mk("p","ad-footnote");
  root.append(metadata,graphic,actions,details,note);
- let mode="ministries",selectedGroup=null;
+ const params=new URLSearchParams(window.location.search);
+ let mode=params.get("tipo")==="ccaa"?"regions":"ministries",selectedGroup=null;
  let selectedIds={ministries:null,regions:null};
+ if(params.has("id"))selectedIds[mode]=params.get("id");
  select.addEventListener("change",()=>{selectedIds[mode]=select.value;selectedGroup=null;render();});
  function drawFlow(subject,branches){
   const W=1200,rowH=48,top=42,bottom=35;
