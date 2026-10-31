@@ -692,6 +692,139 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     }
   }
 
+  function renderSpendingTree(row) {
+    // Progressive columns preserve the official parent/child relationship.
+    // A leaf never inherits an invented amount from a different classification.
+    root.classList.add("is-tree-open");
+    const map=rowMapForYear(), rootRow=map.get("S13.GASTO");
+    const path=[],seen=new Set();
+    let item=row;
+    while(item&&!seen.has(item.code)){
+      path.unshift(item);
+      seen.add(item.code);
+      if(item.code==="S13.GASTO")break;
+      item=item.parent_code?map.get(item.parent_code):rootRow;
+    }
+    if(path[0]?.code!=="S13.GASTO"&&rootRow)path.unshift(rootRow);
+    const head=htmlEl("header","pf-tree-head");
+    const kicker=htmlEl("span","pf-tree-kicker");
+    kicker.textContent="Árbol de partidas · COFOG "+currentYear;
+    const title=htmlEl("h2");title.textContent=rowLabel(row);
+    const description=htmlEl("p");
+    const parent=row.parent_code?map.get(row.parent_code):null;
+    description.textContent=formatMillions(row.value)+" · "+
+      formatPct(row.value,rootRow?.value||row.value)+" del gasto público"+
+      (parent&&parent.code!=="S13.GASTO"?" · "+formatPct(row.value,parent.value)+
+      " de "+rowLabel(parent):"");
+    head.append(kicker,title,description);
+    detail.append(head);
+
+    const nav=htmlEl("nav","pf-tree-crumbs");
+    nav.setAttribute("aria-label","Ruta navegable COFOG");
+    path.forEach((node,index)=>{
+      if(index){
+        const sep=htmlEl("span","pf-tree-chevron");
+        sep.textContent="›";nav.append(sep);
+      }
+      const label=node.code==="S13.GASTO"?
+        "España · gasto consolidado":node.code+" · "+rowLabel(node);
+      if(index===path.length-1){
+        const strong=htmlEl("strong");
+        strong.textContent=label;nav.append(strong);
+      }else{
+        const back=htmlEl("button");
+        back.type="button";back.textContent=label;
+        back.addEventListener("click",()=>openDetail(node));
+        nav.append(back);
+      }
+    });
+    detail.append(nav);
+
+    const viewport=htmlEl("div","pf-tree-scroller");
+    viewport.setAttribute("role","region");
+    viewport.setAttribute("aria-label","Niveles de gasto COFOG ordenados por código");
+    for(let depth=0;depth<path.length;depth++){
+      const parentRow=path[depth];
+      const candidates=detailRowsFor(parentRow);
+      if(!candidates.length)continue;
+      const col=htmlEl("section","pf-tree-column");
+      col.dataset.parentCode=parentRow.code;
+      const colTitle=htmlEl("h3","pf-tree-col-heading");
+      colTitle.textContent=parentRow.code==="S13.GASTO"?
+        "Funciones · orden COFOG":parentRow.code+" · Subfunciones";
+      const list=htmlEl("div","pf-tree-options");
+      for(const child of candidates){
+        const button=htmlEl("button","pf-tree-option");
+        button.type="button";button.dataset.code=child.code;
+        if(path[depth+1]?.code===child.code)
+          button.setAttribute("aria-current","step");
+        const code=htmlEl("span","pf-tree-code");
+        code.textContent=child.code;
+        const name=htmlEl("span","pf-tree-name");
+        name.textContent=rowLabel(child);
+        const value=htmlEl("span","pf-tree-amount");
+        value.textContent=formatMillions(child.value)+" · "+
+          formatPct(child.value,parentRow.value);
+        button.append(code,name,value);
+        button.addEventListener("click",()=>openDetail(child));
+        list.append(button);
+      }
+      col.append(colTitle,list);
+      viewport.append(col);
+    }
+
+    const immediateChildren=detailRowsFor(row);
+    if(!immediateChildren.length){
+      const terminal=htmlEl("section","pf-tree-terminal");
+      const heading=htmlEl("strong");
+      heading.textContent="Último nivel numérico COFOG disponible";
+      const note=htmlEl("p");
+      note.textContent="No hay más subpartidas de "+row.code+
+        " verificadas en esta serie IGAE "+currentYear+
+        ". Los programas, contratos y pagos usan otras clasificaciones; "+
+        "no se atribuyen importes sin una conciliación documental.";
+      terminal.append(heading,note);viewport.append(terminal);
+    }
+    detail.append(viewport);
+    // Show the newly opened right-hand column; the breadcrumb and SVG persist.
+    viewport.scrollLeft=viewport.scrollWidth;
+
+    const src=sourceFor(row,sourceMap);
+    const source=htmlEl("p","pf-source");
+    source.append(document.createTextNode(
+      "Fuente: "+(src.organization?src.organization+" · ":"")+src.name));
+    if(src.url&&/^https?:\/\//i.test(src.url)){
+      const link=document.createElement("a");
+      link.href=src.url;link.target="_blank";link.rel="noopener noreferrer";
+      link.textContent=" · consultar documento oficial";
+      source.append(link);
+    }
+    detail.append(source);
+
+    if(!immediateChildren.length){
+      const evidence=htmlEl("details","pf-tree-evidence");
+      const summary=htmlEl("summary");
+      summary.textContent="Continuar con programas, ejecución y contratos (otras fuentes)";
+      const content=htmlEl("section","pf-detail-bridge");
+      appendFurtherInvestigation(content,row,false);
+      const link=document.createElement("a");
+      const u=new URL("buscador-partidas.html",window.location.href);
+      if(/^\d{2}(?:\.\d+)?$/.test(row.code)){
+        u.searchParams.set("cofog",row.code);
+        u.searchParams.set("anio",String(currentYear));
+      }
+      link.href=u.href;
+      link.textContent="Buscar partidas relacionadas";
+      content.prepend(link);
+      evidence.append(summary,content);detail.append(evidence);
+    }
+    // Highlight original Sankey node, never recreate the chart on drill.
+    for(const node of chart.querySelectorAll(".pf-node-group")){
+      node.setAttribute("aria-pressed",
+        String(node.dataset.code===path[1]?.code));
+    }
+  }
+
   function openDetail(row) {
     if (!row) return;
     // Categorías públicas agregadas: no se envían códigos ni textos de las partidas.
@@ -702,6 +835,11 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     currentRow = row;
     root.classList.add("is-detail-open");
     detail.replaceChildren();
+    if(row.side === "gasto" || row.code === "S13.GASTO") {
+      renderSpendingTree(row);
+      return;
+    }
+    root.classList.remove("is-tree-open");
 
     const yearMap = rowMapForYear();
     const parent = row.parent_code ? yearMap.get(row.parent_code) : null;
@@ -862,6 +1000,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     const adjustment = map.get("ADJ.VINTAGE.2024") || rowsForYear().find(d => d.is_vintage_adjustment);
 
     root.classList.add("is-detail-open");
+    root.classList.remove("is-tree-open");
     currentRow = null;
     detail.replaceChildren();
 
@@ -1146,14 +1285,14 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     footnote.innerHTML = `<b>Interacción.</b> Pulsa un nodo o una rama para consultar el desglose, porcentaje, metodología y fuente oficial.${hasAdjustment ? " La pequeña rama de ajuste estadístico es técnica y no representa un ingreso económico." : ""}`;
   }
 
-  const closeDrawer = () => root.classList.remove("is-detail-open");
+  const closeDrawer = () => root.classList.remove("is-detail-open","is-tree-open");
   closeButton.addEventListener("click", closeDrawer);
   backdrop.addEventListener("click", closeDrawer);
   methodologyButton.addEventListener("click", openMethodology);
   mobileMethodologyButton.addEventListener("click", () => { mobileTools.open = false; openMethodology(); });
   document.addEventListener("keydown", event => {
     if (event.key === "Escape" && root.classList.contains("is-detail-open")) {
-      root.classList.remove("is-detail-open");
+      root.classList.remove("is-detail-open","is-tree-open");
     }
   });
 
@@ -1162,7 +1301,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       detail: {name: "sankey_cambio_anio"}
     }));
     currentYear = Number(yearSelect.value);
-    root.classList.remove("is-detail-open");
+    root.classList.remove("is-detail-open","is-tree-open");
     currentRow = null;
     renderChart();
   });
