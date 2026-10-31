@@ -93,11 +93,24 @@ class NamedSpendingTests(unittest.TestCase):
 
     def test_verification_is_not_inferred_from_generic_topic_matches(self):
         source = (ROOT / "app/components/partidas-search.js").read_text(encoding="utf-8")
-        self.assertIn("Solo relación temática", source)
+        self.assertIn("Correspondencia temática COFOG", source)
         self.assertIn("Los resultados temáticos no prueban financiación", source)
         self.assertIn("No significa que la partida no exista", source)
         self.assertIn('target="_blank"', source) if 'target="_blank"' in source else self.assertIn('a.target="_blank"', source)
 
+
+    def test_health_search_must_have_real_cofog_aliases_and_browser_coverage(self):
+        component = (ROOT / "app/components/partidas-search.js").read_text(encoding="utf-8")
+        aliases = (ROOT / "app/components/spending-query.js").read_text(encoding="utf-8")
+        smoke = (ROOT / "scripts/smoke_runtime.py").read_text(encoding="utf-8")
+        workflow = (ROOT / ".github/workflows/observable-pages.yml").read_text(encoding="utf-8")
+        self.assertIn('sanidad: "07"', aliases)
+        self.assertIn('hospitales: "07.3"', aliases)
+        self.assertIn('medicamentos: "07.1"', aliases)
+        self.assertIn('const matching=searchSpendingRecords(', component)
+        self.assertIn('Sanidad corresponde a la función oficial COFOG 07', component)
+        self.assertIn('q=sanidad', smoke)
+        self.assertIn('node --test scripts/tests/test_spending_query.mjs', workflow)
 
     def test_sankey_functional_drawer_links_to_scoped_finder(self):
         sankey = (ROOT / "app/components/public-finance-sankey.js").read_text(encoding="utf-8")
