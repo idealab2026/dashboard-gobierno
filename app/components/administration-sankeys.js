@@ -36,12 +36,14 @@ function groupMinistry(items){
  }
  return [...map.values()].sort((a,b)=>b.value_mill_eur-a.value_mill_eur);
 }
-export function AdministrationSankeys(data){
+export function AdministrationSankeys(data, options={}){
  const root=mk("section","ad-sankeys");
  root.id="administraciones-sankey";
  const style=mk("style");
  style.textContent=`
  .ad-sankeys{width:100%;max-width:none;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif;min-width:0;color:#0b2447}
+ .ad-sankeys.ad-embedded{padding:0;margin:0}
+ .ad-sankeys.ad-embedded .ad-metadata{margin-top:6px}
  .ad-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
  .ad-tabs button{padding:10px 15px;border:1px solid #cfd9e5;border-radius:9px;background:#fff;color:#273f5a;font:700 .84rem system-ui;cursor:pointer}
  .ad-tabs button[aria-selected="true"]{background:#0b2447;border-color:#0b2447;color:#fff}
@@ -84,7 +86,9 @@ export function AdministrationSankeys(data){
   tabs.append(b);tabButtons[key]=b;
  }
  tabs.setAttribute("role","tablist");
- root.append(tabs);
+ const embedded=Boolean(options.embedded);
+ if(embedded)root.classList.add("ad-embedded");
+ if(!embedded)root.append(tabs);
  const chooser=mk("div","ad-chooser");
  const selwrap=mk("div");
  const selLabel=mk("label","","Seleccionar administración");
@@ -92,7 +96,7 @@ export function AdministrationSankeys(data){
  select.id="ad-entity-select";selLabel.htmlFor=select.id;
  selwrap.append(selLabel,select);
  const period=mk("aside");chooser.append(selwrap,period);
- root.append(chooser);
+ if(!embedded)root.append(chooser);
  const metadata=mk("div","ad-metadata");
  const graphic=mk("div","ad-flow-wrap");
  const actions=mk("div","ad-actions");
@@ -100,9 +104,10 @@ export function AdministrationSankeys(data){
  const note=mk("p","ad-footnote");
  root.append(metadata,graphic,actions,details,note);
  const params=new URLSearchParams(window.location.search);
- let mode=params.get("tipo")==="ccaa"?"regions":"ministries",selectedGroup=null;
+ let mode=options.mode==="regions"?"regions":options.mode==="ministries"?"ministries":params.get("tipo")==="ccaa"?"regions":"ministries",selectedGroup=null;
  let selectedIds={ministries:null,regions:null};
- if(params.has("id"))selectedIds[mode]=params.get("id");
+ if(options.selectedId!=null)selectedIds[mode]=String(options.selectedId);
+ else if(params.has("id") && !embedded)selectedIds[mode]=params.get("id");
  select.addEventListener("change",()=>{selectedIds[mode]=select.value;selectedGroup=null;render();});
  function drawFlow(subject,branches){
   const W=1200,rowH=48,top=42,bottom=35;
@@ -170,13 +175,15 @@ export function AdministrationSankeys(data){
   details.append(card);
  }
  function render(){
-  tabs.querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected",String(x===tabButtons[mode])));
+  if(!embedded)tabs.querySelectorAll("button").forEach(x=>x.setAttribute("aria-selected",String(x===tabButtons[mode])));
   select.replaceChildren();
   const list=data[mode]||[];
   if(!selectedIds[mode]||!list.some(x=>x.id===selectedIds[mode]))selectedIds[mode]=list[0]?.id||null;
   for(const entity of list){const o=mk("option","",entity.name);o.value=entity.id;o.selected=entity.id===selectedIds[mode];select.append(o)}
   const chosen=list.find(x=>x.id===selectedIds[mode]);
   period.textContent=chosen?.year_label||"No hay importes oficiales cargados";
+  root.dataset.administrationMode=mode;
+  root.dataset.administrationId=chosen?.id||"";
   metadata.replaceChildren();graphic.replaceChildren();actions.replaceChildren();details.replaceChildren();
   if(!chosen || !chosen.verified || !Array.isArray(chosen.flows)||!chosen.flows.length){
     graphic.append(mk("p","ad-empty","No se ha validado todavía una cifra oficial conciliada para esta administración. No se representa un Sankey sin datos."));
