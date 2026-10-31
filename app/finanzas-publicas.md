@@ -335,10 +335,19 @@ body {
   -webkit-hyphens: auto;
 }
 
+
+/* IDEA LAB logotype: shared visual identity without replacing product naming. */
+.idealab-brand {display:inline-flex; align-items:center; gap:.55rem; min-width:0;}
+.idealab-brand-logo {display:block; flex:none; width:clamp(126px,12vw,160px); height:auto; aspect-ratio:660/156; object-fit:contain;}
+@media(max-width:768px) {
+  .idealab-brand-logo {width:118px;}
+  .idealab-brand-product {display:none!important;}
+}
+
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación España en Datos">
-  <a class="idealab-brand" href="/">IDEA LAB <span class="idealab-brand-product">· España en Datos</span></a>
+  <a class="idealab-brand" href="/" aria-label="IDEA LAB · España en Datos"><img class="idealab-brand-logo" src="./logo-idea-lab.svg" alt="IDEA LAB" width="154" height="37" /><span class="idealab-brand-product">· España en Datos</span></a>
   <div class="idealab-nav-links">
     <a href="/" class="il-nav-start">Inicio</a>
     <a class="idealab-nav-priority" href="/#mapa-dinero">Mapa del dinero</a>
