@@ -157,6 +157,25 @@ def main() -> None:
             if "RuntimeError:" in health_dom:
                 raise AssertionError("RuntimeError en búsqueda sanidad")
             print("Búsqueda sanidad OK: 102.942 M€, servicios hospitalarios y subfunciones")
+
+            # Road maintenance query must lead to an actual 453C State Budget
+            # program, never to a fabricated execution figure from COFOG 04.5.
+            road_url = search_url + "?q=" + quote("mantenimiento de carreteras")
+            road = subprocess.run(
+                [*args[:-1], "--virtual-time-budget=8000", road_url],
+                text=True, capture_output=True, timeout=85
+            )
+            if road.returncode:
+                raise AssertionError("Chrome no ejecuta consulta de mantenimiento de carreteras")
+            road_dom = road.stdout
+            for required in ("Conservación, mantenimiento y explotación de carreteras",
+                             "1.208,41 M€", "453C", "Ver capítulos presupuestarios",
+                             "No equivale a gasto ejecutado"):
+                if required not in road_dom:
+                    raise AssertionError("No se encontró programa 453C o su trazabilidad: " + required)
+            if "Sin coincidencias en el índice disponible" in road_dom or "RuntimeError:" in road_dom:
+                raise AssertionError("La búsqueda de mantenimiento de carreteras ha fallado")
+            print("Búsqueda mantenimiento carreteras OK: programa 453C, 1.208,41 M€ (2024-P)")
         finally:
             server.shutdown()
             server.server_close()
