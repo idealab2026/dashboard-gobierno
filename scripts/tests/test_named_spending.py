@@ -82,7 +82,7 @@ class NamedSpendingTests(unittest.TestCase):
         self.assertIn('["programa_pge","Programas PGE"]', finder)
         self.assertIn('["programa_documental","Programas con ficha"]', finder)
         self.assertIn('["regional","Funciones CCAA"]', finder)
-        self.assertIn('programa:"Programa de los PGE"', finder)
+        self.assertIn('programa:item.codigo_seccion&&item.admin_hierarchy?"Programa de los PGE":"Programa documentado"', finder)
         self.assertIn('part.importe_eur/1000000', finder)
         self.assertIn('Conservación y mantenimiento de carreteras', finder)
         self.assertIn('carretera: "04.5"', engine)
