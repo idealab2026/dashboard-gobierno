@@ -3089,6 +3089,7 @@ import {PublicFinanceExplorer} from "./components/public-finance-sankey.js";
 const spotlightFinanceRaw = await FileAttachment("./data/public-finance.csv").csv({typed:true});
 const spotlightSources = await FileAttachment("./data/public-finance-sources.csv").csv({typed:true});
 const spotlightTaxes = await FileAttachment("./data/public-finance-tax-figures.csv").csv({typed:true});
+const verifiedSpendingCatalogue = await FileAttachment("./data/partidas-verificadas.json").json();
 const pensionMonthlyRows = await FileAttachment("./data/pensions-payroll.csv").csv({typed:true});
 const spotlightFinance = spotlightFinanceRaw
   .map(d => ({...d, year:Number(d.year), value:Number(d.value)}))
@@ -3101,7 +3102,7 @@ if (!spotlightYears.length) {
 }
 const spotlightSankey = PublicFinanceExplorer(
   spotlightFinance, spotlightSources, spotlightTaxes,
-  {year:spotlightYears[0]}
+  {year:spotlightYears[0], relatedPrograms: verifiedSpendingCatalogue.registros}
 );
 display(spotlightSankey);
 ```
