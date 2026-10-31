@@ -347,7 +347,7 @@ body {
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación España en Datos">
-  <a class="idealab-brand" href="/" aria-label="IDEA LAB · España en Datos"><img class="idealab-brand-logo" src="./logo-idea-lab.svg" alt="IDEA LAB" width="154" height="37" /><span class="idealab-brand-product">· España en Datos</span></a>
+  <a class="idealab-brand" href="https://idealab2026.github.io/" aria-label="IDEA LAB · España en Datos"><img class="idealab-brand-logo" src="./logo-idea-lab.svg" alt="IDEA LAB" width="154" height="37" /><span class="idealab-brand-product">· España en Datos</span></a>
   <div class="idealab-nav-links">
     <a href="/" class="il-nav-start">Inicio</a>
     <a class="idealab-nav-priority" href="/#mapa-dinero">Mapa del dinero</a>
@@ -356,6 +356,7 @@ body {
     <a href="/metodologia.html">Metodología</a>
     <a href="/actualizaciones.html">Actualización</a>
     <a href="/quienes-somos.html">Quiénes somos</a>
+      <a href="https://idealab2026.github.io/" aria-label="Web corporativa de IDEA LAB">IDEA LAB ↗</a>
     <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">En X</a>
   </div>
   <details class="idealab-nav-mobile">
@@ -376,6 +377,7 @@ body {
       <a href="/metodologia.html">Metodología</a>
       <a href="/actualizaciones.html">Actualización</a>
       <a href="/quienes-somos.html">Quiénes somos</a>
+      <a href="https://idealab2026.github.io/" aria-label="Web corporativa de IDEA LAB">IDEA LAB ↗</a>
       <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">En X ↗</a>
     </div>
   </details>
