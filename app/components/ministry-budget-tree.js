@@ -79,6 +79,18 @@ export function MinistryBudgetTree(data,options={}){
  root.append(trail,hint,wrap,note);
  let chosen=ministries.find(m=>String(m.id)===String(options.selectedId))||null;
  let selectedArea=null,selectedProgram=null;
+ // Deep-links usan exactamente la misma ruta jerárquica que la interacción.
+ const route=new URLSearchParams(window.location.search);
+ if(chosen && route.get("ambito")==="ministerio" &&
+    String(chosen.id)===route.get("id")){
+   const code=route.get("codigo"),level=route.get("nivel");
+   if(level==="area" && groupsOf(chosen).some(a=>a.code===code))
+     selectedArea=code;
+   else if(level==="programa"){
+     const verified=chosen.flows.find(p=>p.code===code);
+     if(verified){selectedArea=String(verified.code).charAt(0);selectedProgram=verified.code;}
+   }
+ }
  const baseW=1320,srcX=20,srcW=340,midX=475,midW=265,rightX=875,nodeW=390;
  const areaX=1455,progX=1950,endX=2445,nodeH=40,rowGap=48;
  function draw(){
