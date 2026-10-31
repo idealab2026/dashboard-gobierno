@@ -1,6 +1,6 @@
 /* Interactive ministry and regional Sankeys, backed only by reconciled official amounts. */
 const ns="http://www.w3.org/2000/svg";
-const nf=new Intl.NumberFormat("es-ES",{maximumFractionDigits:1});
+const nf=new Intl.NumberFormat("de-DE",{maximumFractionDigits:1}); // agrupación 4 cifras: 2.333 en vez de 2333
 const label=v=>String(v??"");
 const money=v=>nf.format(Number(v))+" M€";
 const SECTORS={
