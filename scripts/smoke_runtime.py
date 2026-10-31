@@ -235,11 +235,12 @@ def main() -> None:
             import re as _re_cofog
             for code,fragments in [
                 ("01.3",("01.1","01.3","01.7",
-                    "ÚLTIMO NIVEL COFOG CUANTIFICADO",
-                    "Investigar partidas relacionadas")),
+                    "CONTINUIDAD DOCUMENTAL · PGE",
+                    "Consultar programas presupuestarios")),
                 ("04.5",("04.1","04.5",
-                    "ÚLTIMO NIVEL COFOG CUANTIFICADO",
-                    "Investigar partidas relacionadas")),
+                    "CONTINUIDAD DOCUMENTAL · PGE",
+                    "Conservación, mantenimiento y explotación de carreteras",
+                    "Creación de infraestructuras de carreteras")),
             ]:
                 selected_url=url+"?detalle-cofog="+code
                 result=subprocess.run(
