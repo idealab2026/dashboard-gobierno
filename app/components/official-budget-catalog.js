@@ -7,7 +7,7 @@ export function matchingBudgetPrograms(code,year){
   return Number(year)>=2024 ? OFFICIAL_BUDGET_PROGRAMS.filter(x=>
     x.cofog_referencia===code ||
     // Parent group includes all its documentary thematic references.
-    (/^\\d{2}\\.\\d+$/.test(code)&&x.cofog_referencia.startsWith(code+".")) ||
-    (/^\\d{2}$/.test(code)&&x.cofog_referencia.startsWith(code+"."))
+    (/^\d{2}\.\d+$/.test(code)&&x.cofog_referencia.startsWith(code+".")) ||
+    (/^\d{2}$/.test(code)&&x.cofog_referencia.startsWith(code+"."))
   ) : [];
 }
