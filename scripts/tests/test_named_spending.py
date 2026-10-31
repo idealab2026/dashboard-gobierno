@@ -66,6 +66,31 @@ class NamedSpendingTests(unittest.TestCase):
                 self.assertIn('href="/buscador-partidas.html"', source)
         self.assertIn('aria-current="page"', (ROOT / "app/buscador-partidas.md").read_text(encoding="utf-8"))
 
+    def test_homepage_has_visible_search_and_preserves_sankey_priority(self):
+        home = (ROOT / "app/index.md").read_text(encoding="utf-8")
+        self.assertIn('class="il-quick-spending-form"', home)
+        self.assertIn('action="./buscador-partidas.html" method="get"', home)
+        self.assertIn('name="q"', home)
+        self.assertIn('type="search"', home)
+        self.assertIn('aria-labelledby="il-quick-spending-heading"', home)
+        self.assertLess(
+            home.index('<div id="inicio"'),
+            home.index('class="il-quick-spending"')
+        )
+        self.assertLess(
+            home.index('class="il-quick-spending"'),
+            home.index('<section id="mapa-dinero"')
+        )
+        self.assertEqual(home.count('class="il-quick-spending"'), 1)
+
+    def test_homepage_query_prefills_full_search(self):
+        page = (ROOT / "app/buscador-partidas.md").read_text(encoding="utf-8")
+        component = (ROOT / "app/components/partidas-search.js").read_text(encoding="utf-8")
+        self.assertIn('new URLSearchParams(window.location.search).get("q")', page)
+        self.assertIn('initialQuery:', page)
+        self.assertIn('initialQuery = ""', component)
+        self.assertIn('input.value=typeof initialQuery==="string"?initialQuery.slice(0,180):""', component)
+
     def test_verification_is_not_inferred_from_generic_topic_matches(self):
         source = (ROOT / "app/components/partidas-search.js").read_text(encoding="utf-8")
         self.assertIn("Solo relación temática", source)
