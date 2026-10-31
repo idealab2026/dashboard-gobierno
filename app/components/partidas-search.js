@@ -2,6 +2,8 @@
 import {searchSpendingRecords, normalizeSpending} from "./spending-query.js";
 const fold = normalizeSpending;
 const euro = new Intl.NumberFormat("es-ES", {maximumFractionDigits:0});
+// de-DE fuerza agrupación también en 4 cifras: 1.208,41 en lugar de 1208,41.
+const budgetMillions = new Intl.NumberFormat("de-DE", {minimumFractionDigits:2, maximumFractionDigits:2});
 const make = (tag, className, text) => {
   const el = document.createElement(tag);
   if (className) el.className = className;
@@ -186,7 +188,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
     const amountLabel=item.tipo==="agregado"
       ? euro.format(item.importe_eur)+" M€"
       : item.tipo==="programa"
-        ? new Intl.NumberFormat("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2}).format(item.importe_eur/1000000)+" M€"
+        ? budgetMillions.format(item.importe_eur/1000000)+" M€"
         : euro.format(item.importe_eur)+" €";
     const amount=make("strong","sf-amount",amountLabel);
     box.append(amount);
@@ -210,7 +212,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
         const row=make("tr");
         const name=make("td","",part.concepto);
         const value=make("td","sf-breakdown-amount",
-          new Intl.NumberFormat("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2}).format(part.importe_eur/1000000)+" M€");
+          budgetMillions.format(part.importe_eur/1000000)+" M€");
         row.append(name,value);
         table.append(row);
       }
