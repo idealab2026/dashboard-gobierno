@@ -1,5 +1,7 @@
 import {OFFICIAL_DRILL_ROUTES, relatedBudgetPrograms} from "./official-drill-routes.js";
 import {canonicalFinanceCode} from "./finance-code.js";
+import {COFOG_STRUCTURE,cofogsBelow,cofogsFind} from "./cofog-structure.js";
+import {matchingBudgetPrograms} from "./official-budget-catalog.js";
 import {compareFinanceCodes,sortedFinanceChildren,financeExpansionPath,financeExpansionColumns} from "./finance-hierarchy.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -390,6 +392,14 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     .pf-extension-end text{fill:#4b6278;font:600 13px system-ui}
     .pf-extension-end .pf-extension-end-title{fill:#8a662b;font-weight:800}
     .pf-extension-end a text{fill:#19547f;font-weight:800;text-decoration:underline}
+    .pf-extension-node.is-unquantified rect{fill:#fff;stroke:#bfccd9;stroke-dasharray:4 3}
+    .pf-extension-node.is-unquantified .pf-extension-value{fill:#657589}
+    .pf-extension-node.is-taxonomy rect{fill:#f2f7fc;stroke:#adbfce}
+    .pf-extension-node.is-taxonomy[aria-current="step"] rect{fill:#e6f0f9;stroke:#345e82;stroke-width:2.3}
+    .pf-class-line{fill:none;stroke:#aab9c8;stroke-width:1.5;stroke-dasharray:5 5}
+    .pf-doc-line{fill:none;stroke:#bd9b61;stroke-width:1.2;stroke-dasharray:3 5;opacity:.6}
+    .pf-extension-node a{cursor:pointer}
+    .pf-extension-heading{font-size:11px}
     .pf-inline-trail{display:flex;align-items:center;gap:6px;flex-wrap:wrap;
       padding:9px 11px;border:1px solid #dbe5ef;border-radius:9px;
       background:#f6f9fc;margin:8px 0;min-width:0}
@@ -489,8 +499,24 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     return parsed.filter(d => d.year === currentYear);
   }
 
+  // A complete 1999 COFOG taxonomy, overlaid WITHOUT altering the 2024
+  // official statistical facts. Absent group figures are null, not zero.
+  function expandedRowsForYear() {
+    const observed=rowsForYear();
+    const known=new Set(observed.map(row=>row.code));
+    const structural=COFOG_STRUCTURE.filter(row=>
+      row.code.split(".").length===2 && !known.has(row.code) &&
+      known.has(row.parent_code)
+    ).map(row=>({
+      code:row.code,parent_code:row.parent_code,
+      indicator_name:row.title,source_url:row.source_url,
+      year:currentYear,side:"gasto",level:"2",
+      value:null,is_taxonomy_only:true,is_analytic_cut:false
+    }));
+    return [...observed,...structural];
+  }
   function rowMapForYear() {
-    return new Map(rowsForYear().map(row => [row.code, row]));
+    return new Map(expandedRowsForYear().map(row => [row.code, row]));
   }
 
   function children(code, {includeAnalytic = false} = {}) {
@@ -692,7 +718,8 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
   function expandInlineSankey(selected){
     const svg=chart.querySelector("svg");
     if(!svg)return;
-    const rows=rowsForYear();
+    const rows=expandedRowsForYear();
+    const selectedClass=selected.classCode||null;
     const path=financeExpansionPath(rows,selected.code);
     if(path.length<2)return;
     const columns=financeExpansionColumns(rows,selected.code);
@@ -707,7 +734,14 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     const sourceX=1290,nodeW=390,stageGap=145,stageStride=535;
     const boxH=56,rowGap=15;
     const maxCount=Math.max(1,...columns.map(column=>column.children.length));
-    const height=Math.max(760,maxCount*(boxH+rowGap)+90);
+    const terminals=columns.filter(column=>!column.children.length);
+    const docCounts=terminals.map(column=>
+      matchingBudgetPrograms(column.parent.code,currentYear).length);
+    const taxonomyCounts=terminals.map(column=>
+      cofogsBelow(column.parent.code).length);
+    const height=Math.max(760,maxCount*(boxH+rowGap)+90,
+      Math.max(0,...docCounts)*59+130,
+      Math.max(0,...taxonomyCounts)*72+120);
     const width=1320+(Math.max(columns.length,1)+1)*stageStride;
     const scale=Math.max(1,chart.clientWidth/1320);
     svg.setAttribute("viewBox","0 0 "+width+" "+height);
@@ -736,6 +770,15 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
         back.addEventListener("click",()=>item.code==="S13.GASTO"
           ?resetInlineSankey():openDetail(item));
         trail.append(back);
+      }
+    }
+    if(selectedClass){
+      const chosen=cofogsFind(selectedClass);
+      if(chosen){
+        const separator=htmlEl("span");separator.textContent="›";trail.append(separator);
+        const strong=htmlEl("strong");
+        strong.textContent=chosen.code+" · "+chosen.title;
+        trail.append(strong);
       }
     }
     const close=htmlEl("button","pf-trail-close");
@@ -767,63 +810,141 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
         sourceX+stageStride*(columnIndex-1)+stageGap+nodeW;
 
       if(!children.length){
-        // A COFOG aggregate is not a terminal of the research graph.
-        // Continue horizontally into a CLEARLY DISTINCT documentary
-        // classification, never pretending its amounts add to the COFOG flow.
-        const relevant=relatedBudgetPrograms(parent.code,currentYear,options.relatedPrograms||[]);
-        const routeY=Math.max(70,Math.min(height-200,parentY-55));
-        const bridge=svgEl("g",{class:"pf-extension-end"});
-        bridge.append(svgEl("rect",{x,y:routeY,width:390,height:112,rx:9}));
-        const title=svgEl("text",{x:x+13,y:routeY+26,class:"pf-extension-end-title"});
-        title.textContent="CONTINUIDAD DOCUMENTAL · PGE";bridge.append(title);
-        for(const [n,line] of [
-          "Otra clasificación y perímetro: sin flujo",
-          "monetario conciliado con COFOG."
-        ].entries()){
-          const t=svgEl("text",{x:x+13,y:routeY+54+n*21});
-          t.textContent=line;bridge.append(t);
-        }
-        const marker=svgEl("text",{x:x+13,y:routeY+100});
-        marker.textContent="Explora las ramas relacionadas a la derecha →";
-        bridge.append(marker);
-        ribbons.append(svgEl("path",{
-          d:makeRibbon(incomingX,parentY,x,routeY+56,2),
-          class:"pf-extension-ribbon"
-        }));
-        nodes.append(bridge);
-        const nextX=x+stageStride;
-        const nextHeading=svgEl("text",{x:nextX,y:23,class:"pf-extension-heading"});
-        nextHeading.textContent="PROGRAMAS Y FUENTES · RELACIÓN TEMÁTICA";
-        nodes.append(nextHeading);
-        const choices=relevant.length ? relevant.slice(0,8).map(item=>({
-          title:item.titulo,year:item.anio,url:item.fuente_url,
-          subtitle:"PGE "+item.anio+" · importe no sumable al COFOG"
-        })) : [{
-          title:"Consultar programas presupuestarios",
-          subtitle:"Catálogo oficial · sin conciliación automática",
-          url:"buscador-partidas.html?cofog="+encodeURIComponent(parent.code)+"&anio="+currentYear
-        },{
-          title:"Buscar proyectos y contratos",
-          subtitle:"Contratación pública · clasificación diferente",
-          url:"https://contrataciondelestado.es/wps/portal/plataforma"
+        // Always show the COMPLETE COFOG class taxonomy. IGAE only supplies
+        // numeric values through level II in this series, so all class
+        // links are dashed and must never be read as monetary flow.
+        const taxonomy=cofogsBelow(parent.code);
+        const classRows=taxonomy.length?taxonomy:[{
+          code:parent.code,title:"Sin clase adicional en la clasificación",
+          source_url:"https://unstats.un.org/unsd/classifications/Econ"
         }];
-        const itemGap=13,itemH=68;
-        const top=Math.max(55,Math.min(height-choices.length*(itemH+itemGap)-35,
-          routeY+56-(choices.length*(itemH+itemGap)-itemGap)/2));
-        choices.forEach((item,i)=>{
-          const yy=top+i*(itemH+itemGap);
-          const link=svgEl("a",{href:item.url,target:"_blank",
-            rel:"noopener noreferrer", "aria-label":item.title+" · consultar fuente"});
-          const box=svgEl("g",{class:"pf-extension-node"});
-          box.append(svgEl("rect",{x:nextX,y:yy,width:nodeW,height:itemH,rx:8}));
-          const headline=svgEl("text",{x:nextX+12,y:yy+24,class:"pf-extension-label"});
-          headline.textContent=wrapText(item.title,43,1)[0]||item.title;
-          const sub=svgEl("text",{x:nextX+12,y:yy+48,class:"pf-extension-value"});
-          sub.textContent=item.subtitle;
-          box.append(headline,sub);link.append(box);nodes.append(link);
-          ribbons.append(svgEl("path",{d:makeRibbon(x+nodeW,routeY+56,nextX,yy+itemH/2,1.4),
-            class:"pf-extension-ribbon"}));
+        const classGap=14,classH=56;
+        const firstY=Math.max(53,parentY-
+          (classRows.length*(classH+classGap)-classGap)/2);
+        const heading=svgEl("text",{x,y:23,class:"pf-extension-heading"});
+        heading.textContent="NIVEL 3 COFOG · CLASES ONU · SIN IMPORTE IGAE";
+        nodes.append(heading);
+        classRows.forEach((item,i)=>{
+          const yy=firstY+i*(classH+classGap);
+          const center=yy+classH/2;
+          const selectedCode=item.code;
+          const node=svgEl("g",{
+            class:"pf-extension-node is-taxonomy",role:"button",tabindex:"0",
+            "data-code":selectedCode,
+            "aria-label":selectedCode+" · "+item.title+
+              " · nivel de clasificación sin importe publicado"
+          });
+          if(selectedClass===selectedCode)node.setAttribute("aria-current","step");
+          node.append(svgEl("rect",{x,y:yy,width:nodeW,height:classH,rx:8}));
+          const label=svgEl("text",{x:x+12,y:yy+19,class:"pf-extension-label"});
+          label.textContent=selectedCode+" · "+(wrapText(item.title,43,1)[0]||"");
+          const sub=svgEl("text",{x:x+12,y:yy+42,class:"pf-extension-value"});
+          sub.textContent="Clase oficial ONU · sin importe IGAE desglosado";
+          node.append(label,sub);
+          const description=svgEl("title");
+          description.textContent=item.title+" · clasificación oficial sin cuantía";
+          node.append(description);
+          const activate=()=>expandInlineSankey({
+            ...parent,classCode:selectedClass===selectedCode?null:selectedCode
+          });
+          node.addEventListener("click",activate);
+          node.addEventListener("keydown",event=>{
+            if(event.key==="Enter"||event.key===" "){
+              event.preventDefault();activate();
+            }
+          });
+          nodes.append(node);
+          ribbons.append(svgEl("path",{
+            d:"M "+incomingX+" "+parentY+" C "+(incomingX+75)+" "+
+              parentY+" "+(x-75)+" "+center+" "+x+" "+center,
+            class:"pf-class-line"
+          }));
         });
+        // Programas PGE relacionados, siempre etiquetados como otros datos.
+        // Sin filtro: mostrar TODO el catálogo disponible para este grupo.
+        // Con una clase marcada: mostrar su subconjunto temático.
+        const officialPrograms=matchingBudgetPrograms(
+          selectedClass||parent.code,currentYear);
+        const existing=relatedBudgetPrograms(parent.code,currentYear,
+          options.relatedPrograms||[])
+          .filter(item=>!selectedClass ||
+            (selectedClass==="04.5.1" &&
+              ["453B","453C"].includes(item.codigo_presupuestario)));
+        const dedup=new Map();
+        [...officialPrograms,...existing].forEach(item=>{
+          if(!dedup.has(item.codigo_presupuestario))
+            dedup.set(item.codigo_presupuestario,item);
+        });
+        const programs=[...dedup.values()].sort((a,b)=>
+          a.codigo_presupuestario.localeCompare(b.codigo_presupuestario,
+            "es",{numeric:true}));
+        const nextX=x+stageStride;
+        const nextHeading=svgEl("text",{
+          x:nextX,y:23,class:"pf-extension-heading"
+        });
+        nextHeading.textContent="PGE 2024-P · PROGRAMAS RELACIONADOS (OTRO PERÍMETRO)";
+        nodes.append(nextHeading);
+        const note=svgEl("text",{x:nextX,y:44,class:"pf-extension-value"});
+        note.textContent="Presupuesto estatal prorrogado · NO suma ni reparte COFOG";
+        nodes.append(note);
+        const cardH=47,cardGap=10;
+        const startY=programs.length
+          ? Math.max(58,Math.min(firstY,height-programs.length*(cardH+cardGap)-30))
+          : Math.max(75,Math.min(firstY,height-155));
+        if(!programs.length){
+          const empty=svgEl("g",{class:"pf-extension-end"});
+          empty.append(svgEl("rect",{
+            x:nextX,y:startY,width:nodeW,height:105,rx:9
+          }));
+          const head=svgEl("text",{
+            x:nextX+12,y:startY+26,class:"pf-extension-end-title"
+          });
+          head.textContent="Sin programas indexados para esta clase";
+          const sub=svgEl("text",{x:nextX+12,y:startY+51});
+          sub.textContent="La taxonomía sí está completa; el PGE no.";
+          empty.append(head,sub);
+          const a=svgEl("a",{
+            href:"buscador-partidas.html?cofog="+
+              encodeURIComponent(selectedClass||parent.code)+
+              "&anio="+currentYear, target:"_blank",
+            rel:"noopener noreferrer"
+          });
+          const t=svgEl("text",{x:nextX+12,y:startY+82});
+          t.textContent="Consultar otros documentos oficiales →";
+          a.append(t);empty.append(a);nodes.append(empty);
+        }
+        for(const [i,item] of programs.entries()){
+          const yy=startY+i*(cardH+cardGap);
+          const link=svgEl("a",{
+            href:item.fuente_url, target:"_blank",
+            rel:"noopener noreferrer",
+            "aria-label":"Programa "+item.codigo_presupuestario+
+              ": "+item.titulo+" · ver PGE oficial"
+          });
+          const box=svgEl("g",{class:"pf-extension-node"});
+          box.append(svgEl("rect",{
+            x:nextX,y:yy,width:nodeW,height:cardH,rx:7
+          }));
+          const title=svgEl("text",{
+            x:nextX+11,y:yy+18,class:"pf-extension-label"
+          });
+          title.textContent=item.codigo_presupuestario+" · "+
+            (wrapText(item.titulo,43,1)[0]||"");
+          const val=svgEl("text",{
+            x:nextX+11,y:yy+37,class:"pf-extension-value"
+          });
+          val.textContent=formatMillions(item.importe_eur/1000000)+
+            " · 2024-P · presupuesto, no gasto COFOG";
+          box.append(title,val);link.append(box);nodes.append(link);
+          // No painted flow: cross-taxonomy associations are only dotted.
+          ribbons.append(svgEl("path",{
+            d:"M "+(x+nodeW)+" "+(firstY+classH/2)+
+              " C "+(x+nodeW+70)+" "+(firstY+classH/2)+
+              " "+(nextX-70)+" "+(yy+cardH/2)+
+              " "+nextX+" "+(yy+cardH/2),
+            class:"pf-doc-line"
+          }));
+        }
         focusX=nextX;
         continue;
       }
@@ -836,16 +957,22 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
         const center=y+boxH/2;
         positions.set(child.code,center);
         const ribbon=svgEl("path",{
-          d:makeRibbon(incomingX,parentY,x,center,
-            Math.max(1.3,child.value*flowScale)),
-          class:"pf-extension-ribbon"
+          d:child.is_taxonomy_only
+            ? "M "+incomingX+" "+parentY+" C "+(incomingX+60)+" "+
+              parentY+" "+(x-60)+" "+center+" "+x+" "+center
+            :makeRibbon(incomingX,parentY,x,center,
+              Math.max(1.3,child.value*flowScale)),
+          class:child.is_taxonomy_only?"pf-class-line":"pf-extension-ribbon"
         });
         ribbon.addEventListener("click",()=>openDetail(child));
         ribbons.append(ribbon);
         const node=svgEl("g",{
-          class:"pf-extension-node",role:"button",tabindex:"0",
+          class:child.is_taxonomy_only
+            ?"pf-extension-node is-unquantified":"pf-extension-node",
+          role:"button",tabindex:"0",
           "data-code":child.code,
-          "aria-label":rowLabel(child)+" · "+formatMillions(child.value)
+          "aria-label":rowLabel(child)+" · "+
+            (child.is_taxonomy_only?"sin importe en esta serie":formatMillions(child.value))
         });
         if(child.code===selectedChildCode)
           node.setAttribute("aria-current","step");
@@ -853,10 +980,13 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
         const label=svgEl("text",{x:x+12,y:y+19,class:"pf-extension-label"});
         label.textContent=child.code+" · "+(wrapText(rowLabel(child),39,1)[0]||"");
         const amount=svgEl("text",{x:x+12,y:y+43,class:"pf-extension-value"});
-        amount.textContent=formatMillions(child.value)+" · "+
-          formatPct(child.value,parent.value)+" del nivel anterior";
+        amount.textContent=child.is_taxonomy_only
+          ?"Grupo ONU · sin importe en la serie IGAE"
+          :formatMillions(child.value)+" · "+
+            formatPct(child.value,parent.value)+" del nivel anterior";
         const tooltip=svgEl("title");
-        tooltip.textContent=rowLabel(child)+" · "+formatMillions(child.value);
+        tooltip.textContent=rowLabel(child)+" · "+
+          (child.is_taxonomy_only?"sin importe IGAE":formatMillions(child.value));
         node.append(label,amount,tooltip);
         node.addEventListener("click",()=>openDetail(child));
         node.addEventListener("keydown",event=>{
@@ -1370,6 +1500,12 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
   if (deepCode && /^\d{2}(?:\.\d+)?$/.test(deepCode)) {
     const selected = rowMapForYear().get(deepCode);
     if (selected?.side === "gasto") openDetail(selected);
+    else if(cofogsFind(deepCode)){
+      const parentCode=deepCode.slice(0,deepCode.lastIndexOf("."));
+      const parent=rowMapForYear().get(parentCode);
+      if(parent?.side==="gasto")
+        expandInlineSankey({...parent,classCode:deepCode});
+    }
   }
   return root;
 }
