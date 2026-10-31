@@ -2920,15 +2920,6 @@ const indicatorsToShow = preferredIds
   .filter(id => availableIndicators.includes(id));
 
 
-const years = data
-  .map(d => d.year)
-  .filter(Number.isFinite);
-
-const latestDatasetYear =
-  years.length ? Math.max(...years) : "—";
-
-const observationCount = data.length;
-const indicatorCount = availableIndicators.length;
 ```
 
 
@@ -2938,34 +2929,8 @@ const indicatorCount = availableIndicators.length;
   <div class="hero-subtitle">
     <span class="il-hero-long">Nuestro observatorio económico, social e institucional reúne y visualiza información de fuentes oficiales para comprender la realidad de España.</span><span class="il-hero-short">Datos oficiales para comprender la economía y la sociedad españolas.</span>
   </div>
-  <div class="hero-actions">
-    <a href="#mapa-dinero">Explorar el mapa del dinero</a>
-  </div>
 </div>
 
-
-```js
-const meta = document.createElement("div");
-meta.className = "hero-meta";
-
-meta.innerHTML = `
-  <span>
-    <strong>${indicatorCount}</strong> indicadores
-  </span>
-
-  <span>
-    <strong>${observationCount.toLocaleString("es-ES")}</strong>
-    observaciones
-  </span>
-
-  <span>
-    Último año presente en alguna serie:
-    <strong>${latestDatasetYear}</strong>
-  </span>
-`;
-
-display(meta);
-```
 
 <section id="mapa-dinero" class="il-sankey-spotlight">
   <div class="il-spotlight-top">
