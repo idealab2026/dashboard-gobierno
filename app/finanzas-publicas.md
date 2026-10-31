@@ -506,7 +506,6 @@ body {
     </details>
     <a href="/finanzas-publicas.html" class="is-active" aria-current="page">Finanzas públicas</a>
     <a href="/buscador-partidas.html">Buscar partidas</a>
-      <a href="/administraciones.html">Administraciones</a>
     <a href="/administraciones.html">Administraciones</a>
     <details class="il-nav-more">
       <summary>Más</summary>
