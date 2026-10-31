@@ -1668,7 +1668,7 @@ html {
 @media (min-width:769px) {
   .hero {padding:18px 0 12px;margin-bottom:12px;}
   .hero h1 {margin:7px 0 10px;font-size:clamp(2.7rem,4.2vw,4rem);}
-  .hero-subtitle {max-width:90ch!important;font-size:1rem;line-height:1.5;}
+  .hero-subtitle {width:100%!important;max-width:none!important;font-size:1rem;line-height:1.5;}
   .hero-actions {margin-top:15px;}
   .hero-actions a {font-family:system-ui,-apple-system,sans-serif;font-size:.84rem;}
   .hero-meta {margin-top:8px;}
