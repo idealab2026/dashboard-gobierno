@@ -383,6 +383,14 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   const indexCoverage=coverageSummary([...records,...aggregates]);
   const formatCount=new Intl.NumberFormat("es-ES");
   let coverageMode="tipo",activeClassification=null;
+  const currentParams=new URLSearchParams(window.location.search);
+  const urlMode=currentParams.get("clasificacion");
+  const urlGroup=currentParams.get("grupo");
+  if(COVERAGE_MODES.some(mode=>mode.id===urlMode)){
+    coverageMode=urlMode;
+    if(indexCoverage.groups[coverageMode].some(entry=>entry.key===urlGroup))
+      activeClassification={mode:coverageMode,key:urlGroup};
+  }
   const coveragePanel=make("section","sf-coverage");
   coveragePanel.setAttribute("aria-label","Cobertura del índice de gastos públicos");
   const coverageHeading=make("div","sf-coverage-head");
