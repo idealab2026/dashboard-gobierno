@@ -89,31 +89,36 @@ class AdministrationSankeysContract(unittest.TestCase):
         self.assertIn('const spotlightSankey = PublicFinanceExplorer(',source)
         self.assertLess(source.index('id="il-ministry-sankey"'),source.index('const spotlightSankey = PublicFinanceExplorer('))
 
-    def test_multilevel_drilldown_uses_lateral_drawer_and_preserves_original_sankey(self):
+    def test_multilevel_drilldown_expands_same_svg_without_lateral_panel(self):
         widget=(ROOT/"app/components/administration-sankeys.js").read_text(encoding="utf-8")
         self.assertIn('const stage=mk("div","ad-stage")',widget)
-        self.assertIn('const drawer=mk("aside","ad-drill-panel")',widget)
-        self.assertIn('stage.append(graphic,drawer)',widget)
-        self.assertIn('stage.classList.toggle("is-drilling",open)',widget)
-        self.assertIn('function renderDrawer()',widget)
+        self.assertIn('stage.append(graphic);',widget)
+        self.assertNotIn('stage.append(graphic,drawer)',widget)
+        self.assertIn('function drawFlow(subject,branches)',widget)
+        self.assertIn('class:"ad-flow",viewBox:"0 0 "+W+" "+H',widget)
+        self.assertIn('el.style.width=Math.round(W*scale)+"px"',widget)
+        self.assertIn('class:"ad-inline-ribbon"',widget)
+        self.assertIn('class:"ad-inline-dashed"',widget)
         self.assertIn('function openBranch(branch)',widget)
-        self.assertIn('g.addEventListener("click",()=>openBranch(b))',widget)
+        self.assertIn('function openLeaf(branch)',widget)
+        self.assertIn('function openClass(node)',widget)
         self.assertIn('graphic.append(drawFlow(chosen,',widget)
-        self.assertIn('drawer.replaceChildren()',widget)
-        self.assertIn('drawer.scrollTop=0',widget)
-        self.assertIn('function closeDrill()',widget)
-        self.assertIn('root.dataset.drillLevel=open?(selectedLeaf?"terminal":"detalle"):"general"',widget)
-        self.assertIn('"ad-breadcrumbs"',widget)
-        self.assertIn('"ad-subgroup"',widget)
-        self.assertIn('Importe territorial no disponible',widget)
+        self.assertIn('renderTrail(chosen)',widget)
+        self.assertIn('graphic.scrollTo({',widget)
+        self.assertIn('const classes=!isMinistry&&currentLeaf?cofogsBelow(currentLeaf.code):[];',widget)
+        self.assertIn('class:"ad-inline-terminal"',widget)
+        self.assertIn('data-source-code',widget)
+        self.assertIn('level==="clase"',widget)
+        self.assertIn('Sin importe autonómico desglosado',widget)
+        self.assertIn('Crédito PGE · no gasto ejecutado',widget)
+        self.assertIn('La ausencia de información no significa gasto cero.',widget)
         self.assertNotIn('name:"Resto de programas de la sección"',widget)
-        # The click path MUST NOT recreate the main SVG or call render().
         opening=widget.split('function openBranch(branch){',1)[1].split('function openLeaf(',1)[0]
-        self.assertIn('renderDrawer()',opening)
-        self.assertNotIn('render();',opening)
-        leaf=widget.split('function openLeaf(branch){',1)[1].split('function sectionLinks(',1)[0]
-        self.assertIn('renderDrawer()',leaf)
-        self.assertNotIn('render();',leaf)
+        leaf=widget.split('function openLeaf(branch){',1)[1].split('function openClass(',1)[0]
+        self.assertIn('render();',opening)
+        self.assertIn('render();',leaf)
+        self.assertNotIn('renderDrawer()',opening)
+        self.assertNotIn('renderDrawer()',leaf)
 
 
     def test_homepage_ministry_keeps_all_nodes_and_drills_inline(self):
