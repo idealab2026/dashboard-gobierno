@@ -628,6 +628,16 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
         railway.href = u2.href;
         railway.textContent = "Buscar proyectos ferroviarios";
         actions.append(railway);
+        // 453C es un programa del PGE estatal, NO un subnivel numérico COFOG.
+        // Se enlaza con búsqueda libre para evitar aplicar un filtro COFOG
+        // que excluiría los programas presupuestarios.
+        const roadMaintenance = document.createElement("a");
+        const roadUrl = new URL("buscador-partidas.html", window.location.href);
+        roadUrl.searchParams.set("q", "mantenimiento de carreteras");
+        roadMaintenance.href = roadUrl.href;
+        roadMaintenance.textContent = "Mantenimiento de carreteras · 453C";
+        roadMaintenance.setAttribute("aria-label", "Consultar presupuesto estatal de conservación de carreteras, programa 453C");
+        actions.append(roadMaintenance);
       }
       links.append(actions);
       const guide = htmlEl("p", "pf-note");
