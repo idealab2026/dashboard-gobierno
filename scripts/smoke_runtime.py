@@ -79,6 +79,8 @@ def main() -> None:
                 "España en un minuto": "<h2>España en un minuto</h2>" in dom,
                 "Tarjetas de indicadores": 'class="kpi-card' in dom,
                 "Detalle de gasto COFOG": "TOTAL COFOG" in dom,
+                "Buscador visible en portada": 'id="il-quick-spending-query"' in dom,
+                "Formulario que envía búsqueda": 'class="il-quick-spending-form"' in dom,
             }
             if not all(checks.values()):
                 raise AssertionError(f"Runtime incompleto: {checks}; HTML chars={len(dom)}")
@@ -110,6 +112,22 @@ def main() -> None:
             if not all(checks_search.values()):
                 raise AssertionError(f"Buscador incompleto en Chrome: {checks_search}")
             print(f"Buscador de partidas OK en Chrome: {checks_search}")
+
+            # Verify a query submitted from the homepage is applied at the destination.
+            from urllib.parse import quote
+            filtered_url = search_url + "?q=" + quote("Honduras")
+            filtered = subprocess.run(
+                [*args[:-1], "--virtual-time-budget=8000", filtered_url],
+                text=True, capture_output=True, timeout=85
+            )
+            if filtered.returncode:
+                raise AssertionError(f"Chrome no ejecuta consulta: {filtered.stderr[-1200:]}")
+            filtered_dom = filtered.stdout
+            if "Empleo y resiliencia para mujeres migrantes" not in filtered_dom:
+                raise AssertionError("El filtro enviado desde portada no encuentra Honduras")
+            if "RuntimeError:" in filtered_dom:
+                raise AssertionError("Error Observable al abrir consulta prefiltrada")
+            print("Búsqueda profunda desde portada OK en Chrome")
         finally:
             server.shutdown()
             server.server_close()
