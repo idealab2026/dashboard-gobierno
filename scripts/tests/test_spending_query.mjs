@@ -292,6 +292,9 @@ test("all verified ministerial programs and regional functions become distinct, 
  assert.match(health.admin_hierarchy.caution,/no es el gasto/i);
  const matched=searchSpendingRecords(result,"salud",{pais:"Comunidad de Madrid"});
  assert.deepEqual(matched.map(r=>r.id),[health.id]);
+ assert.deepEqual(searchSpendingRecords(result,"sanidad Madrid").map(r=>r.id),[health.id]);
+ // A COFOG 07 regional total is not a published amount for hospitals (07.3).
+ assert.equal(searchSpendingRecords(result,"hospital Madrid").length,0);
  assert.equal(searchSpendingRecords(result,"salud",{pais:"Andalucía"}).length,0);
 });
 test("unverified and unbalanced administrative amounts never enter the search index",()=>{
