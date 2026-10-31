@@ -361,6 +361,15 @@ def main() -> None:
                     raise AssertionError("Orden COFOG incorrecto: "+repr(codes))
                 if 'class="pf-extension-ribbon"' not in page:
                     raise AssertionError("Faltan las bandas conectadas al Sankey "+code)
+                # Prevent the previously observed overlap of two headings in
+                # the exact same COFOG column (same x, same y).
+                headers=_re_cofog.findall(
+                    r'<text x="([0-9.]+)" y="23" class="pf-extension-heading"',
+                    page
+                )
+                if len(headers)!=len(set(headers)):
+                    raise AssertionError("Encabezados COFOG solapados: "+code+
+                                         " "+repr(headers))
                 if "RuntimeError:" in page:
                     raise AssertionError("Error Observable en COFOG "+code)
                 if ('data-selected-class=' in page or
