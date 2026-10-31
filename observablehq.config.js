@@ -7,6 +7,8 @@ export default {
  pager: false,
  preserveExtension: true,
  head: `<link rel="icon" type="image/svg+xml" href="./favicon.svg"><meta name="theme-color" content="#07304b">
+<!-- IDEA LAB · España en Datos · Cloudflare Web Analytics (free, cookieless) -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"6fbdc8b6250b4bcba242121576b1e5f7"}'></script>
 <style id="il-editorial-typography-contract">
 /* CONTRATO GLOBAL DE MAQUETACIÓN (ver AGENTS.md).
    El contenido de lectura ocupa el ancho disponible. Justificar párrafos,

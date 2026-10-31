@@ -186,14 +186,15 @@ toc: true
 
 Se conservan enlaces a [INE](https://www.ine.es/) y [IGAE](https://www.igae.pap.hacienda.gob.es/), con la distinción entre valores publicados y cálculos derivados. No se utiliza ninguna cuenta personal como alojamiento de datos.
 
+
+## Analítica de uso del observatorio
+
+Utilizamos **Cloudflare Web Analytics** para conocer, de forma agregada, las visitas a las páginas de España en Datos, su procedencia general y el rendimiento de carga. Hemos instalado el fragmento de medición únicamente en este observatorio, sin incorporar cookies de seguimiento propias ni mezclar sus estadísticas con otros proyectos. El servicio recibe datos técnicos de navegación necesarios para elaborar sus informes; [Cloudflare explica su funcionamiento y privacidad](https://developers.cloudflare.com/web-analytics/about/).
+
+Este sistema **no registra las búsquedas que introducen los lectores ni qué ramas del Sankey abren**. Esas interacciones no están cuantificadas y no presentamos estimaciones como si fueran datos observados. Las estadísticas empiezan cuando la instalación queda operativa, sin recuperación de visitas previas.
+
 ## Política editorial
 
 Ningún resultado se califica de «predicción validada» si no dispone de evaluación fuera de muestra. Las inferencias causales deben tener una estrategia de identificación, supuestos explícitos y análisis de sensibilidad.
 
 [Volver a España en Datos](/) · [Quiénes somos](/quienes-somos.html)
-
-```js
-// Analítica de visitas y eventos: permanece desactivada sin cuenta IDEA LAB configurada.
-import {installSiteAnalytics} from "./components/site-analytics.js";
-installSiteAnalytics();
-```

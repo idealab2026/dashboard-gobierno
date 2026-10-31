@@ -3348,9 +3348,3 @@ function scrollToCurrentHash() {
 scrollToCurrentHash();
 window.addEventListener("hashchange", scrollToCurrentHash);
 ```
-
-```js
-// Analítica de visitas y eventos: permanece desactivada sin cuenta IDEA LAB configurada.
-import {installSiteAnalytics} from "./components/site-analytics.js";
-installSiteAnalytics();
-```
