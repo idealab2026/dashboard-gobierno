@@ -167,12 +167,43 @@ export function AdministrationSankeys(data, options={}){
 
  @media(max-width:700px){.ad-chooser{grid-template-columns:1fr}.ad-chooser aside{text-align:left}.ad-details{grid-template-columns:1fr}.ad-tabs button{flex:1;font-size:.79rem}.ad-flow{min-width:730px}.ad-metadata strong{font-size:1.1rem}}
  `;
+ style.textContent+=`
+ .ad-stage,.ad-stage.is-drilling{display:block!important;width:100%;min-width:0;max-width:100%}
+ .ad-stage>.ad-flow-wrap{display:block;width:100%;max-width:100%;min-width:0;
+   overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:#b2c0d0 #eef3f8;
+   border:1px solid #e2e8ee;border-radius:9px;box-sizing:border-box;
+   -webkit-overflow-scrolling:touch}
+ .ad-flow{display:block;max-width:none;height:auto}
+ .ad-inline-heading{fill:#98743b;font:750 13px system-ui,sans-serif;letter-spacing:1px}
+ .ad-inline-node[aria-current="step"] rect{fill:#fff0d0;stroke:#a0762d;stroke-width:2.6}
+ .ad-inline-node.is-unquantified rect{fill:#edf5fb;stroke:#aabfd2}
+ .ad-inline-ribbon{fill:none;stroke:#c4a570;opacity:.8;pointer-events:none}
+ .ad-inline-dashed{fill:none;stroke:#91acc5;stroke-width:1.5;
+   stroke-dasharray:5 7;opacity:.85;pointer-events:none}
+ .ad-big-title{font:750 15px system-ui,sans-serif}
+ .ad-big-amount{font:800 16px system-ui,sans-serif}
+ .ad-inline-terminal rect{fill:#fff9eb;stroke:#c6a165;stroke-width:1.5}
+ .ad-terminal-link{fill:#195883;text-decoration:underline;
+   font:700 12px system-ui,sans-serif;cursor:pointer}
+ .ad-trail{display:flex;align-items:center;flex-wrap:wrap;gap:6px 9px;
+   margin:3px 0 12px;font:700 .74rem/1.4 system-ui;color:#526782}
+ .ad-trail button{border:0;border-radius:5px;padding:5px 7px;
+   background:transparent;color:#245782;font:inherit;cursor:pointer}
+ .ad-trail button:hover{background:#edf3f9}
+ .ad-trail strong{color:#18334f}
+ .ad-stage-explainer{font-size:.74rem;margin:0 0 9px}
+ .ad-drill-panel,.ad-drill-scrim{display:none!important}
+ @media(max-width:750px){
+   .ad-metadata{margin-bottom:7px;padding:7px 0}
+   .ad-trail{font-size:.69rem}
+   .ad-stage-explainer{font-size:.69rem}
+ }`;
  root.append(style);
  const tabs=mk("div","ad-tabs");
  const tabButtons={};
  for(const [key,name] of [["ministries","Ministerios"],["regions","Comunidades autónomas"]]){
   const b=mk("button","",name);b.type="button";b.setAttribute("role","tab");
-  b.onclick=()=>{mode=key;selectedGroup=null;selectedLeaf=null;render();};
+  b.onclick=()=>{mode=key;selectedGroup=null;selectedLeaf=null;selectedClass=null;render();};
   tabs.append(b);tabButtons[key]=b;
  }
  tabs.setAttribute("role","tablist");
@@ -191,6 +222,8 @@ export function AdministrationSankeys(data, options={}){
  const graphic=mk("div","ad-flow-wrap");
  const actions=mk("div","ad-actions");
  const stage=mk("div","ad-stage");
+ const trail=mk("nav","ad-trail");
+ trail.setAttribute("aria-label","Ruta del desglose seleccionado");
  const drawer=mk("aside","ad-drill-panel");
  drawer.id="ad-drill-panel";
  drawer.tabIndex=-1;
@@ -202,15 +235,15 @@ export function AdministrationSankeys(data, options={}){
  scrim.setAttribute("aria-label","Cerrar el detalle y volver al Sankey");
  scrim.hidden=true;
  const note=mk("p","ad-footnote");
- stage.append(graphic,drawer);
- root.append(metadata,actions,stage,scrim,note);
+ stage.append(graphic);
+ root.append(metadata,actions,trail,stage,note);
  const params=new URLSearchParams(window.location.search);
  let mode=options.mode==="regions"?"regions":options.mode==="ministries"?"ministries":params.get("tipo")==="ccaa"?"regions":"ministries",selectedGroup=null;
- let selectedLeaf=null;
+ let selectedLeaf=null,selectedClass=null;
  let selectedIds={ministries:null,regions:null};
  if(options.selectedId!=null)selectedIds[mode]=String(options.selectedId);
  else if(params.has("id") && !embedded)selectedIds[mode]=params.get("id");
- select.addEventListener("change",()=>{selectedIds[mode]=select.value;selectedGroup=null;selectedLeaf=null;render();});
+ select.addEventListener("change",()=>{selectedIds[mode]=select.value;selectedGroup=null;selectedLeaf=null;selectedClass=null;render();});
  function drawFlow(subject,branches){
   // Un solo Sankey horizontal: sin drawer ni atribuir importes no publicados.
   const rowStep=52,nodeH=43,toX=774,nodeW=390,areaX=1260,leafX=1746,endX=2232;
@@ -403,22 +436,52 @@ export function AdministrationSankeys(data, options={}){
      : chosen.flows.find(x=>x.code===selectedGroup)||null;
  }
  function closeDrill(){
-   selectedGroup=null;selectedLeaf=null;
-   renderDrawer();
+   selectedGroup=null;selectedLeaf=null;selectedClass=null;
+   render();
  }
  scrim.addEventListener("click",closeDrill);
  root.addEventListener("keydown",ev=>{
    if(ev.key==="Escape"&&!drawer.hidden){ev.preventDefault();closeDrill();}
  });
  function openBranch(branch){
-   // Do not call render(): it would tear down the original Sankey and
-   // replace it by a smaller one, breaking geographical context.
-   selectedGroup=branch.code;selectedLeaf=null;
-   renderDrawer();
+   if(selectedGroup===branch.code){
+     selectedGroup=null;selectedLeaf=null;selectedClass=null;
+   }else{
+     selectedGroup=branch.code;selectedLeaf=null;selectedClass=null;
+   }
+   render();
  }
  function openLeaf(branch){
-   selectedLeaf=branch;
-   renderDrawer();
+   if(selectedLeaf?.code===branch.code){
+     selectedLeaf=null;selectedClass=null;
+   }else{
+     selectedLeaf=branch;selectedClass=null;
+   }
+   render();
+ }
+ function openClass(node){
+   selectedClass=selectedClass===node.code?null:node.code;
+   render();
+ }
+ function renderTrail(chosen){
+   trail.replaceChildren();
+   if(!chosen||!selectedGroup){trail.hidden=true;return;}
+   trail.hidden=false;
+   const crumb=(text,action)=>{
+     if(trail.childNodes.length)trail.append(mk("span","ad-crumb-sep","›"));
+     if(action){
+       const b=mk("button","",text);b.type="button";b.addEventListener("click",action);
+       trail.append(b);
+     }else trail.append(mk("strong","",text));
+   };
+   crumb(chosen.name,closeDrill);
+   const group=drillGroup(chosen);
+   if(group)crumb(group.code+" · "+group.name,selectedLeaf?()=>{
+     selectedLeaf=null;selectedClass=null;render();
+   }:null);
+   if(selectedLeaf)crumb(selectedLeaf.code+" · "+selectedLeaf.name,
+     selectedClass?()=>{selectedClass=null;render();}:null);
+   if(selectedClass)crumb(selectedClass,null);
  }
  function sectionLinks(chosen,body){
    const links=mk("div","ad-official-links");
@@ -572,7 +635,7 @@ export function AdministrationSankeys(data, options={}){
    root.dataset.administrationId=chosen?.id||"";
    metadata.replaceChildren();graphic.replaceChildren();actions.replaceChildren();
    if(!chosen||!chosen.verified||!Array.isArray(chosen.flows)||!chosen.flows.length){
-     closeDrill();
+     trail.hidden=true;
      graphic.append(mk("p","ad-empty",
        "No hay importes oficiales conciliados para esta administración."));
      note.textContent="La ausencia de información no significa gasto cero.";
@@ -582,15 +645,26 @@ export function AdministrationSankeys(data, options={}){
    title.append(h2,mk("p","",chosen.year_label+" · "+chosen.amount_kind));
    metadata.append(title,mk("strong","",money(chosen.total_mill_eur)));
    graphic.append(mk("p","ad-stage-explainer",
-     mode==="ministries"?
-       "Pulsa una rama para abrir sus programas en el panel lateral, sin perder el Sankey principal.":
-       "Pulsa una función para abrir las subfunciones disponibles en el panel lateral."));
+     "Pulsa una rama para ampliar el árbol hacia la derecha. Desliza horizontalmente para explorar."));
    graphic.append(drawFlow(chosen,
      mode==="ministries"?groupMinistry(chosen.flows):chosen.flows));
    const source=sourceAnchor(chosen.source_url,"Consultar documento original del organismo");
    if(source)actions.append(source);
    note.textContent=chosen.note+" "+data.not_comparable;
-   renderDrawer();
+   root.dataset.drillLevel=selectedClass?"clase":selectedLeaf?
+     mode==="ministries"?"programa":"subfuncion":selectedGroup?
+     mode==="ministries"?"area":"funcion":"general";
+   root.dataset.drillCode=selectedClass||selectedLeaf?.code||selectedGroup||"";
+   renderTrail(chosen);
+   const graph=graphic.querySelector("svg.ad-flow");
+   if(graph && selectedGroup){
+     const zoom=Math.max(1,graphic.clientWidth/1190);
+     const focus=Number(graph.dataset.focusX)||774;
+     requestAnimationFrame(()=>graphic.scrollTo({
+       left:Math.max(0,focus*zoom-graphic.clientWidth*.55),
+       behavior:"smooth"
+     }));
+   }else if(graph)requestAnimationFrame(()=>{graphic.scrollLeft=0;});
  }
  // Direct links are reproducible, but the complete original Sankey is kept.
  if(!embedded){
@@ -617,6 +691,15 @@ export function AdministrationSankeys(data, options={}){
          const item=matches.find(x=>x.code===code);
          if(item&&selected.flows.some(x=>x.code===item.parent)){
            selectedGroup=item.parent;selectedLeaf=item;
+         }
+       }else if(level==="clase"){
+         const parentCode=code.split(".")[0];
+         const parentGroup=code.slice(0,code.lastIndexOf("."));
+         const cls=cofogsBelow(parentGroup).find(x=>x.code===code);
+         const groupItem=(data.cofog_group_labels?.[parentCode]||[])
+           .find(x=>x.code===parentGroup);
+         if(cls&&groupItem&&selected.flows.some(x=>x.code===parentCode)){
+           selectedGroup=parentCode;selectedLeaf=groupItem;selectedClass=code;
          }
        }
      }
