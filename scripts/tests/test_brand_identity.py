@@ -104,7 +104,7 @@ class BrandIdentityTests(unittest.TestCase):
         home = (ROOT / "app" / "index.md").read_text(encoding="utf-8")
         self.assertIn("<h2>España en un minuto</h2>", home)
         self.assertIn('header.id = "resumen"', home)
-        self.assertLess(home.index("display(spotlightSankey);"), home.index('header.id = "resumen"'))
+        self.assertLess(home.index("display(sankeyHost);"), home.index('header.id = "resumen"'))
         self.assertLess(home.index("display(seccionContainer);"), home.index('const financePair = document.createElement("div")'))
         self.assertLess(home.index("display(seccionContainer);"), home.index("display(financeSection);"))
         self.assertIn('href="#resumen"', home)
@@ -162,7 +162,8 @@ class BrandIdentityTests(unittest.TestCase):
         for name in ("KpiCard", "indicatorsToShow", "spainData", "renderMetricSection",
                      "kpiPresentation", "getTitle(", "formatter(", "isPercentage("):
             self.assertNotIn(name, cells[finance], f"Dependencia circular desde Sankey: {name}")
-        self.assertIn("display(spotlightSankey);", cells[finance])
+        self.assertIn("sankeyHost.append(spotlightSankey);", cells[finance])
+        self.assertIn("display(sankeyHost);", cells[finance])
         self.assertIn("display(seccionContainer);", cells[kpi])
         self.assertIn("display(financeSection);", cells[tables])
 
