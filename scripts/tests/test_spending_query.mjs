@@ -5,6 +5,8 @@ import {dsvFormat} from "d3-dsv";
 import {searchSpendingRecords, normalizeSpending} from "../../app/components/spending-query.js";
 import {OFFICIAL_DRILL_ROUTES, relatedBudgetPrograms} from "../../app/components/official-drill-routes.js";
 import {canonicalFinanceCode} from "../../app/components/finance-code.js";
+import {COFOG_STRUCTURE,cofogsBelow} from "../../app/components/cofog-structure.js";
+import {OFFICIAL_BUDGET_PROGRAMS,matchingBudgetPrograms} from "../../app/components/official-budget-catalog.js";
 import {compareFinanceCodes,sortedFinanceChildren,financeExpansionPath,financeExpansionColumns} from "../../app/components/finance-hierarchy.js";
 
 const source = readFileSync(new URL("../../app/data/seed/fact_finanzas_publicas_2024.csv", import.meta.url), "utf8").replace(/^\uFEFF/, "");
@@ -183,4 +185,28 @@ test("the national Sankey maintains one SVG and does not rely on a side tree",()
  assert.ok(source.includes('chart.scrollTo({left:target,behavior:"smooth"})'));
  assert.ok(source.includes('expandInlineSankey(row);'));
  assert.ok(!source.includes('function renderSpendingTree(row)'));
+});
+
+test("all 69 COFOG groups and 109 official classes are available regardless of IGAE amount",()=>{
+ assert.equal(COFOG_STRUCTURE.filter(x=>x.code.split(".").length===2).length,69);
+ assert.equal(COFOG_STRUCTURE.filter(x=>x.code.split(".").length===3).length,109);
+ assert.deepEqual(cofogsBelow("04.5").map(x=>x.code),
+  ["04.5.1","04.5.2","04.5.3","04.5.4","04.5.5"]);
+ assert.deepEqual(cofogsBelow("07.3").map(x=>x.code),
+  ["07.3.1","07.3.2","07.3.3","07.3.4"]);
+});
+test("programs match the full transport tree, including ALL modes without a manual two-program limit",()=>{
+ assert.equal(OFFICIAL_BUDGET_PROGRAMS.length,30);
+ const byGroup=matchingBudgetPrograms("04.5",2024);
+ for(const required of ["453A","453B","453C","441N","441O","455M","454M"])
+  assert.ok(byGroup.some(x=>x.codigo_presupuestario===required),required);
+ const modes=[
+  ["04.5.1","453C"],["04.5.2","454M"],
+  ["04.5.3","453A"],["04.5.4","455M"]
+ ];
+ for(const [mode,expected] of modes)
+  assert.ok(matchingBudgetPrograms(mode,2024).some(x=>x.codigo_presupuestario===expected),
+    mode+" "+expected);
+ assert.ok(!matchingBudgetPrograms("07.3",2024).length,
+  "do not fabricate PGE links in Health");
 });
