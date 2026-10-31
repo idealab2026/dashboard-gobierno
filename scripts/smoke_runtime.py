@@ -83,6 +83,33 @@ def main() -> None:
             if not all(checks.values()):
                 raise AssertionError(f"Runtime incompleto: {checks}; HTML chars={len(dom)}")
             print(f"Observatorio OK en Chrome: {checks}")
+
+            search_url = f"http://127.0.0.1:{server.server_port}/{BASE}/buscador-partidas.html"
+            search_args = [
+                *args[:-1],
+                "--virtual-time-budget=12000",
+                search_url,
+            ]
+            search_result = subprocess.run(
+                search_args, text=True, capture_output=True, timeout=85
+            )
+            if search_result.returncode:
+                raise AssertionError(
+                    f"Chrome no abre buscador: {search_result.stderr[-2500:]}"
+                )
+            search_dom = search_result.stdout
+            checks_search = {
+                "Formulario de búsqueda": 'class="spending-finder"' in search_dom,
+                "Documentos oficiales indexados": 'class="sf-record"' in search_dom,
+                "Campo de texto": 'type="search"' in search_dom,
+                "Proyectos de AECID": "Prevención de la violencia" in search_dom,
+            }
+            if any(error in search_dom for error in
+                   ("RuntimeError:", "Uncaught SyntaxError", "Uncaught ReferenceError")):
+                raise AssertionError("Error Observable en buscador de partidas")
+            if not all(checks_search.values()):
+                raise AssertionError(f"Buscador incompleto en Chrome: {checks_search}")
+            print(f"Buscador de partidas OK en Chrome: {checks_search}")
         finally:
             server.shutdown()
             server.server_close()
