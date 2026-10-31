@@ -60,6 +60,26 @@ class BrandIdentityTests(unittest.TestCase):
                 self.assertIn(f'/{slug}.html', (ROOT / "app" / "index.md").read_text(encoding="utf-8"))
             self.assertNotIn("/dashboard-gobierno/", content)
 
+    def test_product_and_parent_brand_share_one_header_row(self):
+        """Prevent regressions to two-line logos and corporate affiliations."""
+        pages = (
+            "index.md", "finanzas-publicas.md", "metodologia.md",
+            "actualizaciones.md", "quienes-somos.md",
+        )
+        for page in pages:
+            with self.subTest(page=page):
+                source = (ROOT / "app" / page).read_text(encoding="utf-8")
+                wrapper = "il-header-identity" if page in ("index.md", "finanzas-publicas.md") else "il-site-identity"
+                rule = re.search(r"\\." + wrapper + r"\\s*\\{([^}]*)\\}", source)
+                self.assertIsNotNone(rule, "Falta regla del contenedor de identidad")
+                self.assertRegex(rule.group(1), r"flex-direction\\s*:\\s*row")
+                self.assertNotRegex(rule.group(1), r"flex-direction\\s*:\\s*column")
+                nav = source.split("<nav", 1)[1].split("</nav>", 1)[0]
+                self.assertEqual(nav.count('href="https://idealab2026.github.io/"'), 1)
+                self.assertIn('src="./logo-idea-lab.svg"', nav)
+                self.assertIn('href="/"', nav)
+                self.assertIn("il-parent-brand" if wrapper == "il-header-identity" else "il-site-parent", nav)
+
     def test_x_bio_fits_limit(self):
         content = (ROOT / "editorial" / "PERFIL_X.md").read_text(encoding="utf-8")
         result = re.search(r"^> (Somos el canal editorial de IDEA LAB\..+)$", content, flags=re.M)
