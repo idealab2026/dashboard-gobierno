@@ -110,6 +110,14 @@ def main() -> None:
                    ("RuntimeError:", "Uncaught SyntaxError", "Uncaught ReferenceError")):
                 raise AssertionError("Error Observable en buscador de partidas")
             if not all(checks_search.values()):
+                print("SEARCH CHROME DIAGNÓSTICO:", {
+                    "len": len(search_dom),
+                    "start": search_dom[:850],
+                    "runtime_errors": [q for q in
+                        ("RuntimeError:", "ReferenceError", "SyntaxError", "NotFoundError")
+                        if q in search_dom],
+                    "stderr_tail": search_result.stderr[-900:]
+                })
                 raise AssertionError(f"Buscador incompleto en Chrome: {checks_search}")
             print(f"Buscador de partidas OK en Chrome: {checks_search}")
 
