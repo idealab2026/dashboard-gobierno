@@ -161,8 +161,8 @@ html {
 
 .hero {
   padding: 1.5rem 0 1rem;
-  border-bottom: 1px solid var(--idealab-border);
-  margin-bottom: 2.5rem;
+  border-bottom: 0;
+  margin-bottom: .65rem;
 }
 
 .hero-kicker {
@@ -820,7 +820,7 @@ html {
 
 /* Prominencia editorial del Sankey original, antes del resumen KPI. */
 .idealab-nav-priority {color: #b68a3f !important; font-weight: 850 !important;}
-.il-sankey-spotlight {margin:2.1rem 0 .65rem; scroll-margin-top:100px; border-top:3px solid #b89b5e; padding:1.25rem 0 0;}
+.il-sankey-spotlight {margin:.75rem 0 .65rem; scroll-margin-top:100px; border-top:3px solid #b89b5e; padding:.95rem 0 0;}
 .il-spotlight-top {display:flex; justify-content:space-between; align-items:end; gap:1.5rem; flex-wrap:wrap;}
 .il-spotlight-kicker {font-size:.69rem;letter-spacing:.13em;font-weight:850;color:#987333;margin-bottom:.45rem;}
 .il-spotlight-top h2 {margin:0 0 .45rem; font-size:clamp(1.5rem,2.9vw,2.3rem);color:#0b2447;letter-spacing:-.03em;}
@@ -2956,7 +2956,7 @@ const indicatorsToShow = preferredIds
       <h2><span class="il-map-title-desktop">¿De dónde sale el dinero y en qué se gasta?</span><span class="il-map-title-mobile">¿A dónde va el dinero público?</span></h2>
       <p>Explora el recorrido de los recursos públicos: ingresos, financiación y funciones de gasto. Selecciona cada rama para consultar importes, fuentes y metodología.</p>
     </div>
-    <a href="/finanzas-publicas.html" class="il-sankey-cta">Ver análisis completo ↗</a>
+    <a href="/finanzas-publicas.html" class="il-sankey-cta">Ver análisis completo</a>
   </div>
 <div class="il-map-year-mobile"><strong>2024</strong><span>IGAE · Administraciones públicas</span></div>
 </section>
