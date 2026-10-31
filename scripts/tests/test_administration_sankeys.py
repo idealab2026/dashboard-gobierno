@@ -86,20 +86,32 @@ class AdministrationSankeysContract(unittest.TestCase):
         self.assertIn('const spotlightSankey = PublicFinanceExplorer(',source)
         self.assertLess(source.index('id="il-ministry-sankey"'),source.index('const spotlightSankey = PublicFinanceExplorer('))
 
-    def test_multilevel_drilldown_has_visible_breadcrumb_and_terminal_state(self):
+    def test_multilevel_drilldown_uses_lateral_drawer_and_preserves_original_sankey(self):
         widget=(ROOT/"app/components/administration-sankeys.js").read_text(encoding="utf-8")
-        self.assertIn('root.dataset.drillLevel=selectedLeaf?"terminal":selectedGroup?"detalle":"general"',widget)
-        self.assertIn('"ad-breadcrumbs"',widget)
+        self.assertIn('const stage=mk("div","ad-stage")',widget)
+        self.assertIn('const drawer=mk("aside","ad-drill-panel")',widget)
+        self.assertIn('stage.append(graphic,drawer)',widget)
+        self.assertIn('stage.classList.toggle("is-drilling",open)',widget)
+        self.assertIn('function renderDrawer()',widget)
         self.assertIn('function openBranch(branch)',widget)
         self.assertIn('g.addEventListener("click",()=>openBranch(b))',widget)
-        self.assertIn('graphic.append(drawFlow({',widget)
-        self.assertIn('total_mill_eur:sectionTotal',widget)
+        self.assertIn('graphic.append(drawFlow(chosen,',widget)
+        self.assertIn('drawer.replaceChildren()',widget)
+        self.assertIn('drawer.scrollTop=0',widget)
+        self.assertIn('function closeDrill()',widget)
+        self.assertIn('root.dataset.drillLevel=open?(selectedLeaf?"terminal":"detalle"):"general"',widget)
+        self.assertIn('"ad-breadcrumbs"',widget)
+        self.assertIn('"ad-subgroup"',widget)
+        self.assertIn('Importe territorial no disponible',widget)
         self.assertNotIn('name:"Resto de programas de la sección"',widget)
-        self.assertIn('"ad-region-drill"',widget)
-        self.assertIn('"ad-subgroups"',widget)
-        self.assertIn('importe autonómico',widget)
-        self.assertIn('selectedLeaf=null;render();',widget)
-        self.assertIn('selectedLeaf=program',widget)
+        # The click path MUST NOT recreate the main SVG or call render().
+        opening=widget.split('function openBranch(branch){',1)[1].split('function openLeaf(',1)[0]
+        self.assertIn('renderDrawer()',opening)
+        self.assertNotIn('render();',opening)
+        leaf=widget.split('function openLeaf(branch){',1)[1].split('function sectionLinks(',1)[0]
+        self.assertIn('renderDrawer()',leaf)
+        self.assertNotIn('render();',leaf)
+
 
     def test_regional_cofog_subgroups_never_inherit_national_amounts(self):
         importer=(ROOT/"scripts/build_administration_sankeys.py").read_text(encoding="utf-8")
