@@ -1757,80 +1757,85 @@ html {
 }
 
 
-/* Selector unificado sobre el Sankey principal; conserva los datos originales
-   y sustituye el diagrama completo según la administración seleccionada. */
-.il-sankey-scope{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;
-  align-items:end;gap:10px;width:100%;box-sizing:border-box;
-  margin:12px 0 9px;padding:12px 14px;background:#f7f9fc;
-  border:1px solid #e1e7f0;border-radius:10px;font-family:system-ui,-apple-system,sans-serif;}
-.il-sankey-scope label{display:flex;flex-direction:column;gap:5px;min-width:0;
-  font:.76rem/1.3 system-ui,-apple-system,sans-serif;font-weight:750;color:#284568;}
-.il-sankey-scope select{appearance:auto;display:block;width:100%;min-width:0;min-height:41px;
-  border:1px solid #c8d3e0;border-radius:8px;padding:8px 10px;
-  color:#102948;background:#fff;font:500 .82rem/1.35 system-ui,-apple-system,sans-serif;}
-.il-sankey-scope select:focus-visible{outline:2px solid #b89b5e;outline-offset:2px;}
-.il-sankey-scope .il-scope-status{font:.72rem/1.5 system-ui,-apple-system,sans-serif;
-  color:#65758a;text-align:right;max-width:230px;padding-bottom:4px;}
-.il-sankey-selected-host{width:100%;min-width:0;max-width:none;box-sizing:border-box;}
-.il-sankey-selected-host>.pf-explorer{width:100%;max-width:none;}
-.il-sankey-selected-host>.ad-sankeys{width:100%;max-width:none;}
-@media(max-width:740px){
- .il-sankey-scope{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;
-  padding:9px;margin:9px 0 6px;}
- .il-sankey-scope select{font-size:.74rem;padding:8px 5px;min-height:39px;}
- .il-sankey-scope label{font-size:.7rem;}
- .il-sankey-scope .il-scope-status{grid-column:1/-1;text-align:left;
-  max-width:none;padding:0;font-size:.67rem;}
-}
-@media(max-width:410px){.il-sankey-scope{grid-template-columns:1fr;}.il-sankey-scope .il-scope-status{grid-column:1;}}
 
-
-/* Compact financial explorer controls: retain all existing selection handlers. */
-#mapa-dinero .il-sankey-scope {
-  display:grid;grid-template-columns:minmax(160px,1fr) minmax(160px,1fr) auto;
-  align-items:end;gap:8px;padding:9px 11px;margin:7px 0 5px;
-  border:1px solid #e1e6ed;border-radius:9px;background:#fafbfc;
+/* Barra única del Sankey: filtros discretos y acciones contextuales. */
+.il-sankey-selected-host{width:100%;min-width:0;max-width:none;box-sizing:border-box}
+.il-sankey-selected-host>.pf-explorer,
+.il-sankey-selected-host>.ad-sankeys{width:100%;max-width:none}
+#mapa-dinero .il-sankey-scope{
+  display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;
+  gap:8px 18px;width:100%;min-width:0;box-sizing:border-box;
+  padding:9px 0 11px;margin:9px 0 6px;border:0;border-bottom:1px solid #e4e8ee;
+  background:transparent;border-radius:0;font-family:system-ui,-apple-system,sans-serif;
 }
-#mapa-dinero .il-sankey-scope label {
-  display:flex;flex-direction:column;gap:3px;
-  font-size:.68rem;line-height:1.2;font-weight:650;letter-spacing:0;
+#mapa-dinero .il-sankey-selects{display:flex;gap:10px;min-width:0}
+#mapa-dinero .il-sankey-selects label{
+  display:flex;flex-direction:column;gap:4px;width:clamp(170px,19vw,290px);min-width:0;
+  color:#51647c;font:650 .72rem/1.2 system-ui,-apple-system,sans-serif;
 }
-#mapa-dinero .il-sankey-scope select {
-  min-height:35px;height:35px;padding:5px 8px;border-radius:6px;
-  font-size:.78rem;font-weight:550;border:1px solid #d4dde7;background:#fff;
+#mapa-dinero .il-sankey-selects select{
+  display:block;width:100%;height:38px;min-height:38px;min-width:0;box-sizing:border-box;
+  padding:5px 10px;border:1px solid #d4dde7;border-radius:7px;background:#fff;
+  color:#1b3554;box-shadow:none;font:550 .81rem/1.2 system-ui,-apple-system,sans-serif;
+  text-overflow:ellipsis;
 }
-#mapa-dinero .il-sankey-scope .il-scope-status {
-  padding:0 0 8px;font-size:.69rem;line-height:1.2;white-space:normal;
-  background:transparent;border:0;min-width:0;
+#mapa-dinero .il-sankey-selects select:hover{border-color:#aebccc}
+#mapa-dinero .il-sankey-side{
+  display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:7px 13px;
+  min-width:0;max-width:100%;margin-left:auto;
 }
-#mapa-dinero .il-spotlight-top {align-items:center;gap:10px;}
-#mapa-dinero .il-sankey-cta {
+#mapa-dinero .il-sankey-scope .il-scope-status{
+  display:inline-flex;align-items:center;min-height:33px;max-width:400px;
+  padding:0;border:0;background:transparent;text-align:left;white-space:normal;
+  color:#718094;font:500 .7rem/1.4 system-ui,-apple-system,sans-serif;
+}
+#mapa-dinero .il-sankey-actions{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+#mapa-dinero .il-sankey-actions a,
+#mapa-dinero .il-sankey-actions button{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;box-sizing:border-box;
+  min-height:35px;padding:5px 8px;border:1px solid transparent;border-radius:7px;
+  background:transparent;color:#254868!important;text-decoration:none!important;
+  font:650 .74rem/1.25 system-ui,-apple-system,sans-serif;cursor:pointer;white-space:nowrap;
+  box-shadow:none;
+}
+#mapa-dinero .il-sankey-actions svg{width:15px;height:15px;flex:none}
+#mapa-dinero .il-sankey-actions a:hover,
+#mapa-dinero .il-sankey-actions button:hover{
+  border-color:#e4e9ef;background:#f2f5f8;
+}
+#mapa-dinero .il-sankey-selects select:focus-visible,
+#mapa-dinero .il-sankey-actions a:focus-visible,
+#mapa-dinero .il-sankey-actions button:focus-visible{
+  outline:2px solid #a9813d;outline-offset:2px;
+}
+/* Las herramientas internas se conservan en el análisis completo, no se duplican en portada. */
+#mapa-dinero .il-sankey-selected-host>.pf-explorer>.pf-toolbar,
+#mapa-dinero .il-sankey-selected-host>.pf-explorer>.pf-mobile-tools,
+#mapa-dinero .il-map-year-mobile{display:none!important}
+#mapa-dinero .il-spotlight-top{align-items:center;gap:10px}
+#mapa-dinero .il-sankey-cta{
   display:inline-flex;align-items:center;justify-content:center;
-  min-height:34px;padding:6px 9px;border:1px solid #dbe2eb;
-  border-radius:7px;background:#fff;color:#0b2447!important;
-  font-size:.72rem;font-weight:650;box-shadow:none;
+  min-height:33px;padding:6px 9px;border:1px solid #e0e6ee;border-radius:7px;
+  background:transparent;color:#163557!important;box-shadow:none;
+  font-size:.73rem;font-weight:650;
 }
-#mapa-dinero .il-sankey-cta:hover {background:#f5f7fa;}
-#mapa-dinero .il-sankey-shortcuts {
-  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
-  padding:0 1px 5px;margin:0;
+#mapa-dinero .il-sankey-cta:hover{background:#f4f7fa}
+@media(max-width:950px){
+  #mapa-dinero .il-sankey-selects{width:100%;gap:8px}
+  #mapa-dinero .il-sankey-selects label{width:auto;flex:1 1 0}
+  #mapa-dinero .il-sankey-side{width:100%;justify-content:space-between;margin:0;gap:6px 10px}
 }
-#mapa-dinero .il-sankey-shortcuts a {
-  display:inline-flex;align-items:center;min-height:29px;
-  padding:4px 8px;border:1px solid #e0e5ec;border-radius:6px;
-  background:#fff;color:#294463!important;text-decoration:none!important;
-  font-size:.71rem;font-weight:650;
-}
-#mapa-dinero .il-sankey-shortcuts a:hover {background:#f4f7fa;}
-@media(max-width:700px){
- #mapa-dinero .il-sankey-scope {grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:7px;}
- #mapa-dinero .il-sankey-scope select {height:34px;min-height:34px;width:100%;font-size:.72rem;padding:5px 3px;}
- #mapa-dinero .il-sankey-scope .il-scope-status {grid-column:1/-1;padding:1px 2px;font-size:.65rem;}
- #mapa-dinero .il-sankey-cta {min-height:30px;padding:4px 7px;font-size:.68rem;}
-}
-@media(max-width:410px){
- #mapa-dinero .il-sankey-scope {grid-template-columns:repeat(2,minmax(0,1fr));}
- #mapa-dinero .il-sankey-scope .il-scope-status {grid-column:1/-1;}
+@media(max-width:510px){
+  #mapa-dinero .il-sankey-scope{gap:5px;padding:7px 0 9px;margin:6px 0 4px}
+  #mapa-dinero .il-sankey-selects{gap:7px}
+  #mapa-dinero .il-sankey-selects label{gap:4px;font-size:.65rem}
+  #mapa-dinero .il-sankey-selects select{
+    height:37px;min-height:37px;padding:5px;font-size:.71rem;
+  }
+  #mapa-dinero .il-sankey-side{flex-direction:column;align-items:flex-start;gap:2px}
+  #mapa-dinero .il-sankey-scope .il-scope-status{min-height:0;max-width:none;font-size:.65rem}
+  #mapa-dinero .il-sankey-actions a,
+  #mapa-dinero .il-sankey-actions button{min-height:32px;padding:3px 7px 3px 0;font-size:.7rem}
 }
 
 </style>
@@ -3159,23 +3164,33 @@ const indicatorsToShow = preferredIds
     </div>
     <a href="/finanzas-publicas.html" class="il-sankey-cta">Ver análisis completo</a>
   </div>
-<div class="il-sankey-scope" role="group" aria-label="Administración que se representa en el Sankey">
-  <label for="il-ministry-sankey">Ministerio
-    <select id="il-ministry-sankey" aria-label="Seleccionar ministerio">
-      <option value="">España · conjunto</option>
-    </select>
-  </label>
-  <label for="il-region-sankey">Comunidad autónoma
-    <select id="il-region-sankey" aria-label="Seleccionar comunidad autónoma">
-      <option value="">España · conjunto</option>
-    </select>
-  </label>
-  <div class="il-scope-status" id="il-sankey-scope-status" role="status" aria-live="polite">España · S.13 · IGAE 2024</div>
+<div class="il-sankey-scope" role="group" aria-label="Filtros y herramientas del mapa del dinero">
+  <div class="il-sankey-selects">
+    <label for="il-ministry-sankey">Ministerio
+      <select id="il-ministry-sankey" aria-label="Seleccionar ministerio">
+        <option value="">España · conjunto</option>
+      </select>
+    </label>
+    <label for="il-region-sankey">Comunidad autónoma
+      <select id="il-region-sankey" aria-label="Seleccionar comunidad autónoma">
+        <option value="">España · conjunto</option>
+      </select>
+    </label>
+  </div>
+  <div class="il-sankey-side">
+    <span class="il-scope-status" id="il-sankey-scope-status" role="status" aria-live="polite">España · S.13 · IGAE 2024 · 10 funciones COFOG</span>
+    <nav class="il-sankey-actions" aria-label="Herramientas del mapa del dinero">
+      <a href="./buscador-partidas.html" title="Buscar cualquier partida presupuestaria">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 5 5"/></svg>
+        Buscar partidas
+      </a>
+      <button id="il-sankey-sources-trigger" type="button" title="Ver metodología y fuentes del mapa">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+        Fuentes
+      </button>
+    </nav>
+  </div>
 </div>
-<nav class="il-sankey-shortcuts" aria-label="Profundizar en las cuentas públicas">
-  <a href="./buscador-partidas.html?q=conservaci%C3%B3n%20carreteras" title="Localizar partidas oficiales verificadas sobre conservación de carreteras">⌕ Buscar conservación de carreteras</a>
-  <a href="./metodologia.html" title="Consultar la metodología y las diferencias entre COFOG y presupuesto">Metodología y fuentes</a>
-</nav>
 <div class="il-map-year-mobile"><strong>2024</strong><span>IGAE · Administraciones públicas</span></div>
 </section>
 
@@ -3218,6 +3233,12 @@ const scopeMobileTitle=scopeHeader.querySelector(".il-map-title-mobile");
 const scopeIntro=scopeHeader.querySelector("p");
 const scopeCta=scopeHeader.querySelector(".il-sankey-cta");
 const yearBadge=document.querySelector("#mapa-dinero .il-map-year-mobile");
+const sourcesTrigger=document.getElementById("il-sankey-sources-trigger");
+sourcesTrigger.addEventListener("click",()=>{
+  const inPageButton=sankeyHost.querySelector(".pf-explorer .pf-toolbar button");
+  if(inPageButton){inPageButton.click();return;}
+  window.location.assign("./metodologia.html");
+});
 const nationalPresentation={
   desktop:scopeDesktopTitle.textContent,mobile:scopeMobileTitle.textContent,
   intro:scopeIntro.textContent,cta:scopeCta.textContent,href:scopeCta.getAttribute("href")
@@ -3272,7 +3293,7 @@ function presentNational(){
   scopeIntro.textContent=nationalPresentation.intro;
   scopeCta.textContent=nationalPresentation.cta;
   scopeCta.setAttribute("href",nationalPresentation.href);
-  scopeStatus.textContent="España · conjunto de administraciones (S.13) · IGAE 2024";
+  scopeStatus.textContent="España · S.13 · IGAE 2024 · 10 funciones COFOG";
   yearBadge.querySelector("strong").textContent="2024";
   yearBadge.querySelector("span").textContent="IGAE · Administraciones públicas";
   sankeyHost.replaceChildren(spotlightSankey);
