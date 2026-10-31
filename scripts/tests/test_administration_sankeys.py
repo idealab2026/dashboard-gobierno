@@ -55,7 +55,8 @@ class AdministrationSankeysContract(unittest.TestCase):
         self.assertIn("no deben sumarse",page)
         self.assertIn("22 ministerios",page)
         self.assertIn("17 comunidades autónomas",page)
-        self.assertIn("Crédito, NO obligación",widget.replace("crédito", "Crédito"))
+        self.assertIn("Crédito presupuestario del programa", widget)
+        self.assertIn("No son pagos ni obligaciones reconocidas", widget)
         self.assertIn("python scripts/build_administration_sankeys.py",workflow)
         self.assertLess(workflow.index("python scripts/build_administration_sankeys.py"),
                         workflow.index('python -m unittest discover'))
@@ -84,6 +85,36 @@ class AdministrationSankeysContract(unittest.TestCase):
         self.assertIn('No es el desglose de ingresos del Estado español',source)
         self.assertIn('const spotlightSankey = PublicFinanceExplorer(',source)
         self.assertLess(source.index('id="il-ministry-sankey"'),source.index('const spotlightSankey = PublicFinanceExplorer('))
+
+    def test_multilevel_drilldown_has_visible_breadcrumb_and_terminal_state(self):
+        widget=(ROOT/"app/components/administration-sankeys.js").read_text(encoding="utf-8")
+        self.assertIn('root.dataset.drillLevel=selectedLeaf?"terminal":selectedGroup?"detalle":"general"',widget)
+        self.assertIn('"ad-breadcrumbs"',widget)
+        self.assertIn('function openBranch(branch)',widget)
+        self.assertIn('g.addEventListener("click",()=>openBranch(b))',widget)
+        self.assertIn('graphic.append(drawFlow({',widget)
+        self.assertIn('total_mill_eur:sectionTotal',widget)
+        self.assertNotIn('name:"Resto de programas de la sección"',widget)
+        self.assertIn('"ad-region-drill"',widget)
+        self.assertIn('"ad-subgroups"',widget)
+        self.assertIn('importe autonómico',widget)
+        self.assertIn('selectedLeaf=null;render();',widget)
+        self.assertIn('selectedLeaf=program',widget)
+
+    def test_regional_cofog_subgroups_never_inherit_national_amounts(self):
+        importer=(ROOT/"scripts/build_administration_sankeys.py").read_text(encoding="utf-8")
+        self.assertIn('def cofog_group_labels():',importer)
+        self.assertIn('"cofog_group_labels":cofog_group_labels()',importer)
+        self.assertIn('{"code":code,"name":r["indicador"]}',importer)
+        self.assertNotIn('"value_mill_eur":r["valor"]',importer)
+        import os
+        if os.environ.get("CI"):
+            for section,items in self.data["cofog_group_labels"].items():
+                self.assertEqual(len(section),2)
+                self.assertTrue(items)
+                for item in items:
+                    self.assertTrue(item["code"].startswith(section+"."))
+                    self.assertNotIn("value_mill_eur",item)
 
     def test_official_ministries_and_regional_original_sources_remain_separate(self):
         self.assertIn("no se suman ni se comparan",self.data["not_comparable"])
