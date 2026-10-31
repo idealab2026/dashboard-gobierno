@@ -80,6 +80,16 @@ class BrandIdentityTests(unittest.TestCase):
                 self.assertIn('href="/"', nav)
                 self.assertIn("il-parent-brand" if wrapper == "il-header-identity" else "il-site-parent", nav)
 
+    def test_main_navigation_has_no_duplicate_administration_link(self):
+        for filename in ("index.md","finanzas-publicas.md"):
+            with self.subTest(filename=filename):
+                source=(ROOT/"app"/filename).read_text(encoding="utf-8")
+                self.assertEqual(
+                    source.count('<a href="/administraciones.html">Administraciones</a>'),
+                    1,
+                    "La navegación pública no debe duplicar Administraciones"
+                )
+
     def test_homepage_has_single_sankey_section_divider(self):
         """Prevent the grey hero rule from reappearing beside the gold Sankey rule."""
         home = (ROOT / "app" / "index.md").read_text(encoding="utf-8")
