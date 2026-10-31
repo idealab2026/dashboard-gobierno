@@ -1,0 +1,58 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import {dsvFormat} from "d3-dsv";
+import {searchSpendingRecords, normalizeSpending} from "../../app/components/spending-query.js";
+
+const source = readFileSync(new URL("../../app/data/seed/fact_finanzas_publicas_2024.csv", import.meta.url), "utf8").replace(/^\uFEFF/, "");
+const items = dsvFormat(";").parse(source)
+  .filter(x=>x.clasificacion==="COFOG" && x.lado==="gasto")
+  .map(x=>({
+    tipo:"agregado",cofog_codigo:x.codigo,titulo:x.indicador,
+    anio:Number(x.año),pais:"España",importe_eur:Number(x.valor),
+    organismo:"IGAE",sector:"COFOG "+x.codigo,
+    descripcion:x.definicion,
+    _search:normalizeSpending([x.indicador,x.definicion,x.codigo,x.año,"España"].join(" "))
+  }));
+
+test("sanidad returns the original COFOG 07 total and all six official groups",()=>{
+  const found=searchSpendingRecords(items,"sanidad");
+  assert.deepEqual(found.map(x=>x.cofog_codigo).sort(),["07","07.1","07.2","07.3","07.4","07.5","07.6"]);
+  assert.equal(found[0].cofog_codigo,"07");
+  assert.equal(found[0].importe_eur,102942);
+  assert.equal(found[0]._matchKind,"cofog-alias");
+  assert.equal(found.filter(x=>x.cofog_codigo!=="07").reduce((n,x)=>n+x.importe_eur,0),102942);
+});
+
+test("salud, gasto en sanidad, and accented terms are robust",()=>{
+  for(const q of ["salud","gasto en sanidad","SANIDAD","sanidad 2024","atención sanitaria"]) {
+    const found=searchSpendingRecords(items,q);
+    assert.ok(found.some(x=>x.cofog_codigo==="07"),q);
+  }
+});
+test("specific hospital and pharmacy searches cannot be promoted to the entire health budget",()=>{
+  assert.deepEqual(searchSpendingRecords(items,"hospitales").map(x=>x.cofog_codigo),["07.3"]);
+  assert.deepEqual(searchSpendingRecords(items,"medicamentos").map(x=>x.cofog_codigo),["07.1"]);
+  assert.deepEqual(searchSpendingRecords(items,"salud pública").map(x=>x.cofog_codigo),["07.4"]);
+});
+
+test("unknown geographic or project qualifier cannot generate a fictitious national allocation",()=>{
+  assert.equal(searchSpendingRecords(items,"sanidad Andalucía").length,0);
+  assert.equal(searchSpendingRecords(items,"ferrocarril Marruecos").length,0);
+  assert.equal(searchSpendingRecords(items,"charlas feministas").length,0);
+  const found=searchSpendingRecords(items,"ferrocarril");
+  assert.deepEqual(found.map(x=>x.cofog_codigo),["04.5"]);
+});
+
+test("COFOG official code, type and year filters remain strict",()=>{
+  assert.deepEqual(searchSpendingRecords(items,"sanidad",{cofog:"07.3"}).map(x=>x.cofog_codigo),["07.3"]);
+  assert.equal(searchSpendingRecords(items,"sanidad",{cofog:"07.3",anio:"2023"}).length,0);
+  assert.equal(searchSpendingRecords(items,"sanidad",{tipo:"intervencion"}).length,0);
+  assert.equal(searchSpendingRecords(items,"sanidad",{pais:"Paraguay"}).length,0);
+});
+
+test("health data have official IGAE provenance and no generated project allocations",()=>{
+  const health=items.filter(x=>x.cofog_codigo.startsWith("07"));
+  assert.equal(health.length,7);
+  assert.ok(health.every(x=>x.organismo==="IGAE"&&x.tipo==="agregado"&&x.pais==="España"));
+});
