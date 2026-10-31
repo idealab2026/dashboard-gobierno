@@ -319,7 +319,7 @@ def main() -> None:
             road_dom = road.stdout
             for required in ("Conservación, mantenimiento y explotación de carreteras",
                              "1.208,41 M€", "453C", "Ver capítulos presupuestarios",
-                             "No equivale a gasto ejecutado"):
+                             "Crédito PGE · no ejecutado"):
                 if required not in road_dom:
                     import re as _regex
                     print("DIAGNÓSTICO 453C:", {
