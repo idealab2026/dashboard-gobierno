@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "ministries_source": "https://www.sepg.pap.hacienda.gob.es/Presup/PGE2025Prorroga/MaestroDocumentos/PGE-ROM/Indice.htm",
+  "regions_source": "https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Documents/CCAA-A/COFOG_A_Detalle_CCAA_2024.xlsx",
+  "ministry_count": 0,
+  "region_count": 0,
+  "ministries": [],
+  "regions": [],
+  "not_comparable": "La cifra ministerial procede del presupuesto prorrogado y la regional de gasto funcional COFOG, ejercicios distintos: no se suman.",
+  "freshness": "El pipeline oficial genera este fichero al publicar."
+}
