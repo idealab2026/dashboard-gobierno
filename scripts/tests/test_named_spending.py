@@ -99,5 +99,50 @@ class NamedSpendingTests(unittest.TestCase):
         self.assertIn('target="_blank"', source) if 'target="_blank"' in source else self.assertIn('a.target="_blank"', source)
 
 
+    def test_sankey_functional_drawer_links_to_scoped_finder(self):
+        sankey = (ROOT / "app/components/public-finance-sankey.js").read_text(encoding="utf-8")
+        self.assertIn('new URL("buscador-partidas.html", window.location.href)', sankey)
+        self.assertIn('finderUrl.searchParams.set("cofog", String(row.code))', sankey)
+        self.assertIn('finderUrl.searchParams.set("anio", String(currentYear))', sankey)
+        self.assertIn('u.searchParams.set("cofog", "04.5")', sankey)
+        self.assertIn('u2.searchParams.set("q", "ferrocarril")', sankey)
+        self.assertIn("El gasto COFOG clasifica finalidades, no ministerios", sankey)
+        self.assertIn("row.side === \"gasto\"", sankey)
+
+    def test_cofog_filter_is_code_and_year_scoped_without_inventing_project_relationship(self):
+        page = (ROOT / "app/buscador-partidas.md").read_text(encoding="utf-8")
+        component = (ROOT / "app/components/partidas-search.js").read_text(encoding="utf-8")
+        self.assertIn('cofog_codigo: String(row.codigo)', page)
+        self.assertIn('get("cofog")', page)
+        self.assertIn('get("anio")', page)
+        self.assertIn('initialCofog', component)
+        self.assertIn('selectedCode+"."', component)
+        self.assertIn('x.tipo==="agregado"', component)
+        self.assertIn('Quitar filtro COFOG', component)
+        self.assertIn("distinta metodología y no son sumables", component)
+
+    def test_official_routes_for_three_independent_budget_dimensions(self):
+        component = (ROOT / "app/components/partidas-search.js").read_text(encoding="utf-8")
+        for expected in [
+            "Por ministerio", "Por comunidad autónoma", "Ferrocarriles e infraestructuras",
+            "www.igae.pap.hacienda.gob.es",
+            "PublicacionLiquidaciones",
+            "www.sepg.pap.hacienda.gob.es",
+            "ofe_2024.pdf",
+            "Un crédito presupuestario no es inversión efectivamente realizada",
+            "no se calculan totales administrativos a partir de COFOG",
+        ]:
+            self.assertIn(expected, component)
+        with (ROOT / "app/data/seed/fact_finanzas_publicas_2024.csv").open(
+            encoding="utf-8-sig", newline=""
+        ) as source:
+            rows = list(csv.DictReader(source, delimiter=";"))
+        transport = [r for r in rows if r["clasificacion"] == "COFOG" and r["codigo"] == "04.5"]
+        self.assertEqual(len(transport), 1)
+        self.assertEqual(transport[0]["indicador"], "Transporte")
+        self.assertEqual(transport[0]["valor"], "28634")
+        self.assertEqual(transport[0]["unidad"], "millones de euros")
+
+
 if __name__ == "__main__":
     unittest.main()
