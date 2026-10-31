@@ -130,7 +130,7 @@ class NamedSpendingTests(unittest.TestCase):
             "www.sepg.pap.hacienda.gob.es",
             "ofe_2024.pdf",
             "Un crédito presupuestario no es inversión efectivamente realizada",
-            "no se calculan totales administrativos a partir de COFOG",
+            "No se calculan totales administrativos a partir de COFOG",
         ]:
             self.assertIn(expected, component)
         with (ROOT / "app/data/seed/fact_finanzas_publicas_2024.csv").open(
