@@ -121,7 +121,7 @@ body {
 }
 .pf-hero p {
   color: var(--idealab-muted);
-  max-width: 980px;
+  max-width: none;
   line-height: 1.55;
   margin: 0;
   font-size: .97rem;
@@ -295,6 +295,44 @@ body {
     text-align:justify!important;
     text-align-last:left!important;
   }
+}
+
+
+/* IDEA LAB EDITORIAL LAYOUT: unbroken full-width content on every page.
+   Keep numeric figures, tables, navigation and Sankey labels left/right aligned. */
+.observablehq, #observablehq-main {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1680px !important;
+  margin-inline: auto;
+  padding-inline: clamp(12px, 2.6vw, 46px);
+}
+:is(.observablehq, #observablehq-main) > :is(p, blockquote, h1, h2, h3, ul, ol) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+}
+:is(.observablehq, #observablehq-main) > p,
+:is(.observablehq, #observablehq-main) > blockquote p {
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+@media (max-width: 768px) {
+  .observablehq, #observablehq-main { padding-inline: 12px; }
+}
+
+/* Public finance: explanatory copy spans the canvas; Sankey sizing is unchanged. */
+.pf-hero p, .pf-after-map p, .pf-documentation p,
+.pf-source-note p, .pf-footnote {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+  -webkit-hyphens: auto;
 }
 
 </style>
