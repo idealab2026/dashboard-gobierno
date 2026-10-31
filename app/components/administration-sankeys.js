@@ -1,4 +1,5 @@
 /* Interactive ministry and regional Sankeys, backed only by reconciled official amounts. */
+import {cofogsBelow} from "./cofog-structure.js";
 const ns="http://www.w3.org/2000/svg";
 const nf=new Intl.NumberFormat("de-DE",{maximumFractionDigits:1}); // agrupación 4 cifras: 2.333 en vez de 2333
 const label=v=>String(v??"");
@@ -211,54 +212,177 @@ export function AdministrationSankeys(data, options={}){
  else if(params.has("id") && !embedded)selectedIds[mode]=params.get("id");
  select.addEventListener("change",()=>{selectedIds[mode]=select.value;selectedGroup=null;selectedLeaf=null;render();});
  function drawFlow(subject,branches){
-  const W=1200,rowH=48,top=42,bottom=35;
-  const H=Math.max(370,top+branches.length*rowH+bottom);
-  const el=svg("svg",{class:"ad-flow",viewBox:`0 0 ${W} ${H}`,role:"img","aria-label":"Diagrama Sankey de "+subject.name});
-  const defs=svg("defs");el.append(defs);
-  const fromX=15,midX=460,toX=775,nodeW=395,h=39;
+  // Un solo Sankey horizontal: sin drawer ni atribuir importes no publicados.
+  const rowStep=52,nodeH=43,toX=774,nodeW=390,areaX=1260,leafX=1746,endX=2232;
+  const isMinistry=mode==="ministries",area=drillGroup(subject);
+  const nextRows=area?(isMinistry?[...area.items].sort((a,b)=>
+    a.code.localeCompare(b.code,"es",{numeric:true})):
+    (data.cofog_group_labels?.[area.code]||[])):[];
+  const currentLeaf=selectedLeaf&&nextRows.some(x=>x.code===selectedLeaf.code)?
+    nextRows.find(x=>x.code===selectedLeaf.code):null;
+  const classes=!isMinistry&&currentLeaf?cofogsBelow(currentLeaf.code):[];
+  const pickedClass=classes.find(x=>x.code===selectedClass)||null;
+  const W=isMinistry?(currentLeaf?endX-30:area?leafX+nodeW+45:1190):
+    (pickedClass?endX+nodeW+50:currentLeaf?leafX+nodeW+45:
+      area?areaX+nodeW+45:1190);
+  const H=Math.max(660,96+branches.length*rowStep,
+    120+nextRows.length*54,120+classes.length*54);
+  const el=svg("svg",{class:"ad-flow",viewBox:"0 0 "+W+" "+H,
+    role:"img","aria-label":"Árbol horizontal de "+subject.name});
+  const level=pickedClass?"clase":currentLeaf?
+    isMinistry?"programa":"subfuncion":area?
+    isMinistry?"area":"funcion":"general";
+  el.dataset.drillLevel=level;
+  el.dataset.selectedGroup=selectedGroup||"";
+  el.dataset.selectedLeaf=currentLeaf?.code||"";
+  el.dataset.selectedClass=pickedClass?.code||"";
+  const scale=Math.max(1,(graphic.clientWidth||1190)/1190);
+  el.style.width=Math.round(W*scale)+"px";
+  el.style.minWidth=Math.round(W*scale)+"px";
+  const cy=H/2,fromX=15,midX=460,sourceW=395,midW=270;
   const total=Number(subject.total_mill_eur);
-  // Ribbons are proportional to the same verified consolidated total, and
-  // visually spaced for legibility. Width floors are graphic only.
-  const sum=branches.reduce((x,b)=>x+Number(b.value_mill_eur),0);
-  if(Math.abs(sum-total)>0.15)throw Error("Sankey no conciliado: "+subject.name+" "+sum+" != "+total);
-  const boxHeight=Math.min(165,Math.max(90,branches.length*18));
-  const cy=H/2;
-  const drawBox=(x,y,width,height,title,value,isMiddle=false)=>{
-    const group=svg("g");
-    group.append(svg("rect",{x,y,width,height,rx:9,fill:isMiddle?"#0b2447":"#f6f2e8",stroke:isMiddle?"#0b2447":"#bfcedb"}));
-    const t=svg("text",{x:x+14,y:y+27,"font-size":isMiddle?17:14,"font-weight":800,fill:isMiddle?"#fff":"#0b2447"});t.textContent=title;group.append(t);
-    const v=svg("text",{x:x+14,y:y+54,"font-size":isMiddle?19:14,"font-weight":750,fill:isMiddle?"#fff":"#53677f"});v.textContent=money(value);group.append(v);
-    el.append(group);
+  const sum=branches.reduce((s,b)=>s+Number(b.value_mill_eur),0);
+  if(Math.abs(sum-total)>0.15)
+    throw Error("Sankey no conciliado: "+subject.name+" "+sum+" != "+total);
+  const put=(parent,x,y,content,cls,attrs={})=>{
+    const t=svg("text",{x,y,class:cls,...attrs});t.textContent=content;parent.append(t);
   };
-  // Draw source -> institution, whose amounts are exactly the same; no manufactured tax flows.
-  const sourceY=cy-boxHeight/2,midY=cy-boxHeight/2;
-  const flow=svg("path",{d:`M ${fromX+nodeW} ${cy} C 438 ${cy}, 438 ${cy}, ${midX} ${cy}`,
-   stroke:"#c3d4e4","stroke-width":Math.max(8,boxHeight*.75),fill:"none","stroke-opacity":.8});el.append(flow);
-  let start=cy-boxHeight/2;
-  for(const [index,b] of branches.entries()){
-    const pos=top+index*rowH;
-    const width=Math.max(1.5,Math.min(17,(b.value_mill_eur/total)*boxHeight));
-    const link=svg("path",{d:`M ${midX+270} ${start+boxHeight*(index+.5)/branches.length} C 765 ${start+boxHeight*(index+.5)/branches.length}, 770 ${pos+h/2}, ${toX} ${pos+h/2}`,
-      class:"ad-flow-path gold","stroke-width":width});
-    el.append(link);
+  const caption=(x,v)=>put(el,x,25,v,"ad-inline-heading");
+  caption(fromX,isMinistry?"ORIGEN · PGE 2025-P":"ORIGEN · IGAE 2024");
+  caption(midX,isMinistry?"SECCIÓN MINISTERIAL":"ADMINISTRACIÓN REGIONAL");
+  caption(toX,isMinistry?"ÁREAS DE GASTO":"FUNCIONES COFOG");
+  if(area)caption(areaX,isMinistry?"PROGRAMAS PRESUPUESTARIOS":"GRUPOS COFOG · SIN CIFRA");
+  if(currentLeaf)caption(leafX,isMinistry?"PROGRAMA · FUENTE":"CLASES COFOG · SIN CIFRA");
+  if(pickedClass)caption(endX,"FIN DE LA CLASIFICACIÓN COFOG");
+  const mainH=Math.min(165,Math.max(90,branches.length*18));
+  el.append(svg("path",{d:"M "+(fromX+sourceW)+" "+cy+" C 436 "+cy+
+    " 440 "+cy+" "+midX+" "+cy,class:"ad-flow-path",
+    "stroke-width":mainH*.72}));
+  const branchYs=new Map();
+  branches.forEach((b,i)=>{
+    const y=58+i*rowStep,center=y+nodeH/2;branchYs.set(b.code,center);
+    const port=cy-mainH/2+(i+.5)*mainH/branches.length;
+    el.append(svg("path",{
+      d:"M "+(midX+midW)+" "+port+" C "+(midX+midW+40)+" "+port+
+        " "+(toX-35)+" "+center+" "+toX+" "+center,
+      class:"ad-flow-path gold",
+      "stroke-width":Math.max(1.2,Math.min(16,mainH*Number(b.value_mill_eur)/total))
+    }));
+  });
+  const big=(x,w,name,amount,mid=false)=>{
+    const top=cy-mainH/2,g=svg("g",{class:mid?"ad-center-root":"ad-source-root"});
+    g.append(svg("rect",{x,y:top,width:w,height:mainH,rx:8,
+      fill:mid?"#0b2447":"#f6f2e8",
+      stroke:mid?"#0b2447":"#bfcedb"}));
+    put(g,x+14,top+27,wrap(name,34)[0],"ad-big-title",
+      {fill:mid?"#fff":"#0b2447"});
+    put(g,x+14,top+54,money(amount),"ad-big-amount",
+      {fill:mid?"#fff":"#496079"});
+    el.append(g);
+  };
+  big(fromX,sourceW,isMinistry?"Presupuesto ministerial":"Gasto regional IGAE",total);
+  big(midX,midW,subject.name,total,true);
+  const node=(x,y,title,sub,code,action,selected,missing=false)=>{
+    const g=svg("g",{class:"ad-branch ad-inline-node"+(missing?" is-unquantified":""),
+      role:"button",tabindex:"0","data-code":code,"aria-label":title+" · "+sub});
+    if(selected)g.setAttribute("aria-current","step");
+    g.append(svg("rect",{x,y,width:nodeW,height:nodeH,rx:7,
+      fill:selected?"#fff0cf":missing?"#eef4fa":"#f7f4ed",
+      stroke:selected?"#9b752f":"#c5d3df",
+      "stroke-width":selected?2.6:1.2}));
+    put(g,x+11,y+17,wrap(title,46)[0]||"","ad-branch-name");
+    put(g,x+11,y+35,sub,"ad-branch-value");
+    const tip=svg("title");tip.textContent=title+" · "+sub;g.append(tip);
+    g.addEventListener("click",action);
+    g.addEventListener("keydown",ev=>{
+      if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();action();}
+    });
+    el.append(g);
+  };
+  for(const b of branches){
+    node(toX,branchYs.get(b.code)-nodeH/2,b.code+" · "+b.name,
+      money(b.value_mill_eur),b.code,()=>openBranch(b),selectedGroup===b.code);
   }
-  drawBox(fromX,sourceY,nodeW,boxHeight,mode==="ministries"?"Presupuesto estatal":"Gasto regional IGAE",total);
-  drawBox(midX,midY,270,boxHeight,subject.name.length>24?subject.name.slice(0,24)+"…":subject.name,total,true);
-  for(const [index,b] of branches.entries()){
-    const y=top+index*rowH;
-    const g=svg("g",{class:"ad-branch",role:"button",tabindex:0,"aria-label":b.name+" "+money(b.value_mill_eur)});
-    g.append(svg("rect",{x:toX,y,width:390,height:h,rx:7,fill:"#f7f4ed",stroke:"#cbd5df"}));
-    const lines=wrap((b.code?b.code+" · ":"")+b.name,46);
-    lines.forEach((line,j)=>{const t=svg("text",{x:toX+11,y:y+(lines.length===1?15:12)+j*12,class:"ad-branch-name"});t.textContent=line;g.append(t)});
-    const v=svg("text",{x:toX+379,y:y+32,"text-anchor":"end",class:"ad-branch-value"});v.textContent=money(b.value_mill_eur);g.append(v);
-    g.dataset.code=b.code;
-    g.addEventListener("click",()=>openBranch(b));
-    g.addEventListener("keydown",ev=>{if(ev.key==="Enter"||ev.key===" "){
-      ev.preventDefault();openBranch(b);
-    }});
-    const tip=svg("title");tip.textContent=b.name+" · "+money(b.value_mill_eur);
-    g.append(tip);el.append(g);
+  const distributed=(items,anchor,h=43,gap=54)=>{
+    const span=items.length*gap-(gap-h);
+    const y0=Math.max(58,Math.min(anchor-span/2,H-span-35));
+    return items.map((item,i)=>({item,y:y0+i*gap,cy:y0+i*gap+h/2}));
+  };
+  let focus=toX;
+  if(area){
+    const yParent=branchYs.get(selectedGroup),children=distributed(nextRows,yParent);
+    for(const n of children){
+      const child=n.item;
+      el.append(svg("path",{d:"M "+(toX+nodeW)+" "+yParent+
+        " C "+(toX+nodeW+55)+" "+yParent+" "+(areaX-55)+" "+
+        n.cy+" "+areaX+" "+n.cy,
+        class:isMinistry?"ad-inline-ribbon":"ad-inline-dashed",
+        "data-source-code":selectedGroup,
+        "stroke-width":isMinistry?
+          Math.max(1.2,Math.min(10,Number(child.value_mill_eur)/
+            Number(area.value_mill_eur)*24)):1.5}));
+      node(areaX,n.y,child.code+" · "+child.name,
+        isMinistry?money(child.value_mill_eur):
+          "Clasificación ONU · importe regional no publicado",
+        child.code,()=>openLeaf(child),currentLeaf?.code===child.code,!isMinistry);
+    }
+    focus=areaX;
+    if(currentLeaf){
+      const anchor=children.find(x=>x.item.code===currentLeaf.code).cy;
+      if(isMinistry){
+        const top=Math.max(58,Math.min(anchor-40,H-125));
+        el.append(svg("path",{d:"M "+(areaX+nodeW)+" "+anchor+
+          " C "+(areaX+nodeW+45)+" "+anchor+" "+(leafX-45)+" "+
+          (top+56)+" "+leafX+" "+(top+56),class:"ad-inline-ribbon",
+          "stroke-width":2,"data-source-code":currentLeaf.code}));
+        const card=svg("g",{class:"ad-inline-terminal"});
+        card.append(svg("rect",{x:leafX,y:top,width:nodeW,height:113,rx:8}));
+        put(card,leafX+12,top+22,
+          currentLeaf.code+" · "+wrap(currentLeaf.name,38)[0],"ad-branch-name");
+        put(card,leafX+12,top+47,money(currentLeaf.value_mill_eur),"ad-branch-value");
+        put(card,leafX+12,top+68,"Crédito PGE · no gasto ejecutado","ad-branch-value");
+        const link=sourceAnchor(subject.source_url,"Fuente");
+        if(link){
+          const a=svg("a",{href:link.href,target:"_blank",rel:"noopener noreferrer"});
+          put(a,leafX+12,top+94,"Consultar fuente oficial ↗","ad-terminal-link");
+          card.append(a);
+        }
+        el.append(card);
+      }else{
+        for(const n of distributed(classes,anchor)){
+          el.append(svg("path",{d:"M "+(areaX+nodeW)+" "+anchor+
+            " C "+(areaX+nodeW+60)+" "+anchor+" "+(leafX-60)+" "+
+            n.cy+" "+leafX+" "+n.cy,
+            class:"ad-inline-dashed","data-source-code":currentLeaf.code}));
+          node(leafX,n.y,n.item.code+" · "+n.item.title,
+            "Clase ONU · sin importe regional desglosado",
+            n.item.code,()=>openClass(n.item),selectedClass===n.item.code,true);
+        }
+      }
+      focus=leafX;
+      if(pickedClass){
+        const yClass=distributed(classes,anchor).find(n=>
+          n.item.code===pickedClass.code).cy;
+        const top=Math.max(59,Math.min(yClass-35,H-125));
+        el.append(svg("path",{d:"M "+(leafX+nodeW)+" "+yClass+
+          " C "+(leafX+nodeW+45)+" "+yClass+" "+(endX-45)+" "+
+          (top+48)+" "+endX+" "+(top+48),
+          class:"ad-inline-dashed","data-source-code":pickedClass.code}));
+        const last=svg("g",{class:"ad-inline-terminal"});
+        last.append(svg("rect",{x:endX,y:top,width:nodeW,height:106,rx:8}));
+        put(last,endX+12,top+24,"Último nivel de clasificación COFOG","ad-branch-name");
+        put(last,endX+12,top+49,"Sin importe autonómico desglosado","ad-branch-value");
+        const url=safeLink(subject.source_url);
+        if(url){
+          const a=svg("a",{href:url,target:"_blank",rel:"noopener noreferrer"});
+          put(a,endX+12,top+76,"Consultar fuente IGAE ↗","ad-terminal-link");
+          last.append(a);
+        }
+        el.append(last);focus=endX;
+      }
+    }
   }
+  el.dataset.focusX=String(focus);
   return el;
  }
 
