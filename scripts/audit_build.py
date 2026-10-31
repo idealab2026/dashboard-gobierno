@@ -15,7 +15,7 @@ if f.exists():
 search_html=d/"buscador-partidas.html"
 if search_html.exists():
     markup=search_html.read_text(encoding="utf-8")
-    if "partidas-buscador" not in markup or "Buscar partidas y proyectos" not in markup:
+    if "il-finder-hero" not in markup or "Buscar partidas y proyectos" not in markup:
         errors.append("Buscador no incorporado al HTML publicado")
 
 # A logo and icon are required on every release, not merely in source.
