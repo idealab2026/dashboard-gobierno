@@ -590,6 +590,51 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       sourceBlock.append(document.createTextNode(`Vintage / fecha: ${src.vintage}`));
     }
     detail.append(sourceBlock);
+
+    // El Sankey es contabilidad nacional por finalidad (COFOG), no un
+    // reparto presupuestario por ministerios o por comunidades autónomas.
+    // El enlace transmite sólo código/año, nunca importes o atribuciones.
+    if (row.side === "gasto" || row.code === "S13.GASTO") {
+      const links = htmlEl("section", "pf-detail-bridge");
+      const bridgeTitle = htmlEl("h3", "pf-detail-subtitle");
+      bridgeTitle.textContent = "Investigar partidas y administraciones";
+      const bridgeNote = htmlEl("p", "pf-note");
+      bridgeNote.textContent = "El gasto COFOG clasifica finalidades, no ministerios, comunidades autónomas ni proyectos. Los portales siguientes tienen ámbitos y criterios distintos; sus importes no se suman a los del gráfico.";
+      links.append(bridgeTitle, bridgeNote);
+
+      const actions = htmlEl("div", "pf-detail-actions pf-investigation-actions");
+      const search = document.createElement("a");
+      const finderUrl = new URL("buscador-partidas.html", window.location.href);
+      if (/^\d{2}(?:\.\d+)?$/.test(String(row.code))) {
+        finderUrl.searchParams.set("cofog", String(row.code));
+        finderUrl.searchParams.set("anio", String(currentYear));
+      }
+      search.href = finderUrl.href;
+      search.textContent = "Ver partidas de esta función";
+      search.setAttribute("aria-label", "Ver partidas COFOG de " + rowLabel(row) + " en el buscador");
+      actions.append(search);
+
+      if (row.code === "04" || row.code === "04.5") {
+        const transport = document.createElement("a");
+        const u = new URL("buscador-partidas.html", window.location.href);
+        u.searchParams.set("cofog", "04.5");
+        u.searchParams.set("anio", String(currentYear));
+        transport.href = u.href;
+        transport.textContent = "Transporte · COFOG 04.5";
+        actions.append(transport);
+        const railway = document.createElement("a");
+        const u2 = new URL("buscador-partidas.html", window.location.href);
+        u2.searchParams.set("q", "ferrocarril");
+        railway.href = u2.href;
+        railway.textContent = "Buscar proyectos ferroviarios";
+        actions.append(railway);
+      }
+      links.append(actions);
+      const guide = htmlEl("p", "pf-note");
+      guide.textContent = "Para identificar ministerio, territorio o inversión ejecutada, consulta en el buscador las rutas oficiales de presupuesto estatal, COFOG regional, liquidaciones autonómicas y observatorio ferroviario.";
+      links.append(guide);
+      detail.append(links);
+    }
   }
 
   function openMethodology() {
