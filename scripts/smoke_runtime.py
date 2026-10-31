@@ -89,15 +89,18 @@ def main() -> None:
                 raise AssertionError(f"Runtime incompleto: {checks}; HTML chars={len(dom)}")
             print(f"Observatorio OK en Chrome: {checks}")
 
-            # Los selectores deben cambiar el gráfico *en la portada*, no
-            # limitarse a enviar al usuario a una página independiente.
-            for query, mode_name, entity_id, expected in [
-                ("?ambito=ministerio&id=17","ministries","17",
-                 ("Transportes y Movilidad Sostenible", "2025-P",
-                  "Presupuesto por ministerio", "ad-flow")),
-                ("?ambito=ccaa&id=1","regions","1",
-                 ("Andalucía", "2024",
-                  "Gasto por comunidad autónoma", "ad-flow"))
+            # Los filtros de portada cambian el mismo mapa. El modo ministerial
+            # conserva las 22 ramas y amplía columnas horizontalmente.
+            for query, expected in [
+                ("?ambito=ministerio&id=17",
+                 ("Presupuestos por ministerio","2025-P",
+                  'data-mode="ministry-budget-tree"',
+                  'data-selected-ministry="17"',
+                  'class="mbt-svg"')),
+                ("?ambito=ccaa&id=1",
+                 ("Andalucía","2024","Gasto por comunidad autónoma",
+                  'data-administration-mode="regions"',
+                  'class="ad-flow"'))
             ]:
                 scoped = subprocess.run(
                     [*args[:-1], "--virtual-time-budget=14000", url+query],
@@ -106,18 +109,55 @@ def main() -> None:
                 if scoped.returncode:
                     raise AssertionError("Chrome no carga scope del Sankey en portada "+query)
                 scoped_dom=scoped.stdout
-                for expected_word in expected:
-                    if expected_word not in scoped_dom:
-                        raise AssertionError("Portada no representa "+query+": falta "+expected_word)
-                if ('data-administration-mode="'+mode_name+'"' not in scoped_dom or
-                    'data-administration-id="'+entity_id+'"' not in scoped_dom or
-                    'class="ad-flow"' not in scoped_dom):
-                    raise AssertionError("Selector de portada no renderiza Sankey de "+mode_name)
-                if 'class="pf-explorer' in scoped_dom:
-                    raise AssertionError("Se duplicó el Sankey nacional con "+mode_name)
-                if "RuntimeError:" in scoped_dom:
-                    raise AssertionError("Fallo observable en scope "+query)
+                for required in expected:
+                    if required not in scoped_dom:
+                        raise AssertionError("Portada "+query+" sin "+required)
+                if 'class="pf-explorer' in scoped_dom or "RuntimeError:" in scoped_dom:
+                    raise AssertionError("Se duplicó o falló el Sankey en "+query)
+                if "ministerio" in query:
+                    nodes=re.findall(
+                        r'<g class="mbt-node"[^>]+data-code="(1[2-9]|2[0-9]|3[0-3])"',
+                        scoped_dom
+                    )
+                    if len(set(nodes))!=22:
+                        raise AssertionError("Faltan ministerios en vista completa: "+str(nodes))
+                    if 'data-drill-level="ministerio"' not in scoped_dom:
+                        raise AssertionError("La vista no ha abierto el primer nivel ministerial")
+                    if "Presupuesto estatal" in scoped_dom:
+                        raise AssertionError("El centro del Sankey no debe representar falsamente S.13")
                 print("Portada Sankey seleccionado OK:",query)
+
+            # Comparar dos niveles de profundización. No hay panel lateral:
+            # las mismas 22 ramas originales permanecen montadas en el SVG.
+            for query,level,required in [
+                ("?ambito=ministerio&id=17&nivel=area&codigo=4",
+                 "area",("Actuaciones de carácter económico", "ÁREAS DE GASTO",
+                         'data-selected-area="4"')),
+                ("?ambito=ministerio&id=17&nivel=programa&codigo=453A",
+                 "programa",("453A","DOCUMENTACIÓN DEL PROGRAMA",
+                           'data-selected-program="453A"')),
+            ]:
+                result=subprocess.run(
+                    [*args[:-1],"--virtual-time-budget=15000",url+query],
+                    text=True,capture_output=True,timeout=85
+                )
+                if result.returncode:
+                    raise AssertionError("Chrome no carga desglose ministerial "+query)
+                page=result.stdout
+                if 'data-drill-level="'+level+'"' not in page:
+                    raise AssertionError("Nivel ministerial equivocado "+query)
+                if 'class="mbt-svg"' not in page or "RuntimeError:" in page:
+                    raise AssertionError("Sankey ministerial no se conserva "+query)
+                for needle in required:
+                    if needle not in page:
+                        raise AssertionError("Falta "+needle+" en "+query)
+                codes=re.findall(
+                    r'<g class="mbt-node"[^>]+data-code="(1[2-9]|2[0-9]|3[0-3])"',
+                    page
+                )
+                if len(set(codes))!=22:
+                    raise AssertionError("Se perdieron ministerios al profundizar "+query)
+                print("Linaje ministerial verificado:",query)
 
 
             search_url = f"http://127.0.0.1:{server.server_port}/{BASE}/buscador-partidas.html"
