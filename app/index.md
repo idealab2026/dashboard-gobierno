@@ -1524,6 +1524,7 @@ html {
     <a href="/metodologia.html">Metodología</a>
     <a href="/actualizaciones.html">Actualización</a>
     <a href="/quienes-somos.html">Quiénes somos</a>
+      <a href="/idea-lab.html">IDEA LAB · Web corporativa</a>
     <a class="idealab-nav-x" href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer" aria-label="Canal editorial de IDEA LAB en X">En X</a>
   </div>
   <details class="idealab-nav-mobile">
@@ -1545,6 +1546,7 @@ html {
       <a href="/metodologia.html">Metodología</a>
       <a href="/actualizaciones.html">Actualización</a>
       <a href="/quienes-somos.html">Quiénes somos</a>
+      <a href="/idea-lab.html">IDEA LAB · Web corporativa</a>
       <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">En X ↗</a>
     </div>
   </details>
@@ -2763,6 +2765,7 @@ const indicatorCount = availableIndicators.length;
   <div class="hero-actions">
     <a href="#mapa-dinero">Explorar el mapa del dinero</a>
     <a href="/quienes-somos.html">Quiénes somos</a>
+      <a href="/idea-lab.html">IDEA LAB · Web corporativa</a>
   </div>
 </div>
 
