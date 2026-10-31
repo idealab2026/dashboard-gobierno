@@ -61,7 +61,7 @@ class AdministrationSankeysContract(unittest.TestCase):
                         workflow.index('python -m unittest discover'))
 
     def test_official_ministries_and_regional_original_sources_remain_separate(self):
-        self.assertIn("distintos",self.data["not_comparable"])
+        self.assertIn("no se suman ni se comparan",self.data["not_comparable"])
         self.assertIn("sepg.pap.hacienda.gob.es",self.data["ministries_source"])
         self.assertIn("igae.pap.hacienda.gob.es",self.data["regions_source"])
 
