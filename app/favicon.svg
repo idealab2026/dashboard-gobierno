@@ -1,17 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="title"><title id="title">IDEA LAB · Símbolo</title>
-  <rect width="128" height="128" rx="20" fill="#07304b"/>
-  <path d="M42 51 50 45 62 47 72 44 85 50 94 52 89 63 94 72 86 85 73 90 64 98 52 92 49 81 43 73 46 63 40 58Z" fill="#8bb7b0"/>
-  <g fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round">
-    <path d="M18 69C25 34 49 18 73 18c23 0 39 20 43 42"/>
-    <path d="M25 44C47 27 83 35 108 58"/>
-    <path d="M19 90C43 113 84 109 111 73"/>
-    <path d="M55 17C30 42 33 88 72 114"/>
-    <path d="M78 18C104 44 100 86 75 112"/>
-    <path d="M16 78C44 89 82 81 113 60"/>
-  </g>
-  <circle cx="43" cy="33" r="10.5" fill="#fff"/>
-  <circle cx="43" cy="33" r="6.5" fill="#87b7b0"/>
-  <circle cx="28" cy="92" r="11" fill="#fff"/>
-  <circle cx="28" cy="92" r="7" fill="#87b7b0"/>
-  <circle cx="108" cy="58" r="12" fill="#fff"/>
-  <circle cx="108" cy="58" r="8" fill="#dca725"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-labelledby="title"><title id="title">España en Datos · IDEA LAB</title>
+  <rect width="128" height="128" rx="21" fill="#07304b"/>
+  <path d="M19.7,40.8 L20.1,34.4 L17.0,30.5 L27.6,24.0 L36.7,25.6 L46.8,25.6 L54.7,27.1 L61.0,26.6 L73.0,26.9 L76.0,30.4 L89.8,34.5 L92.5,32.5 L100.9,36.6 L109.6,35.4 L110.0,40.7 L102.9,46.6 L93.3,48.5 L92.7,51.5 L88.1,56.5 L85.2,63.8 L88.1,69.0 L83.8,73.0 L82.2,78.8 L76.5,80.6 L71.2,87.5 L61.7,87.6 L54.6,87.4 L49.9,90.6 L47.0,94.0 L43.4,93.3 L40.6,90.2 L38.5,85.1 L31.5,83.7 L30.9,80.7 L33.7,77.3 L34.7,74.9 L32.1,72.2 L34.2,66.3 L31.2,61.0 L34.4,60.2 L34.7,56.0 L35.9,54.7 L36.0,47.7 L39.5,45.2 L37.4,40.7 L33.0,40.4 L31.7,41.6 L27.3,41.6 L25.4,37.2 L22.4,38.5 Z" fill="#8bb7b0" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round"/>
+  <circle cx="59.6" cy="53.9" r="5.4" fill="#dca725" stroke="#07304b" stroke-width="2"/>
+  <path d="M21 108 Q64 120 108 105" fill="none" stroke="#dca725" stroke-width="3" stroke-linecap="round"/>
+</svg>
