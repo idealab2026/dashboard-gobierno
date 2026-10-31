@@ -460,7 +460,7 @@ html {
 }
 
 .section-note {
-  max-width: 900px;
+  max-width: none;
 
   margin: 1rem 0 1.5rem;
   padding: 0.9rem 1rem;
@@ -824,7 +824,7 @@ html {
 .il-spotlight-top {display:flex; justify-content:space-between; align-items:end; gap:1.5rem; flex-wrap:wrap;}
 .il-spotlight-kicker {font-size:.69rem;letter-spacing:.13em;font-weight:850;color:#987333;margin-bottom:.45rem;}
 .il-spotlight-top h2 {margin:0 0 .45rem; font-size:clamp(1.5rem,2.9vw,2.3rem);color:#0b2447;letter-spacing:-.03em;}
-.il-spotlight-top p {max-width:840px; margin:.3rem 0 .65rem;color:#556277;font-size:.91rem;line-height:1.5;}
+.il-spotlight-top p {max-width:none; margin:.3rem 0 .65rem;color:#556277;font-size:.91rem;line-height:1.5;}
 .il-sankey-cta {background:#0b2447;color:#fff !important;border-radius:9px;text-decoration:none;padding:.78rem 1rem;font-size:.8rem;font-weight:800;white-space:nowrap;margin:0 0 .35rem;}
 .il-sankey-cta:hover {background:#19376d;text-decoration:none;}
 .il-sankey-meta {font-size:.77rem;color:#65758a;background:#f8f5ef;padding:.7rem .9rem;border:1px solid #e9e0c9;border-radius:9px;margin:.5rem 0 .7rem;}
@@ -836,7 +836,7 @@ html {
 /* Auditoría visual: datos COFOG y pensiones que no estaban expuestos en el panel. */
 .il-finance-coverage {border:1px solid #e1e7ec;background:#fff;border-radius:14px;padding:18px 20px;margin:14px 0 28px;overflow:hidden}
 .il-finance-coverage h3 {font-size:1.08rem;color:#0b2447;margin:0 0 4px}
-.il-finance-coverage p {font-size:.83rem;color:#667085;margin:.25rem 0 13px;max-width:950px}
+.il-finance-coverage p {font-size:.83rem;color:#667085;margin:.25rem 0 13px;max-width:none}
 .il-finance-coverage table {width:100%;border-collapse:collapse;font-size:.83rem}
 .il-finance-coverage th {font-size:.68rem;color:#6b798b;background:#f5f8fa;text-transform:uppercase;letter-spacing:.04em}
 .il-finance-coverage td,.il-finance-coverage th {padding:10px 9px;border-bottom:1px solid #e9edf0;text-align:left}
@@ -877,7 +877,7 @@ html {
 .idealab-nav-areas-panel a{display:block;text-decoration:none}
 .hero{padding:.9rem 0 .8rem;margin-bottom:.7rem}
 .hero h1{font-size:clamp(2.5rem,5vw,3.8rem);margin:.45rem 0 .7rem;white-space:normal}
-.hero-subtitle{font-size:1.02rem;line-height:1.5;max-width:76ch}
+.hero-subtitle{font-size:1.02rem;line-height:1.5;max-width:none}
 .hero-actions{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem}
 .hero-actions a{display:inline-block;padding:.62rem .9rem;border:1px solid var(--idealab-navy);border-radius:8px;font-weight:700;font-size:.87rem;color:var(--idealab-navy);text-decoration:none}
 .hero-actions a:first-child{background:var(--idealab-navy);color:white}
@@ -1442,6 +1442,50 @@ html {
   .il-finance-coverage.is-tax-table tbody {
     grid-template-columns:repeat(2,minmax(0,1fr))!important;
   }
+}
+
+
+/* IDEA LAB EDITORIAL LAYOUT: unbroken full-width content on every page.
+   Keep numeric figures, tables, navigation and Sankey labels left/right aligned. */
+.observablehq, #observablehq-main {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1680px !important;
+  margin-inline: auto;
+  padding-inline: clamp(12px, 2.6vw, 46px);
+}
+:is(.observablehq, #observablehq-main) > :is(p, blockquote, h1, h2, h3, ul, ol) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+}
+:is(.observablehq, #observablehq-main) > p,
+:is(.observablehq, #observablehq-main) > blockquote p {
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+@media (max-width: 768px) {
+  .observablehq, #observablehq-main { padding-inline: 12px; }
+}
+
+/* Hero, standalone explanations and notes use every available column. */
+.hero-subtitle, .section-description, .section-note,
+.il-spotlight-top p, .il-finance-coverage > p,
+.il-pension-info > p, .columna-analisis p {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+.il-spotlight-top > :first-child { flex: 1 1 62%; min-width: 0; }
+@media (max-width: 768px) {
+  /* Keep the compact mobile gutter already used by the dashboard. */
+  .observablehq, #observablehq-main { padding-inline: 10px !important; }
 }
 
 </style>
