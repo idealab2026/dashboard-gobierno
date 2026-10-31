@@ -373,7 +373,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   const select=(label,opts)=>{
     const el=make("select");for(const [v,t] of opts){const o=make("option","",t);o.value=v;el.append(o);}field(label,el);return el;
   };
-  const type=select("Tipo de registro",[["","Todos"],["programa","Programas PGE"],["regional","Funciones CCAA"],["agregado","Gasto COFOG nacional"],["intervencion","Proyectos AECID"],["convocatoria","Convocatorias"],["norma","Normas de concesión"]]);
+  const type=select("Tipo de registro",[["","Todos"],["programa_pge","Programas PGE"],["programa_documental","Programas con ficha"],["regional","Funciones CCAA"],["agregado","Gasto COFOG nacional"],["intervencion","Proyectos AECID"],["convocatoria","Convocatorias"],["norma","Normas de concesión"]]);
   const years=[...new Set([...records,...aggregates].map(x=>String(x.anio)).filter(Boolean))].sort((a,b)=>b.localeCompare(a));
   const year=select("Año",[["","Todos los años"],...years.map(y=>[y,y])]);
   if (years.includes(String(initialYear))) year.value=String(initialYear);
@@ -601,8 +601,9 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
     }
     const heading=make("div","sf-record-top");
     const left=make("div","sf-record-intro");
-    const types={intervencion:"Intervención AECID",agregado:"Gasto COFOG estatal y territorial agregado",
-      regional:"Función COFOG autonómica",programa:"Programa de los PGE",
+    const types={intervencion:"Intervención AECID",agregado:"Gasto COFOG nacional",
+      regional:"Función COFOG autonómica",
+      programa:item.codigo_seccion&&item.admin_hierarchy?"Programa de los PGE":"Programa documentado",
       convocatoria:"Convocatoria",norma:"Norma de concesión"};
     const meta=make("div","sf-record-meta");
     meta.append(make("span","sf-record-kind",types[item.tipo]||item.tipo),
@@ -670,12 +671,19 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   }
   function render(){
     const q=fold(input.value);
+    const sourceType=["programa_pge","programa_documental"].includes(type.value)
+      ?"":type.value;
     const found=searchSpendingRecords(all,input.value,{
-      cofog:selectedCode,tipo:type.value,anio:year.value,pais:country.value
+      cofog:selectedCode,tipo:sourceType,anio:year.value,pais:country.value
     });
+    const typed=type.value==="programa_pge"
+      ?found.filter(item=>matchesClassification(item,"tipo","programa"))
+      :type.value==="programa_documental"
+        ?found.filter(item=>matchesClassification(item,"tipo","programa_documental"))
+        :found;
     const matching=activeClassification?
-      found.filter(item=>matchesClassification(
-        item,activeClassification.mode,activeClassification.key)):found;
+      typed.filter(item=>matchesClassification(
+        item,activeClassification.mode,activeClassification.key)):typed;
     results.replaceChildren();
     const slice=matching.slice(0,visibleCount);
     summary.replaceChildren();
