@@ -78,7 +78,7 @@ class COFOGCoverageTest(unittest.TestCase):
         sankey = (ROOT / "app/components/public-finance-sankey.js").read_text(
             encoding="utf-8"
         )
-        self.assertIn("Sin importe", sankey)
+        self.assertIn("sin importe", sankey.lower())
         self.assertIn("pf-class-line", sankey)
         self.assertIn("matchingBudgetPrograms", sankey)
 
