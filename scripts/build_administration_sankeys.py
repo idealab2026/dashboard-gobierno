@@ -192,7 +192,7 @@ def cofog_group_labels():
         for r in csv.DictReader(handle,delimiter=";"):
             code=(r.get("codigo") or "").strip()
             if (r.get("lado")=="gasto" and r.get("clasificacion")=="COFOG"
-                and re.fullmatch(r"\\d{2}\\.\\d",code)):
+                and re.fullmatch(r"\d{2}\.\d",code)):
                 parent=code.split(".")[0]
                 found.setdefault(parent,[])
                 if not any(x["code"]==code for x in found[parent]):
