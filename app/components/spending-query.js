@@ -50,7 +50,7 @@ export function searchSpendingRecords(items, query, options = {}) {
     if (selectedCountry && item.pais !== selectedCountry) continue;
     const haystack = item._search || normalizeSpending([
       item.titulo, item.pais, item.sector, item.entidad, item.organismo,
-      item.descripcion, item.id, item.trazabilidad, item.clasificacion
+      item.descripcion, item.id, item.trazabilidad, item.clasificacion, item.anio
     ].join(" "));
     let synonymHits = 0, directHits = 0;
     const matchesAll = terms.every(term => {
@@ -70,7 +70,7 @@ export function searchSpendingRecords(items, query, options = {}) {
       + (item.tipo === "agregado" ? 120 - codeDepth * 13 : 15);
     matches.push({
       ...item,
-      _matchKind: terms.length && synonymHits && synonymHits >= directHits ? "cofog-alias" : "literal",
+      _matchKind: terms.length && synonymHits ? "cofog-alias" : "literal",
       _score: relevance
     });
   }
