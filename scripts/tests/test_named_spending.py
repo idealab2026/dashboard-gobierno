@@ -94,7 +94,12 @@ class NamedSpendingTests(unittest.TestCase):
     def test_verification_is_not_inferred_from_generic_topic_matches(self):
         source = (ROOT / "app/components/partidas-search.js").read_text(encoding="utf-8")
         self.assertIn("Correspondencia temática COFOG", source)
-        self.assertIn("Los resultados temáticos no prueban financiación", source)
+        self.assertIn("no son contratos ni proyectos individuales", source)
+        self.assertIn("const matching=searchSpendingRecords(", source)
+        matching = (ROOT / "app/components/spending-query.js").read_text(encoding="utf-8")
+        self.assertIn("terms.every", matching)
+        self.assertIn("if (!matchesAll) continue", matching)
+        self.assertIn("aliasHit", matching)
         self.assertIn("No significa que la partida no exista", source)
         self.assertIn('target="_blank"', source) if 'target="_blank"' in source else self.assertIn('a.target="_blank"', source)
 
@@ -129,7 +134,8 @@ class NamedSpendingTests(unittest.TestCase):
         self.assertIn('get("cofog")', page)
         self.assertIn('get("anio")', page)
         self.assertIn('initialCofog', component)
-        self.assertIn('selectedCode+"."', component)
+        pure_query = (ROOT / "app/components/spending-query.js").read_text(encoding="utf-8")
+        self.assertIn('selectedCode + "."', pure_query)
         self.assertIn('x.tipo==="agregado"', component)
         self.assertIn('Quitar filtro COFOG', component)
         self.assertIn("distinta metodología y no son sumables", component)
