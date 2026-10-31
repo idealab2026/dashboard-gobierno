@@ -136,7 +136,7 @@ class NamedSpendingTests(unittest.TestCase):
         self.assertIn('initialCofog', component)
         pure_query = (ROOT / "app/components/spending-query.js").read_text(encoding="utf-8")
         self.assertIn('selectedCode + "."', pure_query)
-        self.assertIn('x.tipo==="agregado"', component)
+        self.assertIn('item.tipo === "agregado"', pure_query)
         self.assertIn('Quitar filtro COFOG', component)
         self.assertIn("distinta metodología y no son sumables", component)
 
