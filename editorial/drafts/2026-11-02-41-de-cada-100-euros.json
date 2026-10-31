@@ -1,0 +1,15 @@
+{
+  "id": "2026-11-02-41-de-cada-100-euros",
+  "account": "@LARREALIDAD",
+  "status": "review_pending",
+  "theme": "COFOG · protección social",
+  "created_at": "2026-10-31",
+  "planned_date": "2026-11-02",
+  "format": "dato",
+  "text": "De cada 100 € de gasto público en España (2024, provisional), 41 € fueron a protección social.\n\nNo son solo pensiones: incluye desempleo, familia, incapacidad y otras prestaciones.\n\nFuente: IGAE (COFOG 2024).",
+  "source_url": "https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Documents/AAPP_A/Funcional%202020-2024.pdf",
+  "source_period": "2024(P)",
+  "source_verified": "2026-10-31",
+  "editorial_notes": "Apertura de la serie «100 euros públicos». Visual recomendado: barra apilada original con título COFOG; no inventar visual.",
+  "publication": "Pendiente de revisión humana y publicación manual en X. Este repositorio NO publica posts en X."
+}

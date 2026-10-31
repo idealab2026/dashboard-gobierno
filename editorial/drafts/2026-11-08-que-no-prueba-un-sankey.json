@@ -1,0 +1,15 @@
+{
+  "id": "2026-11-08-que-no-prueba-un-sankey",
+  "account": "@LARREALIDAD",
+  "status": "review_pending",
+  "theme": "Interpretación del Sankey",
+  "created_at": "2026-10-31",
+  "planned_date": "2026-11-08",
+  "format": "metodo",
+  "text": "Un Sankey muestra el tamaño y la clasificación del gasto público.\n\nPero no demuestra que «el impuesto X paga el servicio Y» ni permite seguir un euro hasta un contrato.\n\nExploramos datos y límites aquí:\nhttps://idealab2026.github.io/dashboard-gobierno/#mapa-dinero",
+  "source_url": "https://idealab2026.github.io/dashboard-gobierno/#mapa-dinero",
+  "source_period": "atemporal",
+  "source_verified": "2026-10-31",
+  "editorial_notes": "Mostrar fortaleza del producto sin atribución ficticia de ingresos a gastos.",
+  "publication": "Pendiente de revisión humana y publicación manual en X. Este repositorio NO publica posts en X."
+}

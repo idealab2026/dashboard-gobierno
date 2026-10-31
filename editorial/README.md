@@ -2,6 +2,19 @@
 
 Módulo **público, gratuito y deliberadamente separado** del dashboard estadístico y del repositorio privado de investigación de IDEA LAB.
 
+## Campaña editorial · noviembre 2026
+
+Plan y metodología: [PLAN_30_DIAS_2026_11.md](./PLAN_30_DIAS_2026_11.md).
+
+**Ocho publicaciones originales y documentadas están preparadas como borradores de revisión**, con calendario del 2 al 15 de noviembre. Los textos se basan en la IGAE COFOG 2020–2024(P) y la documentación pública de nuestros productos, no en titulares generados automáticamente.
+
+- Ejecutar `python3 editorial/campaign.py --today 2026-11-02 --days 14` para obtener los textos, fuente primaria y enlaces al compositor de X.
+- El workflow diario ya existente **Radar editorial IDEA LAB** añade la cola de posts a su Summary junto con el radar RSS; no se crea ninguna nueva tarea de ChatGPT.
+- `python3 -m unittest discover -s editorial/tests -p 'test_*.py' -v` revisa cada post (cuenta correcta, longitud, fecha, estado pendiente, fuente autorizada y ausencia de duplicados).
+- Publicar **solo después de revisión humana**: ni GitHub ni ChatGPT confirman una publicación si no se obtiene una URL real de X.
+
+**Restricción de costes:** la conexión X/Twitter de Metricool requiere pago y no forma parte de esta arquitectura. Tampoco se han instalado herramientas de publicación con credenciales compartidas.
+
 ## Qué funciona
 
 - Dos fuentes RSS oficiales (BOE y Banco Central Europeo) configurables en `sources.json`.
