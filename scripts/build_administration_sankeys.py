@@ -164,9 +164,20 @@ def parse_regions():
              "verified":True,
              "note":"Administración regional S.1312. No incluye todo el gasto de Estado y ayuntamientos ejecutado en esta comunidad."
             })
-        if abs(sum(r["total_mill_eur"] for r in result)-national_total)>0.2:
-            print("CCAA RECONCILIATION",{"regional_total":national_total,"sum_17_ccaa":sum(r["total_mill_eur"] for r in result),"diff":sum(r["total_mill_eur"] for r in result)-national_total,"regional":[(r["name"],r["total_mill_eur"]) for r in result]})
-            raise ValueError("Suma de CCAA diferente del total regional oficial")
+        difference=sum(r["total_mill_eur"] for r in result)-national_total
+        # The source publishes 268013 M€ for the whole S.1312 and 268131 M€
+        # as the sum of its 17 territorial sheets (118 M€ gap). Preserve the
+        # discrepancy as published; NEVER force territorial sums to agree.
+        if abs(difference)>max(1000,0.02*national_total):
+            raise ValueError("Diferencia regional excesiva: "+str(difference))
+        print("IGAE REGIONAL published",national_total,"M€; sum of 17 CCAA",
+              sum(r["total_mill_eur"] for r in result),"M€; gap",difference,"M€ (sin ajuste)")
+        parse_regions.reconciliation={
+            "national_regional_total_mill_eur":national_total,
+            "sum_17_regions_mill_eur":round(sum(r["total_mill_eur"] for r in result),5),
+            "difference_mill_eur":round(difference,5),
+            "caveat":"Diferencia entre total regional IGAE y suma de hojas territoriales, sin ajuste. No atribuir automáticamente su origen."
+        }
     return result
 
 def main():
@@ -187,6 +198,7 @@ def main():
       "regions_source":CCAA_URL,
       "ministry_count":len(ministries),"region_count":len(regions),
       "ministries":ministries,"regions":regions,
+      "regional_reconciliation":parse_regions.reconciliation,
       "not_comparable":"El presupuesto prorrogado de ministerios (2025-P) no es gasto regional COFOG (2024); no se suman ni se comparan como si fueran el mismo perímetro.",
       "freshness":"Publicaciones disponibles al 31/10/2026. Se consulta origen oficial en cada compilación."
     }
