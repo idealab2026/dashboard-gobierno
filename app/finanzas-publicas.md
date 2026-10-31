@@ -613,6 +613,7 @@ import {PublicFinanceExplorer} from "./components/public-finance-sankey.js";
 const rawPublicFinance = await FileAttachment("./data/public-finance.csv").csv({typed: true});
 const rawSources = await FileAttachment("./data/public-finance-sources.csv").csv({typed: true});
 const rawTaxFigures = await FileAttachment("./data/public-finance-tax-figures.csv").csv({typed: true});
+const verifiedSpendingCatalogue = await FileAttachment("./data/partidas-verificadas.json").json();
 
 const publicFinance = rawPublicFinance
   .map(d => ({...d, year:Number(d.year), value:Number(d.value)}))
@@ -687,7 +688,7 @@ const explorer = PublicFinanceExplorer(
   publicFinance,
   rawSources,
   rawTaxFigures,
-  {year: displayYear}
+  {year: displayYear, relatedPrograms: verifiedSpendingCatalogue.registros}
 );
 ```
 
