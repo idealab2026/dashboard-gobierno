@@ -1,3 +1,5 @@
+import {OFFICIAL_DRILL_ROUTES, relatedBudgetPrograms} from "./official-drill-routes.js";
+
 const SVG_NS = "http://www.w3.org/2000/svg";
 
 function number(value) {
@@ -228,6 +230,36 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     }
     .pf-breadcrumb:hover {color:var(--pf-navy); text-decoration:underline;}
     .pf-detail-subtitle {font-size:.8rem; color:var(--pf-navy); margin:1rem 0 .25rem;}
+
+    /* Continuidad de investigación: niveles cuantitativos separados de las fuentes */
+    .pf-drill-terminal{padding:.65rem .8rem;margin:.65rem 0 .4rem;
+      border-left:3px solid #b89b5e;background:#fff9ed;border-radius:6px;
+      font-size:.78rem;line-height:1.5;color:#4b5970;text-align:justify;text-align-last:left;}
+    .pf-drill-route{margin:7px 0;border:1px solid #dfe6ee;border-radius:9px;
+      padding:0;background:#fff;overflow:hidden;max-width:100%}
+    .pf-drill-route > summary{padding:12px 14px;cursor:pointer;list-style:revert;
+      color:#0b2447;font-size:.8rem;font-weight:750;line-height:1.4;}
+    .pf-drill-route[open] > summary{border-bottom:1px solid #e5e9ef;background:#f6f9fc}
+    .pf-drill-route-inner{padding:10px 14px 13px}
+    .pf-drill-route-inner > p{margin:0 0 10px;font-size:.76rem;
+      text-align:justify;text-align-last:left;color:#56667b;line-height:1.5}
+    .pf-drill-links{display:flex;flex-direction:column;gap:7px}
+    .pf-drill-links a{display:block;padding:8px 9px;border:1px solid #d9e2ea;border-radius:7px;
+      color:#174571;background:#fff;text-decoration:none;font-size:.74rem;font-weight:750;
+      overflow-wrap:anywhere;line-height:1.5}
+    .pf-drill-links a:hover{background:#edf4f9;text-decoration:underline}
+    .pf-drill-links small{display:block;color:#667587;font-weight:500;margin-top:2px}
+    .pf-related-label{display:block;font-size:.74rem;color:#596b80;margin:7px 0}
+    .pf-program{margin:6px 0 10px;border:1px solid #e1d5bb;border-radius:8px;padding:10px;
+      background:#fdfbf6}
+    .pf-program > summary{font-size:.77rem;line-height:1.4;color:#0b2447;font-weight:800;
+      cursor:pointer;overflow-wrap:anywhere}
+    .pf-program-info{margin:8px 0;font-size:.73rem;line-height:1.5;color:#55647a;text-align:justify;text-align-last:left}
+    .pf-program-table{width:100%;border-collapse:collapse;font-size:.71rem}
+    .pf-program-table td{padding:5px 3px;border-bottom:1px solid #e9e2d5}
+    .pf-program-table td:last-child{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+    .pf-program-source{display:inline-block;margin-top:8px;font-size:.75rem;color:#134571;font-weight:750}
+
     .pf-empty {padding:2rem; color:var(--pf-muted); text-align:center;}
     .pf-footnote {font-size:.72rem; color:var(--pf-muted); line-height:1.5; margin:.65rem .15rem 0;}
     .pf-col-title {font-size:13px; font-weight:800; letter-spacing:1.4px; fill:#627086;}
@@ -494,6 +526,105 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     return children(row.code, {includeAnalytic: row.is_analytic_cut});
   }
 
+
+  const programNumber = new Intl.NumberFormat("de-DE",{
+    minimumFractionDigits:2,maximumFractionDigits:2
+  });
+  function appendFurtherInvestigation(container, row, hasChildren) {
+    // Los programas y las rutas siguientes no son descendientes cuantitativos
+    // de COFOG. Son otras dimensiones de consulta, con perímetros propios.
+    if (!hasChildren) {
+      const terminal = htmlEl("p", "pf-drill-terminal");
+      const code = text(row.code);
+      const isGroup = /^\\d{2}\\.\\d/.test(code);
+      terminal.textContent = isGroup
+        ? `Fin del desglose numérico COFOG para ${code} en la serie IGAE ${currentYear}. España no publica de forma general un tercer nivel COFOG por clases. Para llegar a programas, capítulos, proyectos o pagos hay que cambiar a la fuente presupuestaria correspondiente; no se distribuye artificialmente el importe de esta función.`
+        : `No hay más subpartidas cuantificadas para este código en el conjunto cargado (${currentYear}). Puedes continuar por otras fuentes oficiales sin inventar una relación numérica.`;
+      container.append(terminal);
+    }
+
+    const related = relatedBudgetPrograms(row.code, currentYear, options.relatedPrograms);
+    if (related.length) {
+      const label = htmlEl("h3", "pf-detail-subtitle");
+      label.textContent = "Programas presupuestarios relacionados · otra clasificación";
+      container.append(label);
+      const description = htmlEl("p","pf-related-label");
+      description.textContent = "Relación temática, no desglose directo de COFOG. Importes de los PGE prorrogados para 2024; no se suman al total de esta función.";
+      container.append(description);
+      for (const item of related) {
+        const entry = htmlEl("details","pf-program");
+        const summary = htmlEl("summary");
+        summary.textContent = `${item.codigo_presupuestario} · ${item.titulo} · ${programNumber.format(item.importe_eur/1000000)} M€ (presupuesto ${item.anio})`;
+        entry.append(summary);
+        const caveat = htmlEl("p","pf-program-info");
+        caveat.textContent = item.naturaleza_importe + " " + item.trazabilidad;
+        entry.append(caveat);
+        if (Array.isArray(item.desglose) && item.desglose.length) {
+          const table = htmlEl("table","pf-program-table");
+          for (const chapter of item.desglose) {
+            const tr = htmlEl("tr");
+            const title = htmlEl("td");
+            const val = htmlEl("td");
+            title.textContent = chapter.concepto;
+            val.textContent = programNumber.format(chapter.importe_eur/1000000)+" M€";
+            tr.append(title,val);
+            table.append(tr);
+          }
+          entry.append(table);
+        }
+        if (item.fuente_url?.startsWith("https://www.sepg.pap.hacienda.gob.es/")) {
+          const a = htmlEl("a","pf-program-source");
+          a.href = item.fuente_url;
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          a.textContent = "Ver documento presupuestario oficial";
+          entry.append(a);
+        }
+        container.append(entry);
+      }
+    }
+
+    const subtitle = htmlEl("h3","pf-detail-subtitle");
+    subtitle.textContent = "Continuar hasta la partida, ejecución o contrato verificable";
+    container.append(subtitle);
+    for (const [index, route] of OFFICIAL_DRILL_ROUTES.entries()) {
+      const details = htmlEl("details","pf-drill-route");
+      // En un nodo terminal facilitar la continuación sin otro clic.
+      details.open = !hasChildren && index === 0;
+      const summary = htmlEl("summary");
+      summary.textContent = route.title;
+      details.append(summary);
+      const inner = htmlEl("div","pf-drill-route-inner");
+      const p = htmlEl("p");
+      p.textContent = route.description;
+      inner.append(p);
+      const links = htmlEl("div","pf-drill-links");
+      for (const [label,url,period] of route.links) {
+        const a = document.createElement("a");
+        if (url.startsWith("/buscador-partidas.html")) {
+          const target = new URL("buscador-partidas.html", window.location.href);
+          if (/^\\d{2}(?:\\.\\d+)?$/.test(String(row.code))) {
+            target.searchParams.set("cofog",String(row.code));
+            target.searchParams.set("anio",String(currentYear));
+          }
+          a.href = target.href;
+        } else {
+          a.href = url;
+        }
+        a.target = url.startsWith("http") ? "_blank" : "_self";
+        if (a.target === "_blank") a.rel="noopener noreferrer";
+        a.append(document.createTextNode(label));
+        const small = htmlEl("small");
+        small.textContent = period;
+        a.append(small);
+        links.append(a);
+      }
+      inner.append(links);
+      details.append(inner);
+      container.append(details);
+    }
+  }
+
   function openDetail(row) {
     if (!row) return;
     currentRow = row;
@@ -601,6 +732,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       const bridgeNote = htmlEl("p", "pf-note");
       bridgeNote.textContent = "El gasto COFOG clasifica finalidades, no ministerios, comunidades autónomas ni proyectos. Los portales siguientes tienen ámbitos y criterios distintos; sus importes no se suman a los del gráfico.";
       links.append(bridgeTitle, bridgeNote);
+      appendFurtherInvestigation(links, row, childRows.length > 0);
 
       const actions = htmlEl("div", "pf-detail-actions pf-investigation-actions");
       const search = document.createElement("a");
