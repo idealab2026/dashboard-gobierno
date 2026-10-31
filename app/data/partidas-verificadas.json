@@ -167,6 +167,54 @@
       "organismo": "Ministerio de Igualdad",
       "naturaleza_importe": "Cuantía máxima regulada en el real decreto; no acredita por sí misma el desembolso",
       "trazabilidad": "Financiación prevista con los PGE de 2023 prorrogados para 2026, según el real decreto."
+    },
+    {
+      "id": "pge-2024-p-17-453c",
+      "tipo": "programa",
+      "titulo": "Conservación, mantenimiento y explotación de carreteras — programa 453C",
+      "pais": "España",
+      "anio": 2024,
+      "importe_eur": 1208409410,
+      "entidad": "Dirección General de Carreteras",
+      "organismo": "Ministerio de Transportes y Movilidad Sostenible",
+      "sector": "Carreteras · Transporte terrestre · Infraestructuras · Conservación",
+      "codigo_presupuestario": "453C",
+      "cofog_referencia": "04.5",
+      "fuente_url": "https://www.sepg.pap.hacienda.gob.es/Presup/PGE2024Prorroga/MaestroDocumentos/PGE-ROM/doc/HTM/N_24P_E_R_31_117_1_1_1_1453C_2.HTM",
+      "descripcion": "Programa estatal de conservación y explotación de carreteras: mantenimiento, reparaciones, conservación de la red y reposición de infraestructuras. Corresponde a la Dirección General de Carreteras, no a todas las carreteras del país.",
+      "naturaleza_importe": "Crédito presupuestario prorrogado para 2024 (PGE 2023 prorrogados, documento 2024-P). No son obligaciones reconocidas, pagos ni gasto total ejecutado.",
+      "trazabilidad": "La relación con COFOG 04.5 es temática. No se puede restar directamente este presupuesto del total consolidado COFOG ni atribuirlo a una comunidad autónoma o contrato determinado.",
+      "desglose": [
+        {
+          "concepto": "Gastos de personal (capítulo 1)",
+          "importe_eur": 20184280
+        },
+        {
+          "concepto": "Gastos corrientes en bienes y servicios (capítulo 2)",
+          "importe_eur": 34725130
+        },
+        {
+          "concepto": "Inversiones reales (capítulo 6)",
+          "importe_eur": 1153500000
+        }
+      ]
+    },
+    {
+      "id": "pge-2024-p-17-453b",
+      "tipo": "programa",
+      "titulo": "Creación de infraestructuras de carreteras — programa 453B",
+      "pais": "España",
+      "anio": 2024,
+      "importe_eur": 1593547100,
+      "entidad": "Administración General del Estado · Sección 17",
+      "organismo": "Ministerio de Transportes y Movilidad Sostenible",
+      "sector": "Carreteras · Nueva construcción · Infraestructuras de transporte",
+      "codigo_presupuestario": "453B",
+      "cofog_referencia": "04.5",
+      "fuente_url": "https://www.sepg.pap.hacienda.gob.es/Presup/PGE2024Prorroga/MaestroDocumentos/PGE-ROM/doc/HTM/N_24P_E_R_31_117_1_1_2_1_1.HTM",
+      "descripcion": "Programa estatal de creación de infraestructura de carreteras. Es diferente de la conservación y mantenimiento (453C).",
+      "naturaleza_importe": "Crédito presupuestario prorrogado para 2024 (2024-P), no inversión ejecutada ni pago acreditado.",
+      "trazabilidad": "Programa estatal, no gasto de todas las administraciones por territorio; referencia funcional relacionada con transporte, no imputación directa a COFOG."
     }
   ]
 }
