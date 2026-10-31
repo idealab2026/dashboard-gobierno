@@ -172,6 +172,18 @@ def main() -> None:
                              "1.208,41 M€", "453C", "Ver capítulos presupuestarios",
                              "No equivale a gasto ejecutado"):
                 if required not in road_dom:
+                    import re as _regex
+                    print("DIAGNÓSTICO 453C:", {
+                        "required": required,
+                        "amount_nodes": _regex.findall(
+                            r'<strong class="sf-amount"[^>]*>[^<]{0,80}</strong>',
+                            road_dom
+                        )[:15],
+                        "near_title": road_dom[
+                            max(0, road_dom.find("Conservación, mantenimiento")-250):
+                            road_dom.find("Conservación, mantenimiento")+800
+                        ][:1050],
+                    })
                     raise AssertionError("No se encontró programa 453C o su trazabilidad: " + required)
             if "Sin coincidencias en el índice disponible" in road_dom or "RuntimeError:" in road_dom:
                 raise AssertionError("La búsqueda de mantenimiento de carreteras ha fallado")
