@@ -86,7 +86,7 @@ toc: false
 </style>
 
 <nav class="il-site-navigation" aria-label="Navegación del observatorio">
-  <a class="il-site-brand" href="/" aria-label="IDEA LAB · Volver al inicio"><img class="il-site-logo" src="./logo-idea-lab.svg" alt="IDEA LAB" width="146" height="35" /></a>
+  <a class="il-site-brand" href="https://idealab2026.github.io/" aria-label="IDEA LAB · Volver al inicio"><img class="il-site-logo" src="./logo-idea-lab.svg" alt="IDEA LAB" width="146" height="35" /></a>
   <a class="il-site-home" href="/">← Inicio</a>
   <details class="il-site-menu">
     <summary aria-label="Abrir menú del observatorio">Menú ☰</summary>
@@ -98,6 +98,7 @@ toc: false
       <a href="/actualizaciones.html">Actualización</a>
       <a href="/metodologia.html">Metodología</a>
       <a href="/quienes-somos.html">Quiénes somos</a>
+      <a href="https://idealab2026.github.io/" aria-label="Web corporativa de IDEA LAB">IDEA LAB ↗</a>
     </div>
   </details>
 </nav>
