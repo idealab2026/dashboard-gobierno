@@ -92,6 +92,7 @@ def parse_ministry(code,name):
         elif label=="TOTAL CONSOLIDADO":
             total=number(row[5])/1000
     if total is None or total<=0 or not programs:
+        print("MINISTRY DIAGNOSTIC",code,"head",rows[:14],"tail",rows[-7:])
         raise ValueError(f"Sección {code}: total/programas ausentes")
     summed=sum(x["value_mill_eur"] for x in programs)
     if abs(summed-total)>0.06:
