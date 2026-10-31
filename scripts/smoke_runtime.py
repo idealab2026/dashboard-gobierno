@@ -235,13 +235,17 @@ def main() -> None:
             import re as _re_cofog
             for code,fragments in [
                 ("01.3",("01.1","01.3","01.7",
-                    "CONTINUIDAD DOCUMENTAL · PGE",
-                    "Consultar programas presupuestarios")),
-                ("04.5",("04.1","04.5",
-                    "CONTINUIDAD DOCUMENTAL · PGE",
-                    "Conservación, mantenimiento y explotación de carreteras",
-                    "Creación de infraestructuras de carreteras")),
-            ]:
+                    "NIVEL 3 COFOG", "01.3.1",
+                    "01.3.2", "01.3.3")),
+                ("04.5",("04.1","04.5", "NIVEL 3 COFOG",
+                    "04.5.1", "04.5.2", "04.5.3", "04.5.4", "04.5.5",
+                    "453A", "453B", "453C", "441N", "441O",
+                    "455M", "454M")),
+                ("07.3",("07.1","07.3","NIVEL 3 COFOG",
+                    "07.3.1", "07.3.2", "07.3.3", "07.3.4",
+                    "Sin programas indexados para esta clase")),
+                ("09.1",("09.1.1", "09.1.2", "NIVEL 3 COFOG")),
+            ]::
                 selected_url=url+"?detalle-cofog="+code
                 result=subprocess.run(
                     [*args[:-1],"--virtual-time-budget=12000",selected_url],
@@ -258,7 +262,6 @@ def main() -> None:
                     'class="pf-inline-extension"',
                     'data-expanded-code="'+code+'"',
                     'class="pf-inline-trail"',
-                    'class="pf-extension-end"',
                     'class="pf-node-group pf-spend"'
                 ):
                     if required not in page:
