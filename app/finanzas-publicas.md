@@ -706,9 +706,3 @@ const explorer = PublicFinanceExplorer(
     <p>El gráfico se genera desde <code>Fact_finanzas_publicas</code>. Cada registro conserva fuente, metodología, estado y vintage. Las estadísticas con perímetros distintos se mantienen separadas en el data lake y no se fuerzan a coincidir artificialmente.</p>
   </details>
 </div>
-
-```js
-// Analítica de visitas y eventos: permanece desactivada sin cuenta IDEA LAB configurada.
-import {installSiteAnalytics} from "./components/site-analytics.js";
-installSiteAnalytics();
-```
