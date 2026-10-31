@@ -112,10 +112,16 @@ footer: IDEA LAB · Investigación, análisis y divulgación
   .il-about section:first-of-type > p { margin: 0; min-width: 0; }
 }
 
+
+/* Shared brand identity on institutional subpages. */
+.il-site-brand {display:inline-flex; align-items:center; min-width:0;}
+.il-site-logo {display:block; width:clamp(122px,12vw,158px); height:auto; aspect-ratio:660/156; object-fit:contain;}
+@media(max-width:768px){.il-site-logo{width:118px;}}
+
 </style>
 
 <nav class="il-site-navigation" aria-label="Navegación del observatorio">
-  <a class="il-site-brand" href="/" aria-label="IDEA LAB · Volver al inicio">IDEA LAB</a>
+  <a class="il-site-brand" href="/" aria-label="IDEA LAB · Volver al inicio"><img class="il-site-logo" src="./logo-idea-lab.svg" alt="IDEA LAB" width="146" height="35" /></a>
   <a class="il-site-home" href="/">← Inicio</a>
   <details class="il-site-menu">
     <summary aria-label="Abrir menú del observatorio">Menú ☰</summary>
