@@ -227,6 +227,9 @@ def main() -> None:
                             terminal_dom
                         )[:6],
                         "node_mentions": terminal_dom.count("Fin del desglose numérico COFOG para"),
+                        "deep_tags": __import__("re").findall(
+                            r'data-co-fog-deep-(?:code|status)="[^"]*"', terminal_dom
+                        )[:10],
                         "cofog_01_3": terminal_dom.count("01.3"),
                         "has_runtime_error": "RuntimeError:" in terminal_dom,
                         "html_fragment": terminal_dom[terminal_dom.find("pf-detail")-130:
