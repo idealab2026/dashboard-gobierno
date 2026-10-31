@@ -3134,19 +3134,56 @@ const indicatorsToShow = preferredIds
 ```
 
 
-<div id="inicio" class="hero">
-  <div class="hero-kicker">Observatorio económico, social e institucional</div>
-  <h1>España en Datos</h1>
-  <div class="hero-subtitle">
-    <span class="il-hero-long">Nuestro observatorio económico, social e institucional reúne y visualiza información de fuentes oficiales para comprender la realidad de España.</span><span class="il-hero-short">Datos oficiales para comprender la economía y la sociedad españolas.</span>
+<div id="inicio" class="hero il-impact-hero">
+  <div class="il-impact-layout">
+    <div class="il-impact-copy">
+      <div class="hero-kicker"><span class="il-impact-kicker-mark" aria-hidden="true"></span> OBSERVATORIO INDEPENDIENTE · IDEA LAB</div>
+      <h1>España en Datos</h1>
+      <div class="il-impact-manifesto">Mira más allá<br>de los titulares<span aria-hidden="true">.</span></div>
+      <div class="hero-subtitle">
+        <span class="il-hero-long">Nuestro observatorio económico, social e institucional reúne y visualiza información de fuentes oficiales para comprender la realidad de España.</span><span class="il-hero-short">Datos oficiales, visualizaciones interactivas y fuentes que puedes contrastar.</span>
+      </div>
+      <div class="il-impact-actions">
+        <a class="il-impact-cta" href="#mapa-dinero">Explorar el dinero público <span aria-hidden="true">↗</span></a>
+        <a class="il-impact-secondary" href="/buscador-partidas.html">Investigar una partida <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+    <div class="il-impact-visual" aria-hidden="true">
+      <svg viewBox="0 0 640 560" role="presentation" focusable="false" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="ilImpactRing" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#16345c" stop-opacity=".9"/><stop offset="1" stop-color="#16345c" stop-opacity=".16"/></linearGradient>
+        </defs>
+        <circle class="il-ring il-ring-outer" cx="324" cy="280" r="235"/>
+        <circle class="il-ring il-ring-mid" cx="324" cy="280" r="173"/>
+        <circle class="il-ring il-ring-inner" cx="324" cy="280" r="107"/>
+        <path class="il-impact-trace" d="M54 371 C145 367 157 182 264 182 S444 393 588 155"/>
+        <path class="il-impact-trace il-impact-trace-b" d="M60 228 C152 176 169 372 325 346 S494 201 590 284"/>
+        <path class="il-impact-trace" d="M178 58 C277 108 358 441 470 501"/>
+        <circle class="il-impact-dot" cx="264" cy="182" r="9"/>
+        <circle class="il-impact-dot" cx="437" cy="319" r="9"/>
+        <circle class="il-impact-dot" cx="324" cy="346" r="9"/>
+        <circle class="il-impact-dot il-impact-dot-big" cx="324" cy="280" r="57"/>
+        <circle class="il-impact-dot-center" cx="324" cy="280" r="15"/>
+        <circle class="il-impact-dot-small" cx="118" cy="245" r="7"/>
+        <circle class="il-impact-dot-small" cx="519" cy="183" r="6"/>
+        <circle class="il-impact-dot-small" cx="470" cy="501" r="5"/>
+        <text x="83" y="85" class="il-impact-svg-label">01 / ORIGEN</text>
+        <text x="434" y="470" class="il-impact-svg-label">02 / DESTINO</text>
+      </svg>
+    </div>
+  </div>
+  <div class="il-impact-baseline">
+    <span>DATOS ANTES QUE DISCURSOS</span>
+    <span>ECONOMÍA <span aria-hidden="true">/</span> SOCIEDAD <span aria-hidden="true">/</span> FINANZAS PÚBLICAS</span>
+    <span class="il-impact-scroll">DESLIZA PARA EXPLORAR ↓</span>
   </div>
 </div>
 
 
 <section class="il-quick-spending" aria-labelledby="il-quick-spending-heading">
   <div class="il-quick-spending-copy">
-    <h2 id="il-quick-spending-heading">¿Qué gasto público quieres investigar?</h2>
-    <p>Busca proyectos, subvenciones y partidas por nombre, tema o país.</p>
+    <h2 id="il-quick-spending-heading">Sigue el rastro de una partida</h2>
+    <p>Busca por nombre, organismo o concepto.</p>
   </div>
   <form class="il-quick-spending-form" action="./buscador-partidas.html" method="get" role="search">
     <label class="il-quick-spending-label" for="il-quick-spending-query">Buscar partidas por nombre</label>
