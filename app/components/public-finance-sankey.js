@@ -627,6 +627,11 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
 
   function openDetail(row) {
     if (!row) return;
+    // Categorías públicas agregadas: no se envían códigos ni textos de las partidas.
+    const dimension = row.side === "gasto" ? "gasto" : row.side === "ingreso" ? "ingreso" : "otro";
+    document.dispatchEvent(new CustomEvent("idealab:analytics", {
+      detail: {name: "sankey_desglose_" + dimension}
+    }));
     currentRow = row;
     root.classList.add("is-detail-open");
     detail.replaceChildren();
@@ -780,6 +785,9 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
   }
 
   function openMethodology() {
+    document.dispatchEvent(new CustomEvent("idealab:analytics", {
+      detail: {name: "sankey_metodologia"}
+    }));
     const map = rowMapForYear();
     const gasto = map.get("S13.GASTO");
     const recursos = map.get("S13.RECURSOS");
@@ -1083,6 +1091,9 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
   });
 
   yearSelect.addEventListener("change", () => {
+    document.dispatchEvent(new CustomEvent("idealab:analytics", {
+      detail: {name: "sankey_cambio_anio"}
+    }));
     currentYear = Number(yearSelect.value);
     root.classList.remove("is-detail-open");
     currentRow = null;
