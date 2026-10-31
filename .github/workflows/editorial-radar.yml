@@ -28,5 +28,7 @@ jobs:
           persist-credentials: false
       - name: Unit tests without network
         run: python3 -m unittest discover -s editorial/tests -p 'test_*.py' -v
+      - name: Prepare sourced X posts in the existing daily radar summary
+        run: python3 editorial/campaign.py --days 14
       - name: Collect public RSS and prepare review summary
         run: python3 editorial/digest.py
