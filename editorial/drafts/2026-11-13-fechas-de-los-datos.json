@@ -1,0 +1,15 @@
+{
+  "id": "2026-11-13-fechas-de-los-datos",
+  "account": "@LARREALIDAD",
+  "status": "review_pending",
+  "theme": "Distinguir ejercicio, publicación y revisión",
+  "created_at": "2026-10-31",
+  "planned_date": "2026-11-13",
+  "format": "metodo",
+  "text": "Un dato de 2024 publicado en 2026 sigue describiendo 2024.\n\nTres fechas que no debemos mezclar:\n• Año observado.\n• Publicación de la fuente.\n• Última revisión.\n\nEn IDEA LAB explicitamos esas diferencias para evitar falsa actualidad.",
+  "source_url": "https://idealab2026.github.io/dashboard-gobierno/#mapa-dinero",
+  "source_period": "atemporal",
+  "source_verified": "2026-10-31",
+  "editorial_notes": "Distinto de la publicación de 30/10 sobre fuente, contexto y causalidad.",
+  "publication": "Pendiente de revisión humana y publicación manual en X. Este repositorio NO publica posts en X."
+}
