@@ -60,6 +60,31 @@ class AdministrationSankeysContract(unittest.TestCase):
         self.assertLess(workflow.index("python scripts/build_administration_sankeys.py"),
                         workflow.index('python -m unittest discover'))
 
+    def test_homepage_has_two_live_selectors_and_national_fallback(self):
+        source=(ROOT/"app/index.md").read_text(encoding="utf-8")
+        widget=(ROOT/"app/components/administration-sankeys.js").read_text(encoding="utf-8")
+        self.assertIn('id="il-ministry-sankey"',source)
+        self.assertIn('id="il-region-sankey"',source)
+        self.assertIn('id="il-sankey-scope-status"',source)
+        self.assertIn('España · conjunto',source)
+        self.assertIn('const administrationSankeyData = await FileAttachment("./data/admin-sankeys.json").json()',source)
+        self.assertIn('ministrySelect.addEventListener("change"',source)
+        self.assertIn('regionSelect.addEventListener("change"',source)
+        self.assertIn('sankeyHost.replaceChildren(spotlightSankey)',source)
+        self.assertIn('sankeyHost.replaceChildren(AdministrationSankeys(',source)
+        self.assertIn('embedded:true,mode,selectedId:chosen.id',source)
+        self.assertIn('if(!embedded)root.append(tabs)',widget)
+        self.assertIn('if(!embedded)root.append(chooser)',widget)
+
+    def test_scope_changing_never_fabricates_fiscal_flow_or_merges_administrations(self):
+        source=(ROOT/"app/index.md").read_text(encoding="utf-8")
+        self.assertIn('regionSelect.value=""',source)
+        self.assertIn('ministrySelect.value=""',source)
+        self.assertIn('mode==="ministries"?"2025-P":"2024"',source)
+        self.assertIn('No es el desglose de ingresos del Estado español',source)
+        self.assertIn('const spotlightSankey = PublicFinanceExplorer(',source)
+        self.assertLess(source.index('id="il-ministry-sankey"'),source.index('const spotlightSankey = PublicFinanceExplorer('))
+
     def test_official_ministries_and_regional_original_sources_remain_separate(self):
         self.assertIn("no se suman ni se comparan",self.data["not_comparable"])
         self.assertIn("sepg.pap.hacienda.gob.es",self.data["ministries_source"])
