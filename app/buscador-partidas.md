@@ -289,9 +289,12 @@ if (financesMobileMenu) {
 
 ```js
 import {createSpendingSearch} from "./components/partidas-search.js";
+import {indexAdministrativeSpending} from "./components/administrative-spending-index.js";
 import {dsvFormat} from "npm:d3-dsv";
 
 const catalogue = await FileAttachment("./data/partidas-verificadas.json").json();
+const administrationData = await FileAttachment("./data/admin-sankeys.json").json();
+const administrationRows = indexAdministrativeSpending(administrationData);
 const financeText = await FileAttachment("./data/seed/fact_finanzas_publicas_2024.csv").text();
 const financeRows = dsvFormat(";").parse(financeText.replace(/^\uFEFF/, ""));
 const aggregateRows = financeRows
@@ -315,9 +318,13 @@ const aggregateRows = financeRows
     trazabilidad: "No identifica contratos, subvenciones, proyectos o beneficiarios individuales. No hay atribución a un impuesto concreto."
   }));
 const finder = createSpendingSearch({
-  records: catalogue.registros,
+  records: [...catalogue.registros,...administrationRows],
   aggregates: aggregateRows,
-  coverage: catalogue.cobertura + " " + aggregateRows.length + " categorías y subcategorías COFOG del ejercicio 2024.",
+  coverage: catalogue.cobertura + " " + aggregateRows.length +
+    " agregados COFOG nacionales 2024; " + administrationRows.filter(r=>r.tipo==="programa").length +
+    " programas de 22 ministerios (PGE 2025-P, prorrogados para 2026) y " +
+    administrationRows.filter(r=>r.tipo==="regional").length +
+    " funciones COFOG de 17 CCAA (2024). Los documentos AECID/BOE siguen siendo una selección parcial.",
   initialQuery: new URLSearchParams(window.location.search).get("q") || "",
   initialCofog: new URLSearchParams(window.location.search).get("cofog") || "",
   initialYear: new URLSearchParams(window.location.search).get("anio") || ""
