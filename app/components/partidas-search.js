@@ -16,7 +16,7 @@ const external = (label, href) => {
   a.href=href;a.target="_blank";a.rel="noopener noreferrer";
   return a;
 };
-export function createSpendingSearch({records = [], aggregates = [], coverage = "", initialQuery = ""} = {}) {
+export function createSpendingSearch({records = [], aggregates = [], coverage = "", initialQuery = "", initialCofog = "", initialYear = ""} = {}) {
   const root=make("section","spending-finder");
   root.id="partidas-buscador";
   const styles=make("style");
@@ -47,7 +47,20 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   .sf-noresults strong{display:block;margin-bottom:6px;color:var(--sf-navy)}
   .sf-noresults p{font-size:.85rem}
   .sf-portals{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;font-size:.81rem;font-weight:700}
-  .sf-footnote{font-size:.78rem;color:#637187;line-height:1.5;margin:8px 0}
+  .sf-footnote{font-size:.78rem;color:#637187;line-height:1.5;margin:8px 0;text-align:justify;text-align-last:left}
+  .sf-scope{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:11px 12px;margin:7px 0 12px;border:1px solid #d2ddeb;background:#f4f8fc;border-radius:9px;font-size:.81rem;color:#264260}
+  .sf-scope strong{color:#0b2447}
+  .sf-scope button{border:1px solid #aebed2;background:#fff;border-radius:7px;padding:7px 9px;font-size:.76rem;font-weight:750;color:#0b2447;cursor:pointer}
+  .sf-investigation{margin:18px 0 12px}
+  .sf-investigation h2{font:700 1.4rem Georgia,serif;margin:10px 0;color:#0b2447}
+  .sf-investigation p{font-size:.86rem;color:#53647b;line-height:1.55;text-align:justify;text-align-last:left;width:100%;max-width:none}
+  .sf-investigation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .sf-investigation-grid article{border:1px solid #dfe5ed;border-radius:10px;padding:12px;min-width:0}
+  .sf-investigation-grid h3{font:700 .98rem Georgia,serif;color:#0b2447;margin:2px 0 8px}
+  .sf-investigation-grid a{display:block;font-size:.78rem;line-height:1.45;font-weight:650;color:#16436e;margin:9px 0;overflow-wrap:anywhere}
+  .sf-investigation-grid small{font-size:.75rem;color:#62728a;line-height:1.4;display:block}
+  @media(max-width:900px){.sf-investigation-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:650px){.sf-investigation-grid{grid-template-columns:1fr}}
   @media(max-width:900px){.sf-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.sf-field:first-child{grid-column:1/-1}}
   @media(max-width:700px){.sf-results{grid-template-columns:1fr}.sf-controls{gap:7px}.sf-record{padding:12px}.sf-field input,.sf-field select{font-size:.83rem}}
   `;
@@ -66,14 +79,28 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   const type=select("Tipo de registro",[["","Todos"],["intervencion","Proyectos AECID"],["agregado","Gasto agregado IGAE"],["convocatoria","Convocatorias"],["norma","Normas de concesión"]]);
   const years=[...new Set([...records,...aggregates].map(x=>String(x.anio)).filter(Boolean))].sort((a,b)=>b.localeCompare(a));
   const year=select("Año",[["","Todos los años"],...years.map(y=>[y,y])]);
+  if (years.includes(String(initialYear))) year.value=String(initialYear);
   const countries=[...new Set(records.map(x=>x.pais).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"es"));
   const country=select("País / región",[["","Todos los destinos"],...countries.map(y=>[y,y]),["España", "España"]].filter((x,i,a)=>a.findIndex(y=>y[0]===x[0])===i));
   root.append(controls);
+  const focusCode=/^\d{2}(?:\.\d+)?$/.test(String(initialCofog)) ? String(initialCofog) : "";
+  let selectedCode=focusCode;
+  const scope=make("div","sf-scope");
+  const known=aggregates.find(r=>r.cofog_codigo===selectedCode);
+  const scopeLabel=make("span","",selectedCode
+   ? "Filtro COFOG " + selectedCode + (known?" · "+known.titulo:"") + " · subfunciones incluidas"
+   : "Cobertura: categorías COFOG del conjunto de Administraciones Públicas; ministerios y CCAA requieren fuentes distintas.");
+  const clearScope=make("button","","Quitar filtro COFOG");
+  clearScope.type="button";
+  clearScope.hidden=!selectedCode;
+  scope.append(scopeLabel,clearScope);
+  root.append(scope);
   const examples=make("div","sf-examples");examples.append(make("span","","Prueba:"));
   for(const label of ["Transporte","Mujeres Paraguay","Ayuda militar exterior","Ferrocarril Marruecos","Charlas feministas"]){
-    const b=make("button","",label);b.type="button";b.addEventListener("click",()=>{input.value=label;type.value="";year.value="";country.value="";render();input.focus();});examples.append(b);
+    const b=make("button","",label);b.type="button";b.addEventListener("click",()=>{selectedCode="";clearScope.hidden=true;scopeLabel.textContent="Sin filtro COFOG · resultados temáticos no equivalen a un desglose de la función";input.value=label;type.value="";year.value="";country.value="";render();input.focus();});examples.append(b);
   }
   root.append(examples);
+  clearScope.addEventListener("click",()=>{selectedCode="";clearScope.hidden=true;scopeLabel.textContent="Sin filtro COFOG · consulta el catálogo general";render();});
   const summary=make("div","sf-summary"), results=make("div","sf-results");
   root.append(summary,results);
   const portals=make("div","sf-portals");
@@ -111,6 +138,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   function render(){
     const q=fold(input.value), tokens=q.split(" ").filter(Boolean);
     const matching=all.filter(x=>
+      (!selectedCode || x.tipo==="agregado" && (x.cofog_codigo===selectedCode || x.cofog_codigo?.startsWith(selectedCode+"."))) &&
       (!type.value||x.tipo===type.value) &&
       (!year.value||String(x.anio)===year.value) &&
       (!country.value || x.pais===country.value) &&
@@ -123,7 +151,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
     results.replaceChildren();
     const slice=matching.slice(0,70);
     summary.replaceChildren();
-    summary.append(make("span","",matching.length+" resultados en el índice parcial"+(matching.length>70?" · primeros 70":"")));
+    summary.append(make("span","",matching.length+" resultados en el índice parcial"+(matching.length>70?" · primeros 70":"")+(selectedCode?" · COFOG "+selectedCode+" y subfunciones":"")));
     if(q&&matching.some(x=>!x._exact))summary.append(make("span","", "Los resultados temáticos no prueban financiación de la actividad buscada"));
     if(!matching.length){
       const no=make("div","sf-noresults");no.append(make("strong","","Sin coincidencias en el índice disponible."),make("p","", "No significa que la partida no exista o que no se haya destinado dinero. Consulta las fuentes oficiales o intenta otra expresión, país u organismo."));results.append(no);
