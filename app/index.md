@@ -1708,6 +1708,54 @@ html {
   .idealab-nav .il-nav-more-panel {top:100%!important;margin-top:0!important;}
 }
 
+
+/* Búsqueda directa en portada: discreta, visible y sin desplazar el Sankey. */
+.il-quick-spending {
+  display:grid;
+  grid-template-columns:minmax(230px,.82fr) minmax(320px,1.6fr);
+  align-items:center;
+  gap:clamp(10px,2vw,24px);
+  width:100%; min-width:0; box-sizing:border-box;
+  margin:12px 0 17px; padding:12px 15px;
+  border:1px solid #dfe5ed; border-radius:11px;
+  background:#f8fafc;
+  font-family:system-ui,-apple-system,sans-serif;
+}
+.il-quick-spending-copy {min-width:0;}
+.il-quick-spending h2 {
+  font:750 clamp(.86rem,1.25vw,1rem)/1.3 system-ui,-apple-system,sans-serif;
+  color:#0b2447;margin:0 0 3px;
+}
+.il-quick-spending-copy p {
+  width:100%;max-width:none!important;
+  margin:0;color:#637189;font:.76rem/1.45 system-ui,-apple-system,sans-serif;
+  text-align:justify;text-align-last:left;
+}
+.il-quick-spending-form {display:flex;align-items:stretch;gap:8px;min-width:0;margin:0;}
+.il-quick-spending-label {position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+ overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+.il-quick-spending-form input {
+  flex:1;min-width:0;box-sizing:border-box;padding:10px 12px;
+  border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#0b2447;
+  font:400 .82rem/1.4 system-ui,-apple-system,sans-serif;
+}
+.il-quick-spending-form button {
+  flex:none;min-height:41px;padding:0 18px;border:1px solid #0b2447;border-radius:8px;
+  background:#0b2447;color:#fff;font:700 .82rem/1.2 system-ui,-apple-system,sans-serif;
+  cursor:pointer;
+}
+.il-quick-spending-form button:hover {background:#163c6a;}
+.il-quick-spending-form :is(button,input):focus-visible {outline:2px solid #b89b5e;outline-offset:2px;}
+@media(max-width:780px) {
+  .il-quick-spending {grid-template-columns:minmax(0,1fr);gap:8px;padding:11px 12px;margin:10px 0 14px;}
+  .il-quick-spending h2 {font-size:.87rem;}
+  .il-quick-spending-form input {font-size:.8rem;}
+}
+@media(max-width:380px) {
+  .il-quick-spending-form{gap:5px;}
+  .il-quick-spending-form button{padding:0 10px;}
+}
+
 </style>
 
 
@@ -3010,6 +3058,18 @@ const indicatorsToShow = preferredIds
   </div>
 </div>
 
+
+<section class="il-quick-spending" aria-labelledby="il-quick-spending-heading">
+  <div class="il-quick-spending-copy">
+    <h2 id="il-quick-spending-heading">¿Qué gasto público quieres investigar?</h2>
+    <p>Busca proyectos, subvenciones y partidas por nombre, tema o país.</p>
+  </div>
+  <form class="il-quick-spending-form" action="./buscador-partidas.html" method="get" role="search">
+    <label class="il-quick-spending-label" for="il-quick-spending-query">Buscar partidas por nombre</label>
+    <input id="il-quick-spending-query" type="search" name="q" placeholder="Ej. ferrocarril en Marruecos, proyectos de igualdad…" autocomplete="off" maxlength="180" required>
+    <button type="submit">Buscar</button>
+  </form>
+</section>
 
 <section id="mapa-dinero" class="il-sankey-spotlight">
   <div class="il-spotlight-top">
