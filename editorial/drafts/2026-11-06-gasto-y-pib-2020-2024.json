@@ -1,0 +1,15 @@
+{
+  "id": "2026-11-06-gasto-y-pib-2020-2024",
+  "account": "@LARREALIDAD",
+  "status": "review_pending",
+  "theme": "COFOG · euros frente a PIB",
+  "created_at": "2026-10-31",
+  "planned_date": "2026-11-06",
+  "format": "analisis",
+  "text": "Entre 2020 y 2024, el gasto público español creció un 25 % en euros corrientes, pero pasó del 51,38 % al 45,47 % del PIB.\n\nNo es una contradicción: el PIB nominal creció más deprisa y 2020 fue excepcional.\n\nFuente: IGAE.",
+  "source_url": "https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Documents/AAPP_A/Funcional%202020-2024.pdf",
+  "source_period": "2020–2024(P)",
+  "source_verified": "2026-10-31",
+  "editorial_notes": "Serie nominal, no corregida por inflación. No atribuir causalidad a gobiernos o políticas aisladas.",
+  "publication": "Pendiente de revisión humana y publicación manual en X. Este repositorio NO publica posts en X."
+}
