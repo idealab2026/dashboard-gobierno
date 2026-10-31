@@ -188,6 +188,46 @@ def main() -> None:
             if "Sin coincidencias en el índice disponible" in road_dom or "RuntimeError:" in road_dom:
                 raise AssertionError("La búsqueda de mantenimiento de carreteras ha fallado")
             print("Búsqueda mantenimiento carreteras OK: programa 453C, 1.208,41 M€ (2024-P)")
+
+            # A genuine user path: opening the COFOG 01.3 leaf may NOT leave
+            # an empty drawer. It must expose all sourced alternative routes.
+            terminal_url = url + "?detalle-cofog=01.3"
+            terminal_result = subprocess.run(
+                [*args[:-1], "--virtual-time-budget=8000", terminal_url],
+                text=True, capture_output=True, timeout=85
+            )
+            if terminal_result.returncode:
+                raise AssertionError("Chrome no abre el detalle COFOG 01.3")
+            terminal_dom = terminal_result.stdout
+            for required in ("Servicios generales",
+                             "Fin del desglose numérico COFOG para 01.3",
+                             "1 · ¿Qué administración realizó el gasto?",
+                             "2 · ¿Qué ministerio y programa presupuestario?",
+                             "3 · ¿Cuánto se ejecutó o pagó?",
+                             "4 · ¿Qué contrato, subvención o proyecto concreto?",
+                             "iacofogCA.aspx",
+                             "PGE2025Prorroga"):
+                if required not in terminal_dom:
+                    raise AssertionError("Rama COFOG terminal sin continuidad oficial: " + required)
+            if "RuntimeError:" in terminal_dom:
+                raise AssertionError("Error Runtime al profundizar en Servicios generales")
+            print("Detalle COFOG 01.3 OK: cuatro rutas oficiales de continuidad")
+
+            transport_url = url + "?detalle-cofog=04.5"
+            transport_result = subprocess.run(
+                [*args[:-1], "--virtual-time-budget=8000", transport_url],
+                text=True, capture_output=True, timeout=85
+            )
+            if transport_result.returncode:
+                raise AssertionError("Chrome no abre detalle de Transporte 04.5")
+            transport_dom = transport_result.stdout
+            for required in ("Programas presupuestarios relacionados",
+                             "453B", "453C", "Ver documento presupuestario oficial",
+                             "Gastos corrientes en bienes y servicios", "Inversiones reales"):
+                if required not in transport_dom:
+                    raise AssertionError("No hay detalle verificable de programa de Transporte: " + required)
+            print("Detalle Transporte 04.5 OK: programas 453B/453C y capítulos respaldados")
+
         finally:
             server.shutdown()
             server.server_close()
