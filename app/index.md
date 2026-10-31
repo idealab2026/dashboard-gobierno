@@ -1783,6 +1783,8 @@ html {
     </details>
     <a href="/finanzas-publicas.html">Finanzas públicas</a>
     <a href="/buscador-partidas.html">Buscar partidas</a>
+      <a href="/administraciones.html">Administraciones</a>
+    <a href="/administraciones.html">Administraciones</a>
     <details class="il-nav-more">
       <summary>Más</summary>
       <div class="il-nav-more-panel">
