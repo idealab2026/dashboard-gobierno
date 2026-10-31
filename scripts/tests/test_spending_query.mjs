@@ -5,6 +5,7 @@ import {dsvFormat} from "d3-dsv";
 import {searchSpendingRecords, normalizeSpending} from "../../app/components/spending-query.js";
 import {OFFICIAL_DRILL_ROUTES, relatedBudgetPrograms} from "../../app/components/official-drill-routes.js";
 import {canonicalFinanceCode} from "../../app/components/finance-code.js";
+import {compareFinanceCodes,sortedFinanceChildren} from "../../app/components/finance-hierarchy.js";
 
 const source = readFileSync(new URL("../../app/data/seed/fact_finanzas_publicas_2024.csv", import.meta.url), "utf8").replace(/^\uFEFF/, "");
 const items = dsvFormat(";").parse(source)
@@ -123,4 +124,33 @@ test("typed CSV COFOG code normalization preserves official parent-child relatio
   assert.equal(canonicalFinanceCode("01.2+01.5+01.6+01.8"),"01.2+01.5+01.6+01.8");
   const parent=canonicalFinanceCode(1),child=canonicalFinanceCode(1.3);
   assert.ok(child.startsWith(parent+"."));
+});
+
+test("COFOG tree sorts by numerical classification code, never decreasing expenditure",()=>{
+ const rows=[
+  {code:"01.7",parent_code:"01",value:39644},
+  {code:"01.3",parent_code:"01",value:16626},
+  {code:"01.1",parent_code:"01",value:21444},
+  {code:"01.4",parent_code:"01",value:8513},
+  {code:"01.2+01.5+01.6+01.8",parent_code:"01",value:6324}
+ ];
+ assert.deepEqual(sortedFinanceChildren(rows,"01").map(x=>x.code),[
+  "01.1","01.2+01.5+01.6+01.8","01.3","01.4","01.7"
+ ]);
+ assert.ok(compareFinanceCodes("02","10")<0);
+ assert.ok(compareFinanceCodes("01.1","01.7")<0);
+ assert.ok(compareFinanceCodes("01.7","01.3")>0);
+});
+
+test("COFOG hierarchy respects strict parent relationships and excludes analytic cuts by default",()=>{
+ const rows=[
+  {code:"01",parent_code:"S13.GASTO",value:92551},
+  {code:"01.1",parent_code:"01",value:21444},
+  {code:"01.2",parent_code:"01",value:2,is_analytic_cut:true},
+  {code:"01.7",parent_code:"01",value:39644},
+  {code:"04.5",parent_code:"04",value:28634}
+ ];
+ assert.deepEqual(sortedFinanceChildren(rows,"01").map(x=>x.code),["01.1","01.7"]);
+ assert.deepEqual(sortedFinanceChildren(rows,"01",{includeAnalytic:true}).map(x=>x.code),["01.1","01.2","01.7"]);
+ assert.deepEqual(sortedFinanceChildren(rows,"04").map(x=>x.code),["04.5"]);
 });
