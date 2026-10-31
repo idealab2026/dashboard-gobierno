@@ -9,7 +9,7 @@ const make = (tag, className, text) => {
   return el;
 };
 const official = url => {
-  try {const u=new URL(url);return u.protocol==="https:" && ["datos.aecid.es","www.boe.es","boe.es","www.igae.pap.hacienda.gob.es","igae.pap.hacienda.gob.es"].includes(u.hostname) ? u.href : null;}
+  try {const u=new URL(url);return u.protocol==="https:" && ["datos.aecid.es","www.boe.es","boe.es","www.igae.pap.hacienda.gob.es","igae.pap.hacienda.gob.es","www.sepg.pap.hacienda.gob.es"].includes(u.hostname) ? u.href : null;}
   catch {return null;}
 };
 const external = (label, href) => {
@@ -44,6 +44,12 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   .sf-record .sf-row{font:400 .76rem/1.45 system-ui,sans-serif;color:#5b6b80}
   .sf-record .sf-row strong{color:#31455c}
   .sf-record .sf-cta{margin-top:auto;padding-top:3px;font-size:.8rem;font-weight:700;color:#16436e}
+  .sf-breakdown{margin:4px 0 8px;border-top:1px solid #dfe5ed;padding:8px 0 0}
+  .sf-breakdown summary{font:.78rem/1.4 system-ui,sans-serif;font-weight:700;cursor:pointer;color:#16436e}
+  .sf-breakdown-table{width:100%;border-collapse:collapse;font-size:.72rem;color:#46576c;margin-top:8px}
+  .sf-breakdown-table td{border-bottom:1px solid #e9edf2;padding:6px 3px}
+  .sf-breakdown-table td:last-child{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:750}
+  
   .sf-noresults{border:1px dashed #c7d3de;border-radius:12px;padding:18px;background:#f9fafc;color:#42546b;grid-column:1/-1}
   .sf-noresults strong{display:block;margin-bottom:6px;color:var(--sf-navy)}
   .sf-noresults p{font-size:.85rem}
@@ -80,7 +86,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   const select=(label,opts)=>{
     const el=make("select");for(const [v,t] of opts){const o=make("option","",t);o.value=v;el.append(o);}field(label,el);return el;
   };
-  const type=select("Tipo de registro",[["","Todos"],["intervencion","Proyectos AECID"],["agregado","Gasto agregado IGAE"],["convocatoria","Convocatorias"],["norma","Normas de concesión"]]);
+  const type=select("Tipo de registro",[["","Todos"],["intervencion","Proyectos AECID"],["agregado","Gasto agregado IGAE"],["programa","Programas presupuestarios"],["convocatoria","Convocatorias"],["norma","Normas de concesión"]]);
   const years=[...new Set([...records,...aggregates].map(x=>String(x.anio)).filter(Boolean))].sort((a,b)=>b.localeCompare(a));
   const year=select("Año",[["","Todos los años"],...years.map(y=>[y,y])]);
   if (years.includes(String(initialYear))) year.value=String(initialYear);
@@ -100,7 +106,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   scope.append(scopeLabel,clearScope);
   root.append(scope);
   const examples=make("div","sf-examples");examples.append(make("span","","Prueba:"));
-  for(const label of ["Sanidad","Hospitales","Transporte","Mujeres Paraguay","Ferrocarril Marruecos","Charlas feministas"]){
+  for(const label of ["Mantenimiento de carreteras","Carreteras","Sanidad","Hospitales","Transporte","Mujeres Paraguay","Ferrocarril Marruecos"]){
     const b=make("button","",label);b.type="button";b.addEventListener("click",()=>{selectedCode="";clearScope.hidden=true;scopeLabel.textContent="Sin filtro COFOG · resultados temáticos no equivalen a un desglose de la función";input.value=label;type.value="";year.value="";country.value="";render();input.focus();});examples.append(b);
   }
   root.append(examples);
@@ -143,6 +149,12 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
      ["IGAE · COFOG regional por comunidad","https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Paginas/iacofogCA.aspx"],
      ["Hacienda · liquidaciones definitivas CCAA","https://serviciostelematicosext.hacienda.gob.es/SGCIEF/PublicacionLiquidaciones/aspx/menuInicio.aspx"]
     ]],
+   ["Conservación y mantenimiento de carreteras",
+    "Programa 453C de la Administración General del Estado: distinguir presupuesto prorrogado, obligaciones reconocidas y contratos de conservación. El gasto COFOG de transporte no es una cifra equivalente.",
+    [
+      ["Consultar programa 453C y capítulos oficiales","https://www.sepg.pap.hacienda.gob.es/Presup/PGE2024Prorroga/MaestroDocumentos/PGE-ROM/doc/HTM/N_24P_E_R_31_117_1_1_1_1453C_2.HTM"],
+      ["Buscar en el catálogo de IDEA LAB","/buscador-partidas.html?q=mantenimiento%20de%20carreteras"]
+    ]],
    ["Ferrocarriles e infraestructuras",
     "Separar programa 453A, inversión de Adif/Renfe y gasto COFOG 04.5. Un crédito presupuestario no es inversión efectivamente realizada.",
     [
@@ -164,13 +176,24 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   function card(item,related){
     const box=make("article","sf-record");
     const tags=make("div","sf-tags");
-    const kinds={intervencion:"Intervención AECID",agregado:"Gasto COFOG agregado",convocatoria:"Convocatoria",norma:"Norma de concesión"};
+    const kinds={intervencion:"Intervención AECID",agregado:"Gasto COFOG agregado",programa:"Programa de los PGE",convocatoria:"Convocatoria",norma:"Norma de concesión"};
     tags.append(make("span","sf-tag",kinds[item.tipo]||item.tipo));
     if(related)tags.append(make("span","sf-tag sf-tag--related","Correspondencia temática COFOG"));
     tags.append(make("span","sf-tag",item.anio));
     box.append(tags,make("h3","",item.titulo));
-    const amount=make("strong","sf-amount",euro.format(item.importe_eur)+(item.tipo==="agregado"?" M€":" €"));
+    // COFOG se publica en millones. PGE aporta euros: presentar en M€
+    // con una decimal para preservar la diferencia entre créditos y gastos.
+    const amountLabel=item.tipo==="agregado"
+      ? euro.format(item.importe_eur)+" M€"
+      : item.tipo==="programa"
+        ? new Intl.NumberFormat("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2}).format(item.importe_eur/1000000)+" M€"
+        : euro.format(item.importe_eur)+" €";
+    const amount=make("strong","sf-amount",amountLabel);
     box.append(amount);
+    if(item.tipo==="programa" && item.codigo_presupuestario){
+      box.append(make("span","sf-row",
+        "Programa "+item.codigo_presupuestario+" · Presupuesto prorrogado 2024-P · No equivale a gasto ejecutado"));
+    }
     const meta=make("div","sf-row");
     meta.append(make("strong","","Organismo: "),document.createTextNode(item.organismo||"—"));
     if(item.pais)meta.append(document.createTextNode(" · "+item.pais));
@@ -179,6 +202,21 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
     if(item.descripcion)box.append(make("p","",item.descripcion));
     box.append(make("p","sf-row",item.naturaleza_importe||"Importe publicado (ver fuente original)."));
     if(item.trazabilidad)box.append(make("p","sf-row",item.trazabilidad));
+    if(Array.isArray(item.desglose) && item.desglose.length){
+      const details=make("details","sf-breakdown");
+      details.append(make("summary","","Ver capítulos presupuestarios (incluidos en el total)"));
+      const table=make("table","sf-breakdown-table");
+      for(const part of item.desglose){
+        const row=make("tr");
+        const name=make("td","",part.concepto);
+        const value=make("td","sf-breakdown-amount",
+          new Intl.NumberFormat("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2}).format(part.importe_eur/1000000)+" M€");
+        row.append(name,value);
+        table.append(row);
+      }
+      details.append(table,make("p","sf-row","Capítulos incluidos en el mismo programa: no sumarlos al total mostrado ni a COFOG."));
+      box.append(details);
+    }
     if(item.fuente_url && official(item.fuente_url)){
       const a=external("Consultar documento oficial",official(item.fuente_url));a.className="sf-cta";box.append(a);
     }
