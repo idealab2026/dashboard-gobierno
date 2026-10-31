@@ -73,44 +73,6 @@ function htmlEl(name, className = "") {
   return el;
 }
 
-function safeFilename(value) {
-  return text(value)
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-zA-Z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "")
-    .toLowerCase();
-}
-
-function downloadCsv(rows, filename) {
-  const header = [
-    "codigo",
-    "partida",
-    "valor_millones_euros",
-    "porcentaje_referencia",
-    "fuente",
-    "url_fuente"
-  ];
-
-  const body = [header, ...rows].map(row =>
-    row
-      .map(value => `"${text(value).replace(/"/g, '""')}"`)
-      .join(";")
-  );
-
-  const blob = new Blob([`\ufeff${body.join("\n")}`], {
-    type: "text/csv;charset=utf-8"
-  });
-  const anchor = document.createElement("a");
-  const url = URL.createObjectURL(blob);
-  anchor.href = url;
-  anchor.download = filename;
-  document.body.append(anchor);
-  anchor.click();
-  anchor.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
 function makeRibbon(sx, sy, tx, ty, width) {
   // La anchura ya viene calculada con una única escala global.
   // Solo imponemos 1 px para que ajustes técnicos muy pequeños sigan siendo clicables.
@@ -398,50 +360,25 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
 
   const spacer = htmlEl("span", "pf-toolbar-spacer");
 
-  const csvAnchor = htmlEl("a");
-  csvAnchor.textContent = "CSV";
-  csvAnchor.href = options.dataUrl || "#";
-  csvAnchor.download = `IDEA LAB_finanzas_publicas.csv`;
-  csvAnchor.className = "pf-download-link";
-
-  const xlsxAnchor = htmlEl("a");
-  xlsxAnchor.textContent = "Excel";
-  xlsxAnchor.href = options.workbookUrl || "#";
-  xlsxAnchor.download = `IDEA LAB_finanzas_publicas.xlsx`;
-
   const badge = htmlEl("span", "pf-badge");
 
   // Mientras solo exista un ejercicio completo, no mostramos un selector que no aporta nada.
   if (years.length > 1) toolbar.append(yearLabel, yearSelect);
-  toolbar.append(
-    methodologyButton,
-    spacer,
-    badge,
-    csvAnchor,
-    xlsxAnchor
-  );
+  // Las exportaciones se ocultan por decisión editorial; se conservan fuentes.
+  toolbar.append(methodologyButton, spacer, badge);
   root.append(toolbar);
 
-  // Mobile: keep provenance and downloads accessible, but don't let them
-  // push the actual Sankey below the first screen.
+  // Móvil: fuentes accesibles sin enlaces de descarga ni controles redundantes.
   const mobileTools = htmlEl("details", "pf-mobile-tools");
   const mobileSummary = htmlEl("summary");
-  mobileSummary.textContent = "ⓘ Fuentes y descargas";
+  mobileSummary.textContent = "ⓘ Fuentes y metodología";
   const mobileToolsInner = htmlEl("div", "pf-mobile-tools-inner");
   const mobileMethodologyButton = htmlEl("button");
   mobileMethodologyButton.type = "button";
   mobileMethodologyButton.textContent = "Metodología y fuentes";
-  const mobileCsv = htmlEl("a");
-  mobileCsv.href = options.dataUrl || "#";
-  mobileCsv.download = csvAnchor.download;
-  mobileCsv.textContent = "Descargar CSV";
-  const mobileExcel = htmlEl("a");
-  mobileExcel.href = options.workbookUrl || "#";
-  mobileExcel.download = xlsxAnchor.download;
-  mobileExcel.textContent = "Descargar Excel";
   const mobileExplanation = htmlEl("p");
   mobileExplanation.textContent = "Selecciona una rama para consultar importes, porcentajes y referencias. El ajuste estadístico es técnico, no un ingreso económico.";
-  mobileToolsInner.append(mobileMethodologyButton, mobileCsv, mobileExcel, mobileExplanation);
+  mobileToolsInner.append(mobileMethodologyButton, mobileExplanation);
   mobileTools.append(mobileSummary, mobileToolsInner);
   root.append(mobileTools);
 
@@ -634,36 +571,6 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       definition.innerHTML = `<b>Definición:</b> ${text(row.definition)}`;
       detail.append(definition);
     }
-
-    const actions = htmlEl("div", "pf-detail-actions");
-    const downloadBranch = htmlEl("button");
-    downloadBranch.type = "button";
-    downloadBranch.textContent = "Descargar esta rama (.csv)";
-    downloadBranch.addEventListener("click", () => {
-      const rows = childRows.length ? childRows : [row];
-      const source = sourceFor(row, sourceMap);
-      downloadCsv(
-        rows.map(child => [
-          child.code,
-          rowLabel(child),
-          child.value,
-          formatPct(child.value, row.value),
-          sourceFor(child, sourceMap).name || source.name,
-          sourceFor(child, sourceMap).url || source.url
-        ]),
-        `idealab_${currentYear}_${safeFilename(rowLabel(row))}.csv`
-      );
-    });
-    actions.append(downloadBranch);
-
-    if (options.workbookUrl) {
-      const workbook = htmlEl("a");
-      workbook.href = options.workbookUrl;
-      workbook.download = `IDEA LAB_finanzas_publicas_${currentYear}.xlsx`;
-      workbook.textContent = "Excel completo";
-      actions.append(workbook);
-    }
-    detail.append(actions);
 
     const src = sourceFor(row, sourceMap);
     const sourceBlock = htmlEl("div", "pf-source");
