@@ -2982,16 +2982,79 @@ const spotlightFinance = spotlightFinanceRaw
 const spotlightYears = [...new Set(spotlightFinance
   .filter(d => d.parent_code === "S13.GASTO" && d.side === "gasto" && String(d.level) === "1")
   .map(d => d.year))].sort((a,b) => b-a);
-const spotlightDataUrl = await FileAttachment("./data/public-finance.csv").url();
-const spotlightWorkbookUrl = await FileAttachment("./data/public-finance.xlsx").url();
 if (!spotlightYears.length) {
   throw new Error("Sankey: no existe ningún ejercicio con cierre de gasto público completo.");
 }
 const spotlightSankey = PublicFinanceExplorer(
   spotlightFinance, spotlightSources, spotlightTaxes,
-  {year:spotlightYears[0],dataUrl:spotlightDataUrl,workbookUrl:spotlightWorkbookUrl}
+  {year:spotlightYears[0]}
 );
 display(spotlightSankey);
+
+// 1. Imprimimos el título y la descripción arriba de todo (ocupando el ancho completo)
+const header = document.createElement("div");
+header.id = "resumen";
+header.className = "section-header dashboard-section first";
+header.style.borderTop = "none";
+header.style.marginTop = "0";
+header.innerHTML = `
+  <div class="section-kicker">Últimos datos disponibles</div>
+  <h2>España en un minuto</h2>
+  <div class="section-description">
+    Indicadores con distintas fechas de referencia. Verifica el año de cada dato y consulta su fuente antes de interpretarlo.
+  </div>
+`;
+display(header);
+
+// 2. Creamos el contenedor en dos columnas para poner las tarjetas y el análisis al lado
+const seccionContainer = document.createElement("div");
+seccionContainer.className = "seccion-con-analisis";
+
+
+// Columna izquierda: Las tarjetas KPI
+const columnaDatos = document.createElement("div");
+columnaDatos.className = "columna-datos";
+
+const grid = document.createElement("div");
+grid.className = "kpi-grid";
+
+for (const indicatorId of indicatorsToShow) {
+  const presentation = kpiPresentation[indicatorId] ?? {};
+  const card = KpiCard(spainData, {
+    indicatorId,
+    title: presentation.title ?? getTitle(indicatorId),
+    formatValue: presentation.formatValue ?? formatter(indicatorId),
+    unitLabel: presentation.unitLabel ?? "",
+    isPercentage: presentation.isPercentage ?? isPercentage(indicatorId),
+    comparisonMode: presentation.comparisonMode ?? "auto"
+  });
+  grid.append(card);
+}
+columnaDatos.append(grid);
+seccionContainer.append(columnaDatos);
+
+// Columna derecha: El cuadro de Análisis Idea Lab
+const columnaAnalisis = document.createElement("div");
+columnaAnalisis.className = "columna-analisis";
+columnaAnalisis.innerHTML = `
+  <h4>Análisis Idea Lab</h4>
+  <p>
+    España combina crecimiento económico positivo con
+    desequilibrios relevantes en empleo, cuentas públicas,
+    vivienda y vulnerabilidad social.
+  </p>
+  <p>
+    La lectura de la situación exige observar conjuntamente
+    crecimiento, renta, salarios, desempleo, deuda,
+    precios, vivienda y exclusión social; una mejora en
+    una dimensión no implica necesariamente una mejora
+    equivalente en las demás.
+  </p>
+`;
+seccionContainer.append(columnaAnalisis);
+
+// Mostramos el bloque de dos columnas
+display(seccionContainer);
 
 const financePair = document.createElement("div");
 financePair.className = "il-public-finance-pair";
@@ -3124,71 +3187,6 @@ display(financeSection);
 ```
 
 ```js
-// 1. Imprimimos el título y la descripción arriba de todo (ocupando el ancho completo)
-const header = document.createElement("div");
-header.id = "resumen";
-header.className = "section-header dashboard-section first";
-header.style.borderTop = "none";
-header.style.marginTop = "0";
-header.innerHTML = `
-  <div class="section-kicker">Últimos datos disponibles</div>
-  <h2>España en un minuto</h2>
-  <div class="section-description">
-    Indicadores con distintas fechas de referencia. Verifica el año de cada dato y consulta su fuente antes de interpretarlo.
-  </div>
-`;
-display(header);
-
-// 2. Creamos el contenedor en dos columnas para poner las tarjetas y el análisis al lado
-const seccionContainer = document.createElement("div");
-seccionContainer.className = "seccion-con-analisis";
-
-
-// Columna izquierda: Las tarjetas KPI
-const columnaDatos = document.createElement("div");
-columnaDatos.className = "columna-datos";
-
-const grid = document.createElement("div");
-grid.className = "kpi-grid";
-
-for (const indicatorId of indicatorsToShow) {
-  const presentation = kpiPresentation[indicatorId] ?? {};
-  const card = KpiCard(spainData, {
-    indicatorId,
-    title: presentation.title ?? getTitle(indicatorId),
-    formatValue: presentation.formatValue ?? formatter(indicatorId),
-    unitLabel: presentation.unitLabel ?? "",
-    isPercentage: presentation.isPercentage ?? isPercentage(indicatorId),
-    comparisonMode: presentation.comparisonMode ?? "auto"
-  });
-  grid.append(card);
-}
-columnaDatos.append(grid);
-seccionContainer.append(columnaDatos);
-
-// Columna derecha: El cuadro de Análisis Idea Lab
-const columnaAnalisis = document.createElement("div");
-columnaAnalisis.className = "columna-analisis";
-columnaAnalisis.innerHTML = `
-  <h4>Análisis Idea Lab</h4>
-  <p>
-    España combina crecimiento económico positivo con
-    desequilibrios relevantes en empleo, cuentas públicas,
-    vivienda y vulnerabilidad social.
-  </p>
-  <p>
-    La lectura de la situación exige observar conjuntamente
-    crecimiento, renta, salarios, desempleo, deuda,
-    precios, vivienda y exclusión social; una mejora en
-    una dimensión no implica necesariamente una mejora
-    equivalente en las demás.
-  </p>
-`;
-seccionContainer.append(columnaAnalisis);
-
-// Mostramos el bloque de dos columnas
-display(seccionContainer);
-
 // 3. Renderizamos el resto de secciones del dashboard normalmente
 const sectionOrder = [
   "economia",
