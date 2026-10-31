@@ -443,20 +443,19 @@ def main() -> None:
                     raise AssertionError("Sankey ministerial o regional ausente: "+type_arg)
                 print("Sankey validado en Chrome",type_arg)
 
-            # Deep browser checks: each Sankey branch must advance in place to
-            # a visible next stage and reach an explicit final evidence level.
+            # Direct deep links must extend the SAME Sankey horizontally;
+            # ministry PGE and region IGAE have different quantification.
             for query,expected_level,expected_code,required in [
-                ("?tipo=ccaa&id=10&nivel=funcion&codigo=07","detalle","07",
-                 ("Extremadura","2.333","Subfunciones oficiales",
-                  "sin importes autonómicos","ad-subgroup")),
-                ("?tipo=ccaa&id=10&nivel=subfuncion&codigo=07.3","terminal","07.3",
-                 ("Extremadura","Importe territorial no disponible",
-                  "La serie autonómica COFOG 2024","presupuestos y programas autonómicos")),
-                ("?tipo=ministerio&id=17&nivel=area&codigo=4","detalle","4",
-                 ("Transportes y Movilidad Sostenible","programa presupuestario real","Vista general")),
-                ("?tipo=ministerio&id=17&nivel=programa&codigo=453C","terminal","453C",
-                 ("Crédito presupuestario del programa","No son pagos ni obligaciones reconocidas",
-                  "Consultar tabla ministerial en Hacienda"))
+                ("?tipo=ccaa&id=10&nivel=funcion&codigo=07","funcion","07",
+                 ("Extremadura","07.3","GRUPOS COFOG")),
+                ("?tipo=ccaa&id=10&nivel=subfuncion&codigo=07.3","subfuncion","07.3",
+                 ("Extremadura","07.3.1","07.3.2","CLASES COFOG")),
+                ("?tipo=ccaa&id=10&nivel=clase&codigo=07.3.1","clase","07.3.1",
+                 ("Último nivel de clasificación COFOG","Sin importe autonómico desglosado")),
+                ("?tipo=ministerio&id=17&nivel=area&codigo=4","area","4",
+                 ("Transportes y Movilidad Sostenible","PROGRAMAS PRESUPUESTARIOS","453C")),
+                ("?tipo=ministerio&id=17&nivel=programa&codigo=453C","programa","453C",
+                 ("Crédito PGE · no gasto ejecutado","Consultar fuente oficial"))
             ]:
                 deep_url=f"http://127.0.0.1:{server.server_port}/{BASE}/administraciones.html"+query
                 browser=subprocess.run(
@@ -464,30 +463,40 @@ def main() -> None:
                     text=True,capture_output=True,timeout=85
                 )
                 if browser.returncode:
-                    raise AssertionError("Fallo Chrome en subnivel: "+query)
+                    raise AssertionError("Fallo Chrome en nivel: "+query)
                 page=browser.stdout
                 for fragment in required:
                     if fragment not in page:
-                        raise AssertionError("Falta siguiente nivel "+query+": "+fragment)
+                        raise AssertionError("Falta rama o clase "+query+": "+fragment)
                 if ('data-drill-level="'+expected_level+'"' not in page or
                     'data-drill-code="'+expected_code+'"' not in page):
-                    raise AssertionError("No avanzó la jerarquía "+query)
-                # A drill must preserve the entire source Sankey SVG. The
-                # previous implementation destroyed it and rendered only a
-                # standalone terminal card beneath the original position.
+                    raise AssertionError("Nivel del árbol incorrecto "+query)
                 if ('class="ad-flow"' not in page or
-                    'class="ad-stage is-drilling"' not in page or
-                    'class="ad-drill-panel"' not in page or
-                    'class="ad-drill-body"' not in page):
-                    raise AssertionError("Sankey original desapareció al profundizar "+query)
+                    'class="ad-stage"' not in page or
+                    'class="ad-inline-node' not in page and
+                    'class="ad-branch ad-inline-node' not in page):
+                    raise AssertionError("No se preservó el Sankey "+query)
+                if ('class="ad-drill-panel"' in page or
+                    'class="ad-stage is-drilling"' in page):
+                    raise AssertionError("Regresó el panel lateral "+query)
                 import re as _re
-                branches = _re.findall(r'class="ad-branch"',page)
-                min_branches = 10 if "tipo=ccaa" in query else 1  # algunas secciones tienen una sola área
-                if len(branches)<min_branches:
-                    raise AssertionError("Ramas originales perdidas "+query)
+                branch_codes=_re.findall(
+                    r'<g class="ad-branch ad-inline-node"[^>]+data-code="([^"]+)"',
+                    page
+                )
+                if "tipo=ccaa" in query:
+                    expected_all={f"{n:02d}" for n in range(1,11)}
+                    if not expected_all.issubset(set(branch_codes)):
+                        raise AssertionError("Faltan funciones originales en "+query)
+                    if "Sin importe" not in page and "no publicado" not in page:
+                        raise AssertionError("Se ocultó la falta de importes regionales")
+                elif not branch_codes:
+                    raise AssertionError("Faltan áreas ministeriales originales "+query)
+                if 'class="ad-inline-dashed"' not in page and "tipo=ccaa" in query:
+                    raise AssertionError("Faltan conexiones taxonómicas "+query)
                 if "RuntimeError:" in page:
-                    raise AssertionError("Error Observable en nivel "+query)
-                print("Desglose de administración validado:",query)
+                    raise AssertionError("Error de ejecución "+query)
+                print("Sankey expandido dentro del SVG validado:",query)
 
 
 
