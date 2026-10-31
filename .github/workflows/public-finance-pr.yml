@@ -30,6 +30,13 @@ jobs:
           node --check app/components/public-finance-sankey.js
           python -m unittest discover -s scripts/tests -p "test_*.py" -v
           python scripts/validate_public.py
+      - name: Prepare official derived source files (same release procedure)
+        run: |
+          python -m pip install --disable-pip-version-check 'openpyxl>=3.1,<4'
+          python scripts/refresh_official.py
+          python scripts/fetch_ine_latest.py
+          python scripts/update_ine_ecp320.py
+          python scripts/inspect_igae_annual.py
       - name: Build and audit public artifacts
         run: |
           npm ci
