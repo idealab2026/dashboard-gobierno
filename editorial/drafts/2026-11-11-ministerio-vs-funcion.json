@@ -1,0 +1,15 @@
+{
+  "id": "2026-11-11-ministerio-vs-funcion",
+  "account": "@LARREALIDAD",
+  "status": "review_pending",
+  "theme": "Error de perímetro institucional",
+  "created_at": "2026-10-31",
+  "planned_date": "2026-11-11",
+  "format": "metodo",
+  "text": "¿Es lo mismo el presupuesto de Sanidad que el gasto sanitario de España?\n\nNo. Una cifra ministerial y el gasto de todas las administraciones responden a perímetros distintos.\n\nAntes de comparar dos partidas, comprobamos año, ámbito y clasificación.",
+  "source_url": "https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Documents/AAPP_A/Funcional%202020-2024.pdf",
+  "source_period": "atemporal",
+  "source_verified": "2026-10-31",
+  "editorial_notes": "No atribuir una proporción concreta a administraciones sin fuente verificada.",
+  "publication": "Pendiente de revisión humana y publicación manual en X. Este repositorio NO publica posts en X."
+}
