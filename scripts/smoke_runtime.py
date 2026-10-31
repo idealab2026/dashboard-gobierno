@@ -178,7 +178,10 @@ def main() -> None:
                 "Formulario de búsqueda": 'class="spending-finder"' in search_dom,
                 "Documentos oficiales indexados": ('class="sf-record sf-card-open"' in search_dom and 'class="sf-card-lineage"' in search_dom),
                 "Campo de texto": 'type="search"' in search_dom,
-                "Proyectos de AECID": "Prevención de la violencia" in search_dom,
+                "Índice ministerial y autonómico": (
+                    "programas PGE" in search_dom and
+                    "funciones CCAA" in search_dom and
+                    "categorías COFOG nacionales" in search_dom),
             }
             if any(error in search_dom for error in
                    ("RuntimeError:", "Uncaught SyntaxError", "Uncaught ReferenceError")):
@@ -193,6 +196,23 @@ def main() -> None:
                     "stderr_tail": search_result.stderr[-900:]
                 })
                 raise AssertionError(f"Buscador incompleto en Chrome: {checks_search}")
+            # The publicly indexed administrative records must be searchable:
+            # no pretending that the former 84 selected records cover all PGE.
+            volume = re.search(
+                r"Mostrando 24 de ([0-9]+) registros del índice",
+                search_dom
+            )
+            if not volume or int(volume.group(1)) <= 254:
+                raise AssertionError(
+                    "No se indexaron todos los programas PGE y funciones CCAA: "+
+                    (volume.group(1) if volume else "sin contador"))
+            if ('class="sf-pagination"' not in search_dom or
+                'class="sf-load-more"' not in search_dom):
+                raise AssertionError("Paginación ausente, siguen ocultos resultados")
+            if "primeros 70" in search_dom:
+                raise AssertionError("Persistió el límite antiguo de 70")
+            print("Cobertura oficial indexada:",volume.group(1),
+                  "registros; paginación sin truncamiento")
             print(f"Buscador de partidas OK en Chrome: {checks_search}")
 
             # Verify a query submitted from the homepage is applied at the destination.
