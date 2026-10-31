@@ -50,7 +50,7 @@ export function searchSpendingRecords(items, query, options = {}) {
     if (selectedCode && (!code || (code !== selectedCode && !code.startsWith(selectedCode + ".")))) continue;
     if (selectedType && item.tipo !== selectedType) continue;
     if (selectedYear && String(item.anio) !== selectedYear) continue;
-    if (selectedCountry && item.pais !== selectedCountry) continue;
+    if (selectedCountry && item.pais !== selectedCountry && item.entidad !== selectedCountry) continue;
     const haystack = item._search || normalizeSpending([
       item.titulo, item.pais, item.sector, item.entidad, item.organismo,
       item.descripcion, item.id, item.trazabilidad, item.clasificacion, item.anio
