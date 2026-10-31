@@ -1838,6 +1838,192 @@ html {
   #mapa-dinero .il-sankey-actions button{min-height:32px;padding:3px 7px 3px 0;font-size:.7rem}
 }
 
+
+/* IDEA LAB · Visual impact system 2026
+   Principios: contraste, escala, un gesto visual y datos por delante.
+   Es una interpretación propia, no una reproducción de marca Hespérides. */
+.hero.il-impact-hero{
+  position:relative;isolation:isolate;overflow:hidden;box-sizing:border-box;
+  display:block;width:100%;max-width:none;margin:13px 0 10px;
+  padding:0;border:0;border-bottom:0;border-radius:3px;
+  background:#e9c764;color:#0b2447;
+}
+.hero.il-impact-hero .il-impact-layout{
+  position:relative;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(270px,.8fr);
+  align-items:stretch;gap:0;min-height:370px;width:100%;
+}
+.hero.il-impact-hero .il-impact-copy{
+  position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;
+  align-items:flex-start;padding:clamp(23px,3.3vw,58px) clamp(24px,4vw,75px);
+  padding-right:clamp(15px,2.4vw,38px);min-width:0;
+}
+.hero.il-impact-hero .hero-kicker{
+  display:flex;align-items:center;gap:9px;margin:0 0 16px;
+  font:800 clamp(.65rem,.78vw,.79rem)/1.4 system-ui,-apple-system,sans-serif;
+  letter-spacing:.17em;color:#273c52;text-transform:uppercase;
+}
+.il-impact-kicker-mark{
+  display:inline-block;flex:none;width:10px;height:10px;
+  background:#0b2447;border-radius:50%;
+}
+.hero.il-impact-hero h1{
+  width:100%;max-width:none;margin:0;white-space:normal;
+  color:#0a2444;font:850 clamp(3.65rem,7.35vw,8.15rem)/.94 system-ui,-apple-system,sans-serif;
+  letter-spacing:-.078em;text-wrap:balance;overflow-wrap:normal;
+}
+.hero.il-impact-hero .il-impact-manifesto{
+  margin:14px 0 6px;color:#1f3b58;
+  font:720 clamp(1.23rem,2vw,2.2rem)/1.11 system-ui,-apple-system,sans-serif;
+  letter-spacing:-.025em;
+}
+.hero.il-impact-hero .il-impact-manifesto span{color:#fff}
+.hero.il-impact-hero .hero-subtitle{
+  box-sizing:border-box;width:100%;max-width:none;
+  margin:11px 0 0;padding:0;color:#314760;
+  font:500 clamp(.84rem,.95vw,.98rem)/1.55 system-ui,-apple-system,sans-serif;
+}
+.hero.il-impact-hero .il-hero-long{display:none!important}
+.hero.il-impact-hero .il-hero-short{display:inline!important}
+.hero.il-impact-hero .il-impact-actions{
+  display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:20px;
+  font-family:system-ui,-apple-system,sans-serif;
+}
+.hero.il-impact-hero .il-impact-actions a{
+  display:inline-flex;align-items:center;justify-content:center;gap:18px;
+  min-height:45px;box-sizing:border-box;border-radius:3px;
+  padding:10px 15px;text-decoration:none!important;
+  font:760 .8rem/1.3 system-ui,-apple-system,sans-serif;
+  transition:transform .17s ease,background .17s ease;
+}
+.hero.il-impact-hero .il-impact-cta{
+  color:#fff!important;border:1px solid #0b2447;background:#0b2447;
+}
+.hero.il-impact-hero .il-impact-secondary{
+  color:#0b2447!important;border:1px solid rgba(11,36,71,.43);
+  background:rgba(255,255,255,.06);
+}
+.hero.il-impact-hero .il-impact-actions a:hover{
+  transform:translateY(-2px);
+}
+.hero.il-impact-hero .il-impact-cta:hover{background:#163d6b}
+.hero.il-impact-hero .il-impact-secondary:hover{background:rgba(255,255,255,.36)}
+.hero.il-impact-hero .il-impact-actions a:focus-visible{
+  outline:3px solid #fff;outline-offset:3px;
+}
+.hero.il-impact-hero .il-impact-visual{
+  position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  background:radial-gradient(circle at 52% 50%,rgba(255,255,255,.30) 0 8%,transparent 55%),
+  linear-gradient(105deg,transparent 0%,rgba(255,255,255,.07) 100%);
+}
+.hero.il-impact-hero .il-impact-visual:before{
+  content:"";position:absolute;inset:4% -6% 1% 6%;border:1px solid rgba(11,36,71,.16);
+  border-radius:50%;transform:rotate(-18deg);
+}
+.hero.il-impact-hero .il-impact-visual svg{
+  width:min(100%,570px);height:auto;max-height:420px;overflow:visible;
+  animation:il-impact-float 9s ease-in-out infinite;
+}
+.hero.il-impact-hero .il-ring{
+  fill:none;stroke:url(#ilImpactRing);stroke-width:1.1;stroke-dasharray:6 11;opacity:.7;
+}
+.hero.il-impact-hero .il-ring-mid{stroke-width:2.4;stroke-dasharray:none;opacity:.85}
+.hero.il-impact-hero .il-ring-inner{stroke-width:1.5;stroke-dasharray:2 7}
+.hero.il-impact-hero .il-impact-trace{
+  fill:none;stroke:#133153;stroke-width:4;stroke-linecap:round;opacity:.81;
+}
+.hero.il-impact-hero .il-impact-trace-b{
+  stroke-width:2;opacity:.49;stroke-dasharray:4 10;
+}
+.hero.il-impact-hero .il-impact-dot{fill:#132e50}
+.hero.il-impact-hero .il-impact-dot-big{fill:#0b2447;stroke:#f8e4a5;stroke-width:5}
+.hero.il-impact-hero .il-impact-dot-center{fill:#efd06e}
+.hero.il-impact-hero .il-impact-dot-small{fill:#f6e9c7;stroke:#0b2447;stroke-width:3}
+.hero.il-impact-hero .il-impact-svg-label{
+  fill:#283f5a;font:800 13px system-ui,-apple-system,sans-serif;letter-spacing:2px;
+}
+.hero.il-impact-hero .il-impact-baseline{
+  display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;align-items:center;
+  position:relative;z-index:2;
+  padding:11px clamp(24px,4vw,75px);border-top:1px solid rgba(11,36,71,.22);
+  background:rgba(11,36,71,.035);
+  color:#294563;font:740 .61rem/1.35 system-ui,-apple-system,sans-serif;
+  letter-spacing:.11em;
+}
+.hero.il-impact-hero .il-impact-baseline span span{color:#8a6a33;padding:0 4px}
+.hero.il-impact-hero .il-impact-scroll{font-weight:700}
+@keyframes il-impact-float{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  50%{transform:translateY(-9px) rotate(.7deg)}
+}
+/* Búsqueda: transición directa de la portada al gráfico, sin bloque pesado. */
+.il-quick-spending{
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  width:100%;box-sizing:border-box;margin:0 0 15px;padding:13px 18px;
+  background:#0b2447;border:0;border-radius:3px;color:#fff;
+}
+.il-quick-spending-copy{flex:0 1 auto;min-width:0}
+.il-quick-spending h2{
+  color:#fff;margin:0;font:750 clamp(.85rem,1.13vw,1.07rem)/1.25 system-ui,sans-serif;
+}
+.il-quick-spending-copy p{display:none}
+.il-quick-spending .il-quick-spending-form{
+  flex:1 1 570px;max-width:920px;margin:0;gap:6px;
+}
+.il-quick-spending .il-quick-spending-form input{
+  box-sizing:border-box;width:100%;min-width:0;min-height:43px;
+  border:1px solid #e3e8f0;border-radius:3px;background:#fff;
+  color:#0b2447;padding:9px 11px;font:520 .84rem system-ui,sans-serif;
+}
+.il-quick-spending .il-quick-spending-form button{
+  min-height:43px;background:#e9c764;color:#0b2447;border:1px solid #e9c764;
+  border-radius:3px;font-weight:800;padding:0 16px;
+}
+.il-quick-spending .il-quick-spending-form button:hover{background:#f2d788}
+.il-sankey-spotlight .il-spotlight-top h2{
+  font:790 clamp(2rem,3.2vw,3.7rem)/1.07 Georgia,serif;letter-spacing:-.03em;
+}
+#mapa-dinero .il-sankey-scope{margin-top:7px}
+@media(max-width:1100px){
+  .hero.il-impact-hero .il-impact-layout{grid-template-columns:minmax(0,1.45fr) minmax(200px,.7fr)}
+  .hero.il-impact-hero .il-impact-copy{padding:30px 27px}
+  .hero.il-impact-hero h1{font-size:clamp(3.6rem,7vw,6.3rem)}
+  .hero.il-impact-hero .il-impact-visual svg{width:125%;max-width:none;min-width:280px}
+  .il-quick-spending{gap:10px}
+}
+@media(max-width:760px){
+  .hero.il-impact-hero{margin:8px 0 9px}
+  .hero.il-impact-hero .il-impact-layout{
+    grid-template-columns:minmax(0,1fr);min-height:0;
+  }
+  .hero.il-impact-hero .il-impact-copy{padding:26px 19px 25px}
+  .hero.il-impact-hero .hero-kicker{font-size:.58rem;letter-spacing:.10em;margin-bottom:14px}
+  .hero.il-impact-hero h1{font-size:clamp(3.45rem,12.5vw,5.9rem);letter-spacing:-.075em}
+  .hero.il-impact-hero .il-impact-manifesto{font-size:clamp(1.12rem,4.5vw,1.6rem)}
+  .hero.il-impact-hero .hero-subtitle{font-size:.82rem;line-height:1.48}
+  .hero.il-impact-hero .il-impact-visual{
+    position:absolute;inset:0 -22% 0 48%;opacity:.23;z-index:-1;pointer-events:none;
+  }
+  .hero.il-impact-hero .il-impact-visual svg{width:410px;min-width:410px}
+  .hero.il-impact-hero .il-impact-actions{gap:7px;margin-top:18px}
+  .hero.il-impact-hero .il-impact-actions a{
+    min-height:40px;padding:9px 10px;gap:7px;font-size:.71rem;
+  }
+  .hero.il-impact-hero .il-impact-baseline{padding:9px 19px;gap:6px;font-size:.54rem}
+  .hero.il-impact-hero .il-impact-scroll{display:none}
+  .il-quick-spending{padding:12px;flex-direction:column;align-items:stretch;gap:8px}
+  .il-quick-spending .il-quick-spending-form{flex:initial;width:100%;max-width:none}
+  .il-quick-spending .il-quick-spending-form input{font-size:.78rem}
+  .il-sankey-spotlight .il-spotlight-top h2{font-size:clamp(1.65rem,7vw,2.35rem)}
+}
+@media(max-width:375px){
+  .hero.il-impact-hero h1{font-size:3.05rem}
+  .hero.il-impact-hero .il-impact-actions a{font-size:.67rem;padding:8px}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero.il-impact-hero .il-impact-visual svg{animation:none}
+  .hero.il-impact-hero .il-impact-actions a{transition:none}
+}
+
 </style>
 
 
