@@ -1,0 +1,15 @@
+{
+  "id": "2026-10-31-midas-competicion-sintetica",
+  "account": "@LARREALIDAD",
+  "status": "review_pending",
+  "theme": "MIDAS · primer resultado técnico verificable",
+  "created_at": "2026-10-31",
+  "format": "technical",
+  "text": "📊 MIDAS | #AlgoTrading\n\n23 estrategias, 6 familias y 48 sesiones simuladas. Comparamos rentabilidad, drawdown y costes.\n\n⚠️ Datos sintéticos: no son rendimientos paper con cotizaciones de mercado.\n\nhttps://idealab2026.github.io/laboratorio-cuantitativo/\n\n#QuantTrading",
+  "source_url": "https://idealab2026.github.io/laboratorio-cuantitativo/",
+  "source_record": "https://github.com/idealab2026/laboratorio-cuantitativo/blob/main/README.md",
+  "source_period": "versión institucional pública consultada el 31/10/2026",
+  "source_verified": "2026-10-31",
+  "editorial_notes": "No publicar rentabilidades o un ranking de estrategias con datos de mercado: los ledgers institucionales actuales están not_started y el roster declara not_migrated. Este post habla de 23 estrategias de demostración, seis familias y 48 sesiones ficticias. #AlgoTrading y #QuantTrading son hashtags relevantes, no se garantiza viralidad. Revisar cualquier actualización posterior antes de publicar.",
+  "publication": "Publicación manual en X. El preview no publica."
+}
