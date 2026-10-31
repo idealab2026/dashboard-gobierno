@@ -44,6 +44,39 @@ toc: false
   .il-site-menu>summary{padding:9px;font-size:.76rem;}
 }
 
+
+/* IDEA LAB EDITORIAL LAYOUT: unbroken full-width content on every page.
+   Keep numeric figures, tables, navigation and Sankey labels left/right aligned. */
+.observablehq, #observablehq-main {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1680px !important;
+  margin-inline: auto;
+  padding-inline: clamp(12px, 2.6vw, 46px);
+}
+:is(.observablehq, #observablehq-main) > :is(p, blockquote, h1, h2, h3, ul, ol) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+}
+:is(.observablehq, #observablehq-main) > p,
+:is(.observablehq, #observablehq-main) > blockquote p {
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+@media (max-width: 768px) {
+  .observablehq, #observablehq-main { padding-inline: 12px; }
+}
+
+/* Updates: paragraphs expand; source tables and status labels remain untouched. */
+:is(.observablehq, #observablehq-main) > :is(p, blockquote) {
+  max-width: none;
+  text-align: justify;
+  text-align-last: left;
+}
+
 </style>
 
 <nav class="il-site-navigation" aria-label="Navegación del observatorio">
