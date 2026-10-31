@@ -1,0 +1,15 @@
+{
+  "id": "2026-11-04-sanidad-educacion-2024",
+  "account": "@LARREALIDAD",
+  "status": "review_pending",
+  "theme": "COFOG · salud frente a educación",
+  "created_at": "2026-10-31",
+  "planned_date": "2026-11-04",
+  "format": "dato",
+  "text": "En 2024, el conjunto de administraciones españolas gastó 102.942 M€ en salud y 65.862 M€ en educación (datos provisionales).\n\nNo son presupuestos de ministerios: son cifras de gasto funcional ejecutado.\n\nFuente: IGAE, COFOG.",
+  "source_url": "https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Documents/AAPP_A/Funcional%202020-2024.pdf",
+  "source_period": "2024(P)",
+  "source_verified": "2026-10-31",
+  "editorial_notes": "Comparar magnitudes sin sugerir correlaciones de eficacia ni comparar contra presupuestos estatales.",
+  "publication": "Pendiente de revisión humana y publicación manual en X. Este repositorio NO publica posts en X."
+}
