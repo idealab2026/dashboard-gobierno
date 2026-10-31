@@ -454,7 +454,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
       convocatoria:"Convocatoria",norma:"Norma de concesión"};
     const meta=make("div","sf-record-meta");
     meta.append(make("span","sf-record-kind",types[item.tipo]||item.tipo),
-      make("span","","· "+item.anio));
+      make("span","","· "+(item.periodo||item.anio)));
     if(item.tipo==="programa"&&item.codigo_presupuestario)
       meta.append(make("span","","· "+item.codigo_presupuestario));
     left.append(meta,make("h3","",item.titulo));
@@ -484,7 +484,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
       "Resultados por correspondencia temática con la clasificación oficial COFOG; no son contratos ni proyectos individuales."));
     if(lineage){
       body.append(make("p","",lineage.caution));
-      if(lineage.descendants.length){
+      if(Array.isArray(lineage.descendants)&&lineage.descendants.length){
         const sub=make("details","sf-lineage-list");
         sub.id=lineageId(lineage.code);
         sub.append(make("summary","","Subcategorías COFOG ("+lineage.descendants.length+")"));
