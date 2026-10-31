@@ -88,6 +88,17 @@ class BrandIdentityTests(unittest.TestCase):
         self.assertIn(">Ver análisis completo</a>", home)
         self.assertNotIn(">Ver análisis completo ↗</a>", home)
 
+    def test_finance_tables_and_note_share_layout_axis(self):
+        """Footnote must render in the tables' own block; COFOG must not stretch."""
+        home = (ROOT / "app" / "index.md").read_text(encoding="utf-8")
+        self.assertIn('financeSection.append(financePair);', home)
+        self.assertIn('financeSection.append(financeNote);', home)
+        self.assertIn('display(financeSection);', home)
+        self.assertNotIn('<div class="il-spotlight-footnote">', home)
+        self.assertRegex(home, r"\.il-public-finance-pair\s*\{[^}]*align-items:\s*start")
+        self.assertIn('methodologyLink.href = "/metodologia.html"', home)
+        self.assertIn('updatesLink.href = "/actualizaciones.html"', home)
+
     def test_x_bio_fits_limit(self):
         content = (ROOT / "editorial" / "PERFIL_X.md").read_text(encoding="utf-8")
         result = re.search(r"^> (Somos el canal editorial de IDEA LAB\..+)$", content, flags=re.M)
