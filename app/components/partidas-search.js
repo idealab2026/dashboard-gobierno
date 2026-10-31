@@ -354,7 +354,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
         :euro.format(item.importe_eur)+" €";
     right.append(make("strong","sf-amount",amountLabel));
     right.append(make("small","",item.tipo==="agregado"?"Gasto consolidado · "+item.anio:
-      item.tipo==="programa"?"Crédito presupuestario · "+item.anio:"Importe publicado"));
+      item.tipo==="programa"?"No equivale a gasto ejecutado":"Importe publicado"));
     heading.append(left,right);box.append(heading);
     const entity=[item.organismo,item.pais,item.entidad].filter(Boolean).join(" · ");
     if(entity)box.append(make("div","sf-record-source",entity));
