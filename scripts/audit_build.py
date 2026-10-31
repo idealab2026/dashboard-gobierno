@@ -5,8 +5,13 @@ import sys
 from pathlib import Path
 d=Path("dist")
 errors=[]
-for name in ("index.html","finanzas-publicas.html","metodologia.html"):
+for name in ("index.html","finanzas-publicas.html","metodologia.html","idea-lab.html"):
     if not (d/name).exists(): errors.append("Falta página "+name)
+corp=(d/"idea-lab.html")
+if corp.exists():
+    corporate_html=corp.read_text(encoding="utf-8")
+    for expected in ("IDEA LAB", "España en Datos", "LAREALIDAD", "logo-idea-lab.svg"):
+        if expected not in corporate_html: errors.append("Falta referencia corporativa: "+expected)
 f=(d/"finanzas-publicas.html")
 if f.exists():
     html=f.read_text(encoding="utf-8")
