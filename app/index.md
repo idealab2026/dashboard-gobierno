@@ -2941,7 +2941,6 @@ const indicatorsToShow = preferredIds
     </div>
     <a href="/finanzas-publicas.html" class="il-sankey-cta">Ver análisis completo ↗</a>
   </div>
-  <div class="il-sankey-meta">Ejercicio histórico · Sector consolidado S.13 · Datos sujetos a revisión · No se asignan impuestos a gastos concretos.</div>
 <div class="il-map-year-mobile"><strong>2024</strong><span>IGAE · Administraciones públicas</span></div>
 </section>
 
