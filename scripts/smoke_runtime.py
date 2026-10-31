@@ -83,7 +83,7 @@ def main() -> None:
                 "Formulario que envía búsqueda": 'class="il-quick-spending-form"' in dom,
                 "Selector de ministerios en portada": 'id="il-ministry-sankey"' in dom,
                 "Selector de CCAA en portada": 'id="il-region-sankey"' in dom,
-                "Total nacional sin cambiar": "Administraciones Públicas (S.13)" in dom,
+                "Total nacional disponible": "España · conjunto" in dom and 'class="pf-explorer' in dom,
             }
             if not all(checks.values()):
                 raise AssertionError(f"Runtime incompleto: {checks}; HTML chars={len(dom)}")
