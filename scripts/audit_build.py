@@ -5,13 +5,19 @@ import sys
 from pathlib import Path
 d=Path("dist")
 errors=[]
-for name in ("index.html","finanzas-publicas.html","metodologia.html"):
+for name in ("index.html","finanzas-publicas.html","metodologia.html","buscador-partidas.html"):
     if not (d/name).exists(): errors.append("Falta página "+name)
 f=(d/"finanzas-publicas.html")
 if f.exists():
     html=f.read_text(encoding="utf-8")
     if "pf-explorer-host" not in html and "sankey" not in html.lower():
         errors.append("Falta contenedor del Sankey V2")
+search_html=d/"buscador-partidas.html"
+if search_html.exists():
+    markup=search_html.read_text(encoding="utf-8")
+    if "partidas-buscador" not in markup or "Buscar partidas y proyectos" not in markup:
+        errors.append("Buscador no incorporado al HTML publicado")
+
 # A logo and icon are required on every release, not merely in source.
 for name in ("logo-idea-lab.svg", "favicon.svg"):
     if not (d / name).exists():
@@ -47,7 +53,7 @@ class AnchorLinks(HTMLParser):
    if href:self.hrefs.append(href)
 
 pages=("index.html","quienes-somos.html","actualizaciones.html",
-       "metodologia.html","finanzas-publicas.html")
+       "metodologia.html","finanzas-publicas.html","buscador-partidas.html")
 for page in pages:
  published=d/page
  if not published.exists():
