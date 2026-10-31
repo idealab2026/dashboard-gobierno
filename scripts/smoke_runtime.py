@@ -213,6 +213,39 @@ def main() -> None:
                 raise AssertionError("Persistió el límite antiguo de 70")
             print("Cobertura oficial indexada:",volume.group(1),
                   "registros; paginación sin truncamiento")
+            if ('class="sf-coverage"' not in search_dom or
+                'class="sf-coverage-stats"' not in search_dom or
+                'class="sf-class-chart"' not in search_dom):
+                raise AssertionError("Falta el panel gráfico de clasificación del índice")
+            for fragment in ("591","337","170","71","13",
+                             "Programas PGE · área","COFOG · España",
+                             "COFOG · CCAA",
+                             'class="sf-bar-choice"'):
+                if fragment not in search_dom:
+                    raise AssertionError("Recuento o barra ausente: "+fragment)
+            # A deep link selects the very same bar that a click selects,
+            # preserving the option to clear it and all index counters.
+            classified_url = search_url + "?clasificacion=area&grupo=4"
+            grouped = subprocess.run(
+                [*args[:-1], "--virtual-time-budget=10000", classified_url],
+                text=True, capture_output=True, timeout=85
+            )
+            if grouped.returncode:
+                raise AssertionError("Chrome no abre el gráfico prefiltrado")
+            classified_dom=grouped.stdout
+            if ('data-classification-key="4" aria-pressed="true"' not in classified_dom and
+                'aria-pressed="true" data-classification-key="4"' not in classified_dom):
+                raise AssertionError("La barra de área económica no está seleccionada")
+            filtered_count = re.search(
+                r"Mostrando (\\d+) de (\\d+) registros del índice",classified_dom
+            )
+            if (not filtered_count or int(filtered_count.group(2))<=0 or
+                int(filtered_count.group(2))>=337):
+                raise AssertionError("El gráfico no filtra programas del área 4")
+            if "RuntimeError:" in classified_dom:
+                raise AssertionError("Error Observable al abrir categoría prefiltrada")
+            print("Cobertura interactiva validada: 591 registros, barras y filtro PGE 4")
+
             print(f"Buscador de partidas OK en Chrome: {checks_search}")
 
             # Verify a query submitted from the homepage is applied at the destination.
