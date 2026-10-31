@@ -220,6 +220,14 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
     .spending-finder .sf-lineage-child{flex:1 1 45%}
   }
 
+  .spending-finder .sf-summary{flex-wrap:wrap;gap:3px 12px}
+  .spending-finder .sf-result-types{font-size:.68rem;font-weight:500;color:#77879a}
+  .spending-finder .sf-pagination{display:flex;justify-content:center;margin:15px 0 20px}
+  .spending-finder .sf-pagination[hidden]{display:none!important}
+  .spending-finder .sf-load-more{cursor:pointer;border:1px solid #c7d2dd;
+    color:#1c3d5f;background:#fff;border-radius:7px;font:750 .78rem/1.35 system-ui;
+    min-height:42px;padding:9px 15px}
+  .spending-finder .sf-load-more:hover{border-color:#a88b56;background:#fcf9f3}
   /* V6: breadcrumb arriba y tarjeta navegable debajo; información sólo tras pulsar. */
   .spending-finder .sf-results{
     display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,470px),1fr));
@@ -301,11 +309,12 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   const select=(label,opts)=>{
     const el=make("select");for(const [v,t] of opts){const o=make("option","",t);o.value=v;el.append(o);}field(label,el);return el;
   };
-  const type=select("Tipo de registro",[["","Todos"],["intervencion","Proyectos AECID"],["agregado","Gasto agregado IGAE"],["programa","Programas presupuestarios"],["convocatoria","Convocatorias"],["norma","Normas de concesión"]]);
+  const type=select("Tipo de registro",[["","Todos"],["programa","Programas PGE"],["regional","Funciones CCAA"],["agregado","Gasto COFOG nacional"],["intervencion","Proyectos AECID"],["convocatoria","Convocatorias"],["norma","Normas de concesión"]]);
   const years=[...new Set([...records,...aggregates].map(x=>String(x.anio)).filter(Boolean))].sort((a,b)=>b.localeCompare(a));
   const year=select("Año",[["","Todos los años"],...years.map(y=>[y,y])]);
   if (years.includes(String(initialYear))) year.value=String(initialYear);
-  const countries=[...new Set(records.map(x=>x.pais).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"es"));
+  const countries=[...new Set(records.map(x=>x.pais).filter(Boolean)
+   .concat(records.filter(x=>x.tipo==="regional").map(x=>x.entidad)))].sort((a,b)=>a.localeCompare(b,"es"));
   const country=select("País / región",[["","Todos los destinos"],...countries.map(y=>[y,y]),["España", "España"]].filter((x,i,a)=>a.findIndex(y=>y[0]===x[0])===i));
   root.append(controls);
   const focusCode=/^\d{2}(?:\.\d+)?$/.test(String(initialCofog)) ? String(initialCofog) : "";
@@ -314,7 +323,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   const known=aggregates.find(r=>r.cofog_codigo===selectedCode);
   const scopeLabel=make("span","",selectedCode
    ? "Filtro COFOG " + selectedCode + (known?" · "+known.titulo:"") + " · subfunciones incluidas"
-   : "Cobertura: España · gasto COFOG · 2024. Ministerios y CCAA se consultan por separado.");
+   : "Índice oficial: programas PGE 2025-P · gasto COFOG nacional y autonómico 2024 · documentos seleccionados.");
   const clearScope=make("button","","Quitar filtro COFOG");
   clearScope.type="button";
   clearScope.hidden=!selectedCode;
@@ -336,7 +345,13 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   quickGuide.href="#investigar-por-administracion";
   clearScope.addEventListener("click",()=>{selectedCode="";clearScope.hidden=true;scopeLabel.textContent="Sin filtro COFOG · consulta el catálogo general";render();});
   const summary=make("div","sf-summary"), results=make("div","sf-results");
-  root.append(summary,results);
+  const paging=make("div","sf-pagination");
+  const more=make("button","sf-load-more","Ver más partidas");
+  more.type="button";
+  paging.append(more);
+  root.append(summary,results,paging);
+  const PAGE_SIZE=24;
+  let visibleCount=PAGE_SIZE;
   const lineageId=code=>"linaje-"+String(code).replace(/[^a-zA-Z0-9-]/g,"-");
   const portals=make("div","sf-portals");
   for(const [title,href] of [
@@ -403,8 +418,9 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   // La ruta es la cabecera de cada tarjeta, no un bloque de texto separado.
   // Nunca se abre un Sankey para un documento sin relación COFOG verificada.
   function card(item,related){
-    const lineage=item.tipo==="agregado"?
-      spendingLineage(item,aggregates):relatedProgramLineage(item,aggregates);
+    const lineage=item.admin_hierarchy||(
+      item.tipo==="agregado"?
+        spendingLineage(item,aggregates):relatedProgramLineage(item,aggregates));
     const source=official(item.fuente_url),url=lineage?.href||source;
     const group=make("article","sf-result-group");
     const trail=make("nav","sf-card-lineage");
@@ -420,8 +436,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
       if(lineage.relation)trail.append(make("span","sf-theme-relationship",
         "Correspondencia temática COFOG"));
     }else{
-      trail.append(make("span","sf-crumb","Documento oficial"),
-        make("span","sf-theme-relationship","Sin linaje COFOG verificado"));
+      trail.append(make("span","sf-crumb","Documento oficial"));
     }
     group.append(trail);
     const tile=make(url?"a":"div","sf-record");
@@ -434,8 +449,9 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
     }
     const heading=make("div","sf-record-top");
     const left=make("div","sf-record-intro");
-    const types={intervencion:"Intervención AECID",agregado:"Gasto COFOG",
-      programa:"Programa de los PGE",convocatoria:"Convocatoria",norma:"Norma de concesión"};
+    const types={intervencion:"Intervención AECID",agregado:"Gasto COFOG estatal y territorial agregado",
+      regional:"Función COFOG autonómica",programa:"Programa de los PGE",
+      convocatoria:"Convocatoria",norma:"Norma de concesión"};
     const meta=make("div","sf-record-meta");
     meta.append(make("span","sf-record-kind",types[item.tipo]||item.tipo),
       make("span","","· "+item.anio));
@@ -444,10 +460,12 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
     left.append(meta,make("h3","",item.titulo));
     const figure=make("div","sf-record-figure");
     const amount=item.tipo==="agregado"?euro.format(item.importe_eur)+" M€":
-      item.tipo==="programa"?budgetMillions.format(item.importe_eur/1000000)+" M€":
+      item.tipo==="programa"||item.tipo==="regional"
+        ?budgetMillions.format(item.importe_eur/1000000)+" M€":
         euro.format(item.importe_eur)+" €";
     figure.append(make("strong","sf-amount",amount),
-      make("small","",item.tipo==="programa"?"No equivale a gasto ejecutado":
+      make("small","",item.tipo==="programa"?"Crédito PGE · no ejecutado":
+        item.tipo==="regional"?"IGAE 2024 · administración regional":
         item.tipo==="agregado"?"IGAE · gasto agregado":"Importe documentado"));
     heading.append(left,figure);tile.append(heading);
     const bottom=make("div","sf-card-bottom");
@@ -504,11 +522,19 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
       cofog:selectedCode,tipo:type.value,anio:year.value,pais:country.value
     });
     results.replaceChildren();
-    const slice=matching.slice(0,70);
+    const slice=matching.slice(0,visibleCount);
     summary.replaceChildren();
-    summary.append(make("span","",matching.length+
-      (matching.length===1?" resultado":" resultados")+
-      (matching.length>70?" · primeros 70":"")));
+    const counts={programa:0,regional:0,agregado:0,documento:0};
+    for(const item of matching){
+      const key=counts[item.tipo]===undefined?"documento":item.tipo;
+      counts[key]++;
+    }
+    summary.append(make("span","",
+      "Mostrando "+slice.length+" de "+matching.length+" registros del índice"));
+    const breakdown=make("span","sf-result-types",
+      counts.programa+" programas PGE · "+counts.regional+" funciones CCAA · "+
+      counts.agregado+" categorías COFOG nacionales · "+counts.documento+" documentos");
+    summary.append(breakdown);
     const aliasMatch=q&&matching.some(item=>item._matchKind==="cofog-alias");
     if(aliasMatch){
       const info=make("details","sf-summary-explainer");
@@ -527,8 +553,19 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
       for(const item of slice)
         results.append(card(item,item._matchKind==="cofog-alias"));
     }
+    paging.hidden=matching.length<=slice.length;
+    more.textContent="Mostrar "+Math.min(PAGE_SIZE,matching.length-slice.length)+
+      " más · quedan "+(matching.length-slice.length);
   }
-  for(const el of [input,type,year,country])el.addEventListener(el===input?"input":"change",render);
+  more.addEventListener("click",()=>{
+    visibleCount+=PAGE_SIZE;
+    render();
+  });
+  for(const el of [input,type,year,country])
+    el.addEventListener(el===input?"input":"change",()=>{
+      visibleCount=PAGE_SIZE;
+      render();
+    });
   render();
   return root;
 }
