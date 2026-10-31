@@ -145,7 +145,7 @@ class BrandIdentityTests(unittest.TestCase):
         must not import indicators or KPI functions from the dashboard cell.
         """
         home = (ROOT / "app" / "index.md").read_text(encoding="utf-8")
-        cells = re.findall(r"```js\\n([\\s\\S]*?)\\n```", home)
+        cells = re.findall(r"```js\n([\s\S]*?)\n```", home)
         self.assertGreaterEqual(len(cells), 6, "La portada debe separar celdas de datos, Sankey y KPIs")
         data_cells = [i for i, cell in enumerate(cells) if "function renderMetricSection(" in cell]
         finance_cells = [i for i, cell in enumerate(cells) if "const spotlightFinanceRaw =" in cell]
