@@ -69,8 +69,10 @@ export function searchSpendingRecords(items, query, options = {}) {
     // Precisión antes que cantidad: sin país, palabra o concepto verificado
     // no se debe mostrar un agregado nacional como proyecto de otra región.
     const codeDepth = code.split(".").length - 1;
-    const relevance = (directHits * 25) + (synonymHits * 20)
-      + (item.tipo === "agregado" ? 120 - codeDepth * 13 : 15);
+    const relevance = terms.length
+      ? (directHits * 25) + (synonymHits * 20)
+        + (item.tipo === "agregado" ? 120 - codeDepth * 13 : 15)
+      : (item.tipo === "agregado" ? 120 - codeDepth * 13 : 300);
     matches.push({
       ...item,
       _matchKind: terms.length && synonymHits ? "cofog-alias" : "literal",
