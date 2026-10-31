@@ -28,7 +28,9 @@ jobs:
         uses: actions/checkout@v5
         with:
           persist-credentials: false
-      - name: Validar borrador y límites de X
-        run: python3 -m unittest discover -s editorial/tests -p 'test_publication_preview.py' -v
-      - name: Crear enlace para publicación manual
+      - name: Validar ocho publicaciones, fuentes, fechas y límites de X
+        run: python3 -m unittest discover -s editorial/tests -p 'test_*.py' -v
+      - name: Preparar campaña editorial con enlaces a X (sin publicación)
+        run: python3 editorial/campaign.py --days 14
+      - name: Mantener vista previa legacy del post del Sankey
         run: python3 editorial/prepare_publication.py
