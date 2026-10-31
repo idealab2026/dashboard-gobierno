@@ -338,14 +338,20 @@ test("coverage dashboard reconciles EVERY indexed observation and separates fisc
 });
 test("clickable classification filters partition the index without counting money or mixed units",()=>{
   const examples=[
-    {id:"p17",tipo:"programa",codigo_presupuestario:"453C"},
-    {id:"p30",tipo:"programa",codigo_presupuestario:"232A"},
+    {id:"p17",tipo:"programa",codigo_presupuestario:"453C",
+      codigo_seccion:"17",admin_hierarchy:{href:"/administraciones.html"}},
+    {id:"p30",tipo:"programa",codigo_presupuestario:"232A",
+      codigo_seccion:"30",admin_hierarchy:{href:"/administraciones.html"}},
     {id:"ccaa",tipo:"regional",codigo_funcion:"07"},
     {id:"cofog",tipo:"agregado",cofog_codigo:"07.3"},
-    {id:"doc",tipo:"intervencion"}
+    {id:"doc",tipo:"intervencion"},
+    {id:"pge-doc",tipo:"programa",codigo_presupuestario:"453C"}
   ];
   const view=coverageSummary(examples);
-  assert.equal(view.total,5);
+  assert.equal(view.total,6);
+  assert.equal(view.documentCount,2);
+  assert.equal(classificationKey(examples[5],"tipo"),"programa_documental");
+  assert.equal(classificationKey(examples[5],"area"),null);
   assert.equal(view.programCount,2);
   assert.equal(classificationKey(examples[0],"area"),"4");
   assert.equal(classificationKey(examples[1],"area"),"2");
