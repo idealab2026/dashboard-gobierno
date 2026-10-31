@@ -7,10 +7,13 @@ import {
 
 const BASE = "https://idealab2026.github.io/dashboard-gobierno/";
 
-test("tracking stays completely disabled until IDEA LAB configures its own endpoint", () => {
-  assert.equal(GOATCOUNTER_ENDPOINT, "");
-  assert.equal(validateEndpoint(GOATCOUNTER_ENDPOINT), false);
-  assert.equal(installSiteAnalytics(), false);
+test("tracking is disabled before activation and allows only a legitimate configured endpoint", () => {
+  if (!GOATCOUNTER_ENDPOINT) {
+    assert.equal(validateEndpoint(GOATCOUNTER_ENDPOINT), false);
+    assert.equal(installSiteAnalytics(), false);
+  } else {
+    assert.equal(validateEndpoint(GOATCOUNTER_ENDPOINT), true);
+  }
 });
 test("only legitimate GoatCounter HTTPS collection endpoints accepted", () => {
   assert.equal(validateEndpoint("https://idea-lab.goatcounter.com/count"), true);
