@@ -1784,6 +1784,55 @@ html {
 }
 @media(max-width:410px){.il-sankey-scope{grid-template-columns:1fr;}.il-sankey-scope .il-scope-status{grid-column:1;}}
 
+
+/* Compact financial explorer controls: retain all existing selection handlers. */
+#mapa-dinero .il-sankey-scope {
+  display:grid;grid-template-columns:minmax(160px,1fr) minmax(160px,1fr) auto;
+  align-items:end;gap:8px;padding:9px 11px;margin:7px 0 5px;
+  border:1px solid #e1e6ed;border-radius:9px;background:#fafbfc;
+}
+#mapa-dinero .il-sankey-scope label {
+  display:flex;flex-direction:column;gap:3px;
+  font-size:.68rem;line-height:1.2;font-weight:650;letter-spacing:0;
+}
+#mapa-dinero .il-sankey-scope select {
+  min-height:35px;height:35px;padding:5px 8px;border-radius:6px;
+  font-size:.78rem;font-weight:550;border:1px solid #d4dde7;background:#fff;
+}
+#mapa-dinero .il-sankey-scope .il-scope-status {
+  padding:0 0 8px;font-size:.69rem;line-height:1.2;white-space:normal;
+  background:transparent;border:0;min-width:0;
+}
+#mapa-dinero .il-spotlight-top {align-items:center;gap:10px;}
+#mapa-dinero .il-sankey-cta {
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:34px;padding:6px 9px;border:1px solid #dbe2eb;
+  border-radius:7px;background:#fff;color:#0b2447!important;
+  font-size:.72rem;font-weight:650;box-shadow:none;
+}
+#mapa-dinero .il-sankey-cta:hover {background:#f5f7fa;}
+#mapa-dinero .il-sankey-shortcuts {
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  padding:0 1px 5px;margin:0;
+}
+#mapa-dinero .il-sankey-shortcuts a {
+  display:inline-flex;align-items:center;min-height:29px;
+  padding:4px 8px;border:1px solid #e0e5ec;border-radius:6px;
+  background:#fff;color:#294463!important;text-decoration:none!important;
+  font-size:.71rem;font-weight:650;
+}
+#mapa-dinero .il-sankey-shortcuts a:hover {background:#f4f7fa;}
+@media(max-width:700px){
+ #mapa-dinero .il-sankey-scope {grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:7px;}
+ #mapa-dinero .il-sankey-scope select {height:34px;min-height:34px;width:100%;font-size:.72rem;padding:5px 3px;}
+ #mapa-dinero .il-sankey-scope .il-scope-status {grid-column:1/-1;padding:1px 2px;font-size:.65rem;}
+ #mapa-dinero .il-sankey-cta {min-height:30px;padding:4px 7px;font-size:.68rem;}
+}
+@media(max-width:410px){
+ #mapa-dinero .il-sankey-scope {grid-template-columns:repeat(2,minmax(0,1fr));}
+ #mapa-dinero .il-sankey-scope .il-scope-status {grid-column:1/-1;}
+}
+
 </style>
 
 
@@ -3123,6 +3172,10 @@ const indicatorsToShow = preferredIds
   </label>
   <div class="il-scope-status" id="il-sankey-scope-status" role="status" aria-live="polite">España · S.13 · IGAE 2024</div>
 </div>
+<nav class="il-sankey-shortcuts" aria-label="Profundizar en las cuentas públicas">
+  <a href="./buscador-partidas.html?q=conservaci%C3%B3n%20carreteras" title="Localizar partidas oficiales verificadas sobre conservación de carreteras">⌕ Buscar conservación de carreteras</a>
+  <a href="./metodologia.html" title="Consultar la metodología y las diferencias entre COFOG y presupuesto">Metodología y fuentes</a>
+</nav>
 <div class="il-map-year-mobile"><strong>2024</strong><span>IGAE · Administraciones públicas</span></div>
 </section>
 
