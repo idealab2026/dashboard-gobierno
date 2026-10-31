@@ -180,6 +180,30 @@ def parse_regions():
         }
     return result
 
+def cofog_group_labels():
+    """Only COFOG group names from the official national classification.
+
+    These groups have NO regional amounts in the available 2024 workbook.
+    Never transfer a national amount or distribution into a CCAA.
+    """
+    source=ROOT/"app/data/seed/fact_finanzas_publicas_2024.csv"
+    found={}
+    with source.open(encoding="utf-8-sig",newline="") as handle:
+        for r in csv.DictReader(handle,delimiter=";"):
+            code=(r.get("codigo") or "").strip()
+            if (r.get("lado")=="gasto" and r.get("clasificacion")=="COFOG"
+                and re.fullmatch(r"\\d{2}\\.\\d",code)):
+                parent=code.split(".")[0]
+                found.setdefault(parent,[])
+                if not any(x["code"]==code for x in found[parent]):
+                    found[parent].append({"code":code,"name":r["indicador"]})
+    for groups in found.values():
+        groups.sort(key=lambda x:x["code"])
+    if not all(found.get(x) for x in ("01","04","07")):
+        raise ValueError("Faltan grupos COFOG oficiales de ejemplo")
+    return found
+
+
 def main():
     import concurrent.futures
     # Gobierno: los 22 ministerios identificados por sección en el índice oficial.
@@ -198,6 +222,7 @@ def main():
       "regions_source":CCAA_URL,
       "ministry_count":len(ministries),"region_count":len(regions),
       "ministries":ministries,"regions":regions,
+      "cofog_group_labels":cofog_group_labels(),
       "regional_reconciliation":parse_regions.reconciliation,
       "not_comparable":"El presupuesto prorrogado de ministerios (2025-P) no es gasto regional COFOG (2024); no se suman ni se comparan como si fueran el mismo perímetro.",
       "freshness":"Publicaciones disponibles al 31/10/2026. Se consulta origen oficial en cada compilación."
