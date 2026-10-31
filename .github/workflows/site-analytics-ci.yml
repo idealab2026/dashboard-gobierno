@@ -1,12 +1,12 @@
-name: IDEA LAB · Contrato de analítica sin credenciales
+name: IDEA LAB · Cloudflare Web Analytics · integración pública
 
 on:
   pull_request:
     paths:
-      - 'app/components/site-analytics.js'
+      - 'observablehq.config.js'
       - 'app/components/public-finance-sankey.js'
       - 'app/*.md'
-      - 'scripts/tests/test_site_analytics.mjs'
+      - 'scripts/tests/test_cloudflare_analytics.py'
       - '.github/workflows/site-analytics-ci.yml'
   workflow_dispatch:
 
@@ -26,8 +26,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Pruebas de normalización, eventos y privacidad
-        run: node --test scripts/tests/test_site_analytics.mjs
+      - name: Contrato Cloudflare · token público, un beacon y sin GoatCounter
+        run: python3 -m unittest discover -s scripts/tests -p 'test_cloudflare_analytics.py' -v
       - name: Preparar Python como el despliegue oficial
         uses: actions/setup-python@v5
         with:
