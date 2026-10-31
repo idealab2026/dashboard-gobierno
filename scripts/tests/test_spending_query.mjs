@@ -9,6 +9,7 @@ import {COFOG_STRUCTURE,cofogsBelow} from "../../app/components/cofog-structure.
 import {OFFICIAL_BUDGET_PROGRAMS,matchingBudgetPrograms} from "../../app/components/official-budget-catalog.js";
 import {spendingLineage,sankeyDeepLink,relatedProgramLineage} from "../../app/components/spending-lineage.js";
 import {indexAdministrativeSpending} from "../../app/components/administrative-spending-index.js";
+import {coverageSummary,COVERAGE_MODES,classificationKey,matchesClassification} from "../../app/components/spending-coverage.js";
 import {compareFinanceCodes,sortedFinanceChildren,financeExpansionPath,financeExpansionColumns} from "../../app/components/finance-hierarchy.js";
 
 const source = readFileSync(new URL("../../app/data/seed/fact_finanzas_publicas_2024.csv", import.meta.url), "utf8").replace(/^\uFEFF/, "");
@@ -305,4 +306,56 @@ test("unverified and unbalanced administrative amounts never enter the search in
  assert.equal(indexAdministrativeSpending({ministries:[
    {...base,total_mill_eur:8,verified:false}
  ],regions:[]}).length,0);
+});
+
+test("coverage dashboard reconciles EVERY indexed observation and separates fiscal universes",()=>{
+  const official=JSON.parse(readFileSync(new URL(
+    "../../app/data/admin-sankeys.json",import.meta.url),"utf8"));
+  const catalogue=JSON.parse(readFileSync(new URL(
+    "../../app/data/partidas-verificadas.json",import.meta.url),"utf8"));
+  const admin=indexAdministrativeSpending(official);
+  const national=items.map((x,i)=>({...x,id:"cofog-national-"+x.cofog_codigo+"-"+i}));
+  const all=[...catalogue.registros,...admin,...national];
+  const out=coverageSummary(all);
+  assert.equal(out.total,all.length);
+  assert.equal(out.total,591);
+  assert.equal(out.programCount,337);
+  assert.equal(out.regionalCount,170);
+  assert.equal(out.nationalCount,71);
+  assert.equal(out.documentCount,13);
+  assert.equal(out.programCount+out.regionalCount+out.nationalCount+
+    out.documentCount,out.total);
+  assert.equal(out.groups.tipo.reduce((n,row)=>n+row.count,0),out.total);
+  assert.equal(out.groups.area.reduce((n,row)=>n+row.count,0),out.programCount);
+  assert.equal(out.groups.cofog.reduce((n,row)=>n+row.count,0),out.nationalCount);
+  assert.equal(out.groups.ccaa.reduce((n,row)=>n+row.count,0),out.regionalCount);
+  assert.equal(out.groups.ccaa.length,10);
+  assert.ok(out.groups.ccaa.every(row=>row.count===17));
+  assert.deepEqual(COVERAGE_MODES.map(x=>x.id),["tipo","area","cofog","ccaa"]);
+  assert.equal(
+    out.groups.tipo.filter(x=>["programa","regional","agregado"].includes(x.key))
+      .reduce((n,row)=>n+row.count,0),578);
+});
+test("clickable classification filters partition the index without counting money or mixed units",()=>{
+  const examples=[
+    {id:"p17",tipo:"programa",codigo_presupuestario:"453C"},
+    {id:"p30",tipo:"programa",codigo_presupuestario:"232A"},
+    {id:"ccaa",tipo:"regional",codigo_funcion:"07"},
+    {id:"cofog",tipo:"agregado",cofog_codigo:"07.3"},
+    {id:"doc",tipo:"intervencion"}
+  ];
+  const view=coverageSummary(examples);
+  assert.equal(view.total,5);
+  assert.equal(view.programCount,2);
+  assert.equal(classificationKey(examples[0],"area"),"4");
+  assert.equal(classificationKey(examples[1],"area"),"2");
+  assert.equal(classificationKey(examples[2],"ccaa"),"07");
+  assert.equal(classificationKey(examples[3],"cofog"),"07");
+  assert.equal(classificationKey(examples[4],"area"),null);
+  assert.deepEqual(examples.filter(item=>matchesClassification(item,"area","4"))
+    .map(x=>x.id),["p17"]);
+  assert.deepEqual(examples.filter(item=>matchesClassification(item,"tipo","intervencion"))
+    .map(x=>x.id),["doc"]);
+  assert.throws(()=>coverageSummary([examples[0],examples[0]]),/repetido/);
+  assert.throws(()=>coverageSummary([{tipo:"programa"}]),/sin identificador/);
 });
