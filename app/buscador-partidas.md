@@ -314,7 +314,8 @@ const aggregateRows = financeRows
 const finder = createSpendingSearch({
   records: catalogue.registros,
   aggregates: aggregateRows,
-  coverage: catalogue.cobertura + " " + aggregateRows.length + " categorías y subcategorías COFOG del ejercicio 2024."
+  coverage: catalogue.cobertura + " " + aggregateRows.length + " categorías y subcategorías COFOG del ejercicio 2024.",
+  initialQuery: new URLSearchParams(window.location.search).get("q") || ""
 });
 display(finder);
 ```
