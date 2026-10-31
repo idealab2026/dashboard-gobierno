@@ -123,8 +123,8 @@ def main() -> None:
                         raise AssertionError("Faltan ministerios en vista completa: "+str(nodes))
                     if 'data-drill-level="ministerio"' not in scoped_dom:
                         raise AssertionError("La vista no ha abierto el primer nivel ministerial")
-                    if "Presupuesto estatal" in scoped_dom:
-                        raise AssertionError("El centro del Sankey no debe representar falsamente S.13")
+                    if 'class="mbt-source"' not in scoped_dom or "Suma de secciones" not in scoped_dom:
+                        raise AssertionError("El origen ministerial debe estar rotulado como suma presupuestaria, no como S.13")
                 print("Portada Sankey seleccionado OK:",query)
 
             # Comparar dos niveles de profundización. No hay panel lateral:
