@@ -181,7 +181,7 @@ class BrandIdentityTests(unittest.TestCase):
                 )
                 self.assertEqual(nav.count(f'href="{target}">España en un minuto'), 2)
                 self.assertNotIn(">Indicadores</a>", nav)
-                self.assertIn(f'href="{target}">Economía</a>', nav)
+                self.assertIn(f'href="{target.replace("resumen", "economia")}">Economía</a>', nav)
                 self.assertIn("pointerenter", source)
         home = (ROOT / "app" / "index.md").read_text(encoding="utf-8")
         self.assertIn('header.id = "resumen"', home)
