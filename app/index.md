@@ -1756,6 +1756,34 @@ html {
   .il-quick-spending-form button{padding:0 10px;}
 }
 
+
+/* Selector unificado sobre el Sankey principal; conserva los datos originales
+   y sustituye el diagrama completo según la administración seleccionada. */
+.il-sankey-scope{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;
+  align-items:end;gap:10px;width:100%;box-sizing:border-box;
+  margin:12px 0 9px;padding:12px 14px;background:#f7f9fc;
+  border:1px solid #e1e7f0;border-radius:10px;font-family:system-ui,-apple-system,sans-serif;}
+.il-sankey-scope label{display:flex;flex-direction:column;gap:5px;min-width:0;
+  font:.76rem/1.3 system-ui,-apple-system,sans-serif;font-weight:750;color:#284568;}
+.il-sankey-scope select{appearance:auto;display:block;width:100%;min-width:0;min-height:41px;
+  border:1px solid #c8d3e0;border-radius:8px;padding:8px 10px;
+  color:#102948;background:#fff;font:500 .82rem/1.35 system-ui,-apple-system,sans-serif;}
+.il-sankey-scope select:focus-visible{outline:2px solid #b89b5e;outline-offset:2px;}
+.il-sankey-scope .il-scope-status{font:.72rem/1.5 system-ui,-apple-system,sans-serif;
+  color:#65758a;text-align:right;max-width:230px;padding-bottom:4px;}
+.il-sankey-selected-host{width:100%;min-width:0;max-width:none;box-sizing:border-box;}
+.il-sankey-selected-host>.pf-explorer{width:100%;max-width:none;}
+.il-sankey-selected-host>.ad-sankeys{width:100%;max-width:none;}
+@media(max-width:740px){
+ .il-sankey-scope{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;
+  padding:9px;margin:9px 0 6px;}
+ .il-sankey-scope select{font-size:.74rem;padding:8px 5px;min-height:39px;}
+ .il-sankey-scope label{font-size:.7rem;}
+ .il-sankey-scope .il-scope-status{grid-column:1/-1;text-align:left;
+  max-width:none;padding:0;font-size:.67rem;}
+}
+@media(max-width:410px){.il-sankey-scope{grid-template-columns:1fr;}.il-sankey-scope .il-scope-status{grid-column:1;}}
+
 </style>
 
 
@@ -3082,16 +3110,31 @@ const indicatorsToShow = preferredIds
     </div>
     <a href="/finanzas-publicas.html" class="il-sankey-cta">Ver análisis completo</a>
   </div>
+<div class="il-sankey-scope" role="group" aria-label="Administración que se representa en el Sankey">
+  <label for="il-ministry-sankey">Ministerio
+    <select id="il-ministry-sankey" aria-label="Seleccionar ministerio">
+      <option value="">España · conjunto</option>
+    </select>
+  </label>
+  <label for="il-region-sankey">Comunidad autónoma
+    <select id="il-region-sankey" aria-label="Seleccionar comunidad autónoma">
+      <option value="">España · conjunto</option>
+    </select>
+  </label>
+  <div class="il-scope-status" id="il-sankey-scope-status" role="status" aria-live="polite">España · S.13 · IGAE 2024</div>
+</div>
 <div class="il-map-year-mobile"><strong>2024</strong><span>IGAE · Administraciones públicas</span></div>
 </section>
 
 ```js
 import {PublicFinanceExplorer} from "./components/public-finance-sankey.js";
+import {AdministrationSankeys} from "./components/administration-sankeys.js";
 
 const spotlightFinanceRaw = await FileAttachment("./data/public-finance.csv").csv({typed:true});
 const spotlightSources = await FileAttachment("./data/public-finance-sources.csv").csv({typed:true});
 const spotlightTaxes = await FileAttachment("./data/public-finance-tax-figures.csv").csv({typed:true});
 const verifiedSpendingCatalogue = await FileAttachment("./data/partidas-verificadas.json").json();
+const administrationSankeyData = await FileAttachment("./data/admin-sankeys.json").json();
 const pensionMonthlyRows = await FileAttachment("./data/pensions-payroll.csv").csv({typed:true});
 const spotlightFinance = spotlightFinanceRaw
   .map(d => ({...d, year:Number(d.year), value:Number(d.value)}))
@@ -3106,7 +3149,100 @@ const spotlightSankey = PublicFinanceExplorer(
   spotlightFinance, spotlightSources, spotlightTaxes,
   {year:spotlightYears[0], relatedPrograms: verifiedSpendingCatalogue.registros}
 );
-display(spotlightSankey);
+// Un solo hueco visual: el Sankey original permanece montado al volver a
+// España, y cada administración usa exclusivamente su propio universo oficial.
+const sankeyHost=document.createElement("div");
+sankeyHost.className="il-sankey-selected-host";
+sankeyHost.append(spotlightSankey);
+display(sankeyHost);
+
+const ministrySelect=document.getElementById("il-ministry-sankey");
+const regionSelect=document.getElementById("il-region-sankey");
+const scopeStatus=document.getElementById("il-sankey-scope-status");
+const scopeHeader=document.querySelector("#mapa-dinero .il-spotlight-top");
+const scopeDesktopTitle=scopeHeader.querySelector(".il-map-title-desktop");
+const scopeMobileTitle=scopeHeader.querySelector(".il-map-title-mobile");
+const scopeIntro=scopeHeader.querySelector("p");
+const scopeCta=scopeHeader.querySelector(".il-sankey-cta");
+const yearBadge=document.querySelector("#mapa-dinero .il-map-year-mobile");
+const nationalPresentation={
+  desktop:scopeDesktopTitle.textContent,mobile:scopeMobileTitle.textContent,
+  intro:scopeIntro.textContent,cta:scopeCta.textContent,href:scopeCta.getAttribute("href")
+};
+const ministries=administrationSankeyData.ministries||[];
+const regions=administrationSankeyData.regions||[];
+function addAdministrationOptions(select,entries){
+  for(const entity of entries){
+    if(!entity.verified)continue;
+    const option=document.createElement("option");
+    option.value=String(entity.id);
+    option.textContent=entity.name;
+    select.append(option);
+  }
+}
+addAdministrationOptions(ministrySelect,ministries);
+addAdministrationOptions(regionSelect,regions);
+ministrySelect.disabled=!ministries.length;
+regionSelect.disabled=!regions.length;
+if(!ministries.length||!regions.length){
+ scopeStatus.textContent="Desglose pendiente de actualización · se mantiene el Sankey nacional.";
+}
+function presentSelectedScope(mode,id){
+  const data=mode==="ministries"?ministries:regions;
+  const chosen=data.find(item=>String(item.id)===String(id));
+  if(!chosen){presentNational();return;}
+  // El selector opuesto vuelve a «España · conjunto»; nunca fusionamos
+  // presupuestos ministeriales y gasto regional como si fueran el mismo dinero.
+  if(mode==="ministries")regionSelect.value="";
+  else ministrySelect.value="";
+  const heading=mode==="ministries"?"Presupuesto por ministerio":"Gasto por comunidad autónoma";
+  scopeDesktopTitle.textContent=heading;
+  scopeMobileTitle.textContent=heading;
+  scopeIntro.textContent=chosen.name+". "+chosen.year_label+
+    ". Selecciona una rama para consultar los programas o funciones oficiales. No es el desglose de ingresos del Estado español.";
+  scopeStatus.textContent=chosen.year_label+" · "+chosen.amount_kind;
+  scopeCta.textContent="Ver análisis por administraciones";
+  scopeCta.href="/administraciones.html?tipo="+(mode==="ministries"?"ministerio":"ccaa")+
+    "&id="+encodeURIComponent(chosen.id);
+  yearBadge.querySelector("strong").textContent=mode==="ministries"?"2025-P":"2024";
+  yearBadge.querySelector("span").textContent=mode==="ministries"?
+    "PGE · presupuesto prorrogado":"IGAE · gasto regional COFOG";
+  sankeyHost.replaceChildren(AdministrationSankeys(administrationSankeyData,{
+    embedded:true,mode,selectedId:chosen.id
+  }));
+}
+function presentNational(){
+  ministrySelect.value="";
+  regionSelect.value="";
+  scopeDesktopTitle.textContent=nationalPresentation.desktop;
+  scopeMobileTitle.textContent=nationalPresentation.mobile;
+  scopeIntro.textContent=nationalPresentation.intro;
+  scopeCta.textContent=nationalPresentation.cta;
+  scopeCta.setAttribute("href",nationalPresentation.href);
+  scopeStatus.textContent="España · conjunto de administraciones (S.13) · IGAE 2024";
+  yearBadge.querySelector("strong").textContent="2024";
+  yearBadge.querySelector("span").textContent="IGAE · Administraciones públicas";
+  sankeyHost.replaceChildren(spotlightSankey);
+}
+ministrySelect.addEventListener("change",()=>{
+  if(ministrySelect.value)presentSelectedScope("ministries",ministrySelect.value);
+  else presentNational();
+});
+regionSelect.addEventListener("change",()=>{
+  if(regionSelect.value)presentSelectedScope("regions",regionSelect.value);
+  else presentNational();
+});
+// Permite enlazar directamente a una sección sin perder el acceso al total.
+const scopeQuery=new URLSearchParams(window.location.search);
+if(scopeQuery.get("ambito")==="ministerio"&&
+   ministries.some(d=>String(d.id)===scopeQuery.get("id"))){
+  ministrySelect.value=scopeQuery.get("id");
+  presentSelectedScope("ministries",ministrySelect.value);
+}else if(scopeQuery.get("ambito")==="ccaa"&&
+   regions.some(d=>String(d.id)===scopeQuery.get("id"))){
+  regionSelect.value=scopeQuery.get("id");
+  presentSelectedScope("regions",regionSelect.value);
+}
 ```
 
 ```js
