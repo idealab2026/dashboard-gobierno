@@ -79,12 +79,29 @@ class NamedSpendingTests(unittest.TestCase):
         engine = (ROOT / "app/components/spending-query.js").read_text(encoding="utf-8")
         self.assertIn('roadUrl.searchParams.set("q", "mantenimiento de carreteras")', sankey)
         self.assertIn("Mantenimiento de carreteras · 453C", sankey)
-        self.assertIn('["programa","Programas presupuestarios"]', finder)
+        self.assertIn('["programa","Programas PGE"]', finder)
+        self.assertIn('["regional","Funciones CCAA"]', finder)
         self.assertIn('programa:"Programa de los PGE"', finder)
         self.assertIn('part.importe_eur/1000000', finder)
         self.assertIn('Conservación y mantenimiento de carreteras', finder)
         self.assertIn('carretera: "04.5"', engine)
         self.assertIn('item.tipo === "programa" ? 195', engine)
+
+    def test_finder_loads_all_official_rows_and_never_truncates_at_70(self):
+        page=(ROOT/"app/buscador-partidas.md").read_text(encoding="utf-8")
+        component=(ROOT/"app/components/partidas-search.js").read_text(encoding="utf-8")
+        index=(ROOT/"app/components/administrative-spending-index.js").read_text(encoding="utf-8")
+        self.assertIn('FileAttachment("./data/admin-sankeys.json").json()',page)
+        self.assertIn("indexAdministrativeSpending(administrationData)",page)
+        self.assertIn("records: [...catalogue.registros,...administrationRows]",page)
+        self.assertIn("data?.ministries||[]",index)
+        self.assertIn("data?.regions||[]",index)
+        self.assertIn("const PAGE_SIZE=24",component)
+        self.assertIn("visibleCount+=PAGE_SIZE",component)
+        self.assertIn("paging.hidden=matching.length<=slice.length",component)
+        self.assertNotIn("slice(0,70)",component)
+        self.assertNotIn("primeros 70",component)
+        self.assertIn("registros del índice",component)
 
     def test_search_is_reachable_from_all_pages(self):
         for name in ("index.md", "finanzas-publicas.md", "metodologia.md",
