@@ -251,24 +251,24 @@ def main() -> None:
                 raise AssertionError("Chrome no ejecuta q=hospital")
             hospital_dom=hospital.stdout
             for required in (
+                'class="sf-result-group"',
+                'class="sf-card-lineage"',
+                'class="sf-record sf-card-open"',
+                'class="sf-result-details"',
                 'class="sf-lineage-list"',
-                'class="sf-record"',
-                'class="sf-record-top"',
-                'class="sf-lineage-list"',
-                'open=""',
                 'id="linaje-07-3"',
                 "07 · Salud",
                 "07.3 · Servicios hospitalarios",
                 "43.650 M€",
-                "102.942 M€",
                 "07.3.1",
                 "07.3.2",
                 "07.3.3",
                 "07.3.4",
-                "Subcategorías (4) · sin importe desglosado",
+                "Subcategorías COFOG (4)",
                 './?detalle-cofog=07.3#mapa-dinero',
                 './?detalle-cofog=07.3.1#mapa-dinero',
-                "Ver en Sankey"
+                "Abrir Sankey"
+
             ):
                 if required not in hospital_dom:
                     raise AssertionError(
@@ -276,10 +276,16 @@ def main() -> None:
             if "RuntimeError:" in hospital_dom:
                 raise AssertionError("RuntimeError en linaje hospitalario")
             if 'class="sf-lineage-card"' in hospital_dom:
-                raise AssertionError("La vista compacta no debe duplicar resultado y linaje en dos tarjetas")
+                raise AssertionError("El linaje no debe mostrarse en otra tarjeta")
             if 'class="sf-sources-details"' not in hospital_dom:
-                raise AssertionError("Fuentes extensas deben estar disponibles en detalles plegables")
-            print("Resultado hospital compactado: ficha única, S.13 → 07 → 07.3 y 4 clases")
+                raise AssertionError("Fuentes extensas no accesibles")
+            if 'class="sf-result-details" open' in hospital_dom:
+                raise AssertionError("Detalles visibles sin pedirlos")
+            first_card=hospital_dom.find('class="sf-record sf-card-open"')
+            first_lineage=hospital_dom.find('class="sf-card-lineage"')
+            if not 0 <= first_lineage < first_card:
+                raise AssertionError("El linaje debe aparecer encima de la tarjeta")
+            print("Búsqueda hospital: linaje superior, tarjeta clicable y texto oculto")
 
             # Road maintenance query must lead to an actual 453C State Budget
             # program, never to a fabricated execution figure from COFOG 04.5.
