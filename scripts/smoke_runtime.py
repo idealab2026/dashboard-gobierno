@@ -275,7 +275,11 @@ def main() -> None:
                         "El linaje hospitalario no aparece en el buscador: "+required)
             if "RuntimeError:" in hospital_dom:
                 raise AssertionError("RuntimeError en linaje hospitalario")
-            if 'class="sf-lineage-card"' in hospital_dom:\n                raise AssertionError("La vista compacta no debe duplicar resultado y linaje en dos tarjetas")\n            if 'class="sf-sources-details"' not in hospital_dom:\n                raise AssertionError("Fuentes extensas deben estar disponibles en detalles plegables")\n            print("Resultado hospital compactado: ficha única, S.13 → 07 → 07.3 y 4 clases")
+            if 'class="sf-lineage-card"' in hospital_dom:
+                raise AssertionError("La vista compacta no debe duplicar resultado y linaje en dos tarjetas")
+            if 'class="sf-sources-details"' not in hospital_dom:
+                raise AssertionError("Fuentes extensas deben estar disponibles en detalles plegables")
+            print("Resultado hospital compactado: ficha única, S.13 → 07 → 07.3 y 4 clases")
 
             # Road maintenance query must lead to an actual 453C State Budget
             # program, never to a fabricated execution figure from COFOG 04.5.
