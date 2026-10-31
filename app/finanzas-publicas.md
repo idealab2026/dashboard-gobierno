@@ -356,6 +356,7 @@ body {
     <a href="/metodologia.html">Metodología</a>
     <a href="/actualizaciones.html">Actualización</a>
     <a href="/quienes-somos.html">Quiénes somos</a>
+      <a href="/idea-lab.html">IDEA LAB · Web corporativa</a>
     <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">En X</a>
   </div>
   <details class="idealab-nav-mobile">
@@ -376,6 +377,7 @@ body {
       <a href="/metodologia.html">Metodología</a>
       <a href="/actualizaciones.html">Actualización</a>
       <a href="/quienes-somos.html">Quiénes somos</a>
+      <a href="/idea-lab.html">IDEA LAB · Web corporativa</a>
       <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">En X ↗</a>
     </div>
   </details>
