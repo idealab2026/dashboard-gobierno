@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {dsvFormat} from "d3-dsv";
 import {searchSpendingRecords, normalizeSpending} from "../../app/components/spending-query.js";
+import {OFFICIAL_DRILL_ROUTES, relatedBudgetPrograms} from "../../app/components/official-drill-routes.js";
 
 const source = readFileSync(new URL("../../app/data/seed/fact_finanzas_publicas_2024.csv", import.meta.url), "utf8").replace(/^\uFEFF/, "");
 const items = dsvFormat(";").parse(source)
@@ -85,4 +86,27 @@ test("new road construction, road maintenance and COFOG are not mistaken for the
   assert.ok(!searchSpendingRecords(all,"mantenimiento carreteras Andalucía").some(x=>x.codigo_presupuestario==="453C"));
   assert.equal(searchSpendingRecords(all,"mantenimiento carreteras",{cofog:"04.5"}).length,0);
   assert.equal(searchSpendingRecords(all,"mantenimiento carreteras",{tipo:"programa"}).length,1);
+});
+
+test("at terminal nodes all official alternative drill paths remain available and independent",()=>{
+  assert.deepEqual(OFFICIAL_DRILL_ROUTES.map(x=>x.id),[
+    "cofog-ambito","programa","ejecucion","contratacion"
+  ]);
+  for(const route of OFFICIAL_DRILL_ROUTES){
+    assert.ok(route.links.length>=2,route.id);
+    for(const [title,url,period] of route.links){
+      assert.ok(title&&url&&period);
+      assert.ok(url.startsWith("https://")||url==="/buscador-partidas.html");
+    }
+  }
+  const official=OFFICIAL_DRILL_ROUTES.find(x=>x.id==="cofog-ambito");
+  assert.equal(official.links.length,4);
+  assert.ok(official.links.some(x=>x[1].includes("iacofogCA.aspx")));
+});
+test("budget programmes follow related COFOG function without becoming numerical children",()=>{
+  const transport=relatedBudgetPrograms("04.5",2024,named);
+  assert.deepEqual(transport.map(x=>x.codigo_presupuestario).sort(),["453B","453C"]);
+  assert.deepEqual(relatedBudgetPrograms("04",2024,named).map(x=>x.codigo_presupuestario).sort(),["453B","453C"]);
+  assert.deepEqual(relatedBudgetPrograms("01.3",2024,named),[]);
+  assert.deepEqual(relatedBudgetPrograms("04.5",2023,named),[]);
 });
