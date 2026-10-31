@@ -81,10 +81,44 @@ def main() -> None:
                 "Detalle de gasto COFOG": "TOTAL COFOG" in dom,
                 "Buscador visible en portada": 'id="il-quick-spending-query"' in dom,
                 "Formulario que envía búsqueda": 'class="il-quick-spending-form"' in dom,
+                "Selector de ministerios en portada": 'id="il-ministry-sankey"' in dom,
+                "Selector de CCAA en portada": 'id="il-region-sankey"' in dom,
+                "Total nacional sin cambiar": "Administraciones Públicas (S.13)" in dom,
             }
             if not all(checks.values()):
                 raise AssertionError(f"Runtime incompleto: {checks}; HTML chars={len(dom)}")
             print(f"Observatorio OK en Chrome: {checks}")
+
+            # Los selectores deben cambiar el gráfico *en la portada*, no
+            # limitarse a enviar al usuario a una página independiente.
+            for query, mode_name, entity_id, expected in [
+                ("?ambito=ministerio&id=17","ministries","17",
+                 ("Transportes y Movilidad Sostenible", "2025-P",
+                  "Presupuesto por ministerio", "ad-flow")),
+                ("?ambito=ccaa&id=1","regions","1",
+                 ("Andalucía", "2024",
+                  "Gasto por comunidad autónoma", "ad-flow"))
+            ]:
+                scoped = subprocess.run(
+                    [*args[:-1], "--virtual-time-budget=14000", url+query],
+                    text=True, capture_output=True, timeout=85
+                )
+                if scoped.returncode:
+                    raise AssertionError("Chrome no carga scope del Sankey en portada "+query)
+                scoped_dom=scoped.stdout
+                for expected_word in expected:
+                    if expected_word not in scoped_dom:
+                        raise AssertionError("Portada no representa "+query+": falta "+expected_word)
+                if ('data-administration-mode="'+mode_name+'"' not in scoped_dom or
+                    'data-administration-id="'+entity_id+'"' not in scoped_dom or
+                    'class="ad-flow"' not in scoped_dom):
+                    raise AssertionError("Selector de portada no renderiza Sankey de "+mode_name)
+                if 'class="pf-explorer' in scoped_dom:
+                    raise AssertionError("Se duplicó el Sankey nacional con "+mode_name)
+                if "RuntimeError:" in scoped_dom:
+                    raise AssertionError("Fallo observable en scope "+query)
+                print("Portada Sankey seleccionado OK:",query)
+
 
             search_url = f"http://127.0.0.1:{server.server_port}/{BASE}/buscador-partidas.html"
             search_args = [
