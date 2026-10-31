@@ -513,7 +513,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
     if(aliasMatch){
       const info=make("details","sf-summary-explainer");
       info.append(make("summary","","Sobre las coincidencias"),
-        make("p","",/\\bsanidad\\b/.test(q)
+        make("p","",/\bsanidad\b/.test(q)
           ? "Sanidad corresponde a la función oficial COFOG 07 «Salud»; se muestran su total y subfunciones, sin sumar dos veces."
           : "Resultados por correspondencia temática con la clasificación oficial COFOG; no son contratos ni proyectos individuales."));
       summary.append(info);
