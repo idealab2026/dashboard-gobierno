@@ -138,6 +138,34 @@ class BrandIdentityTests(unittest.TestCase):
                 self.assertIn('const compactNav = document.querySelector(".idealab-nav-mobile")', content)
                 self.assertIn('event.key === "Escape"', content)
 
+    def test_observable_reactive_cells_do_not_form_finance_kpi_cycle(self):
+        """The browser runtime is reactive: build success alone does not catch cycles.
+
+        Dashboard definitions use pensions/Sankey data, so the Sankey cell
+        must not import indicators or KPI functions from the dashboard cell.
+        """
+        home = (ROOT / "app" / "index.md").read_text(encoding="utf-8")
+        cells = re.findall(r"```js\\n([\\s\\S]*?)\\n```", home)
+        self.assertGreaterEqual(len(cells), 6, "La portada debe separar celdas de datos, Sankey y KPIs")
+        data_cells = [i for i, cell in enumerate(cells) if "function renderMetricSection(" in cell]
+        finance_cells = [i for i, cell in enumerate(cells) if "const spotlightFinanceRaw =" in cell]
+        kpi_cells = [i for i, cell in enumerate(cells) if 'header.id = "resumen"' in cell]
+        table_cells = [i for i, cell in enumerate(cells) if 'const financePair = document.createElement("div")' in cell]
+        self.assertEqual([len(data_cells), len(finance_cells), len(kpi_cells), len(table_cells)], [1, 1, 1, 1])
+        dashboard, finance, kpi, tables = (data_cells[0], finance_cells[0], kpi_cells[0], table_cells[0])
+        self.assertNotEqual(finance, kpi, "El Sankey y los KPI no pueden estar en la misma celda reactiva")
+        self.assertNotEqual(finance, tables, "El Sankey y el detalle deben ser celdas separadas")
+        self.assertLess(finance, kpi)
+        self.assertLess(kpi, tables)
+        self.assertIn("pensionMonthlyRows", cells[dashboard])
+        self.assertIn("const pensionMonthlyRows =", cells[finance])
+        for name in ("KpiCard", "indicatorsToShow", "spainData", "renderMetricSection",
+                     "kpiPresentation", "getTitle(", "formatter(", "isPercentage("):
+            self.assertNotIn(name, cells[finance], f"Dependencia circular desde Sankey: {name}")
+        self.assertIn("display(spotlightSankey);", cells[finance])
+        self.assertIn("display(seccionContainer);", cells[kpi])
+        self.assertIn("display(financeSection);", cells[tables])
+
     def test_x_bio_fits_limit(self):
         content = (ROOT / "editorial" / "PERFIL_X.md").read_text(encoding="utf-8")
         result = re.search(r"^> (Somos el canal editorial de IDEA LAB\..+)$", content, flags=re.M)
