@@ -812,9 +812,14 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       focusX=x;
       const parentY=positions.get(parent.code);
       if(!Number.isFinite(parentY))continue;
-      const heading=svgEl("text",{x,y:23,class:"pf-extension-heading"});
-      heading.textContent=(columnIndex+2)+" · "+parent.code+" · "+rowLabel(parent);
-      nodes.append(heading);
+      // En el nivel terminal hay una cabecera propia. Dibujar ambas encima
+      // provocaba el texto solapado que aparecía en 07.3 y otras ramas COFOG.
+      if(children.length){
+        const heading=svgEl("text",{x,y:23,class:"pf-extension-heading"});
+        heading.textContent=(columnIndex+2)+" · "+parent.code+" · "+
+          (wrapText(rowLabel(parent),30,1)[0]||"");
+        nodes.append(heading);
+      }
       const incomingX=columnIndex===0?sourceX:
         sourceX+stageStride*(columnIndex-1)+stageGap+nodeW;
 
@@ -831,7 +836,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
         const firstY=Math.max(53,parentY-
           (classRows.length*(classH+classGap)-classGap)/2);
         const heading=svgEl("text",{x,y:23,class:"pf-extension-heading"});
-        heading.textContent="NIVEL 3 COFOG · CLASES ONU · SIN IMPORTE IGAE";
+        heading.textContent="NIVEL 3 COFOG · CLASES SIN IMPORTE";
         nodes.append(heading);
         classRows.forEach((item,i)=>{
           const yy=firstY+i*(classH+classGap);
@@ -892,7 +897,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
         const nextHeading=svgEl("text",{
           x:nextX,y:23,class:"pf-extension-heading"
         });
-        nextHeading.textContent="PGE 2024-P · PROGRAMAS RELACIONADOS (OTRO PERÍMETRO)";
+        nextHeading.textContent="PGE · PROGRAMAS RELACIONADOS";
         nodes.append(nextHeading);
         const note=svgEl("text",{x:nextX,y:44,class:"pf-extension-value"});
         note.textContent="Presupuesto estatal prorrogado · NO suma ni reparte COFOG";
