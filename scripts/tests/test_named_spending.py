@@ -28,7 +28,7 @@ class NamedSpendingTests(unittest.TestCase):
                 self.assertTrue(item["pais"])
                 self.assertGreaterEqual(item["anio"], 2024)
                 self.assertGreater(item["importe_eur"], 0)
-                self.assertIn(item["tipo"], {"intervencion", "convocatoria", "norma"})
+                self.assertIn(item["tipo"], {"intervencion", "convocatoria", "norma", "programa"})
                 self.assertTrue(item["naturaleza_importe"])
                 self.assertTrue(item["trazabilidad"])
                 self.assertEqual(urlparse(item["fuente_url"]).scheme, "https")
@@ -57,6 +57,34 @@ class NamedSpendingTests(unittest.TestCase):
         self.assertIn("No significa que la partida no exista", component)
         self.assertIn("datos.aecid.es/lista-de-intervenciones", component)
         self.assertIn("www.infosubvenciones.es", component)
+
+    def test_road_maintenance_budget_is_published_as_prorogued_pge_not_executed(self):
+        by_id = {r["id"]: r for r in self.records}
+        maintenance = by_id["pge-2024-p-17-453c"]
+        new_roads = by_id["pge-2024-p-17-453b"]
+        self.assertEqual(maintenance["tipo"], "programa")
+        self.assertEqual(maintenance["anio"], 2024)
+        self.assertEqual(maintenance["importe_eur"], 1208409410)
+        self.assertEqual(maintenance["codigo_presupuestario"], "453C")
+        self.assertEqual(maintenance["cofog_referencia"], "04.5")
+        self.assertEqual(sum(p["importe_eur"] for p in maintenance["desglose"]), maintenance["importe_eur"])
+        self.assertIn("No son obligaciones reconocidas", maintenance["naturaleza_importe"])
+        self.assertIn("no a todas las carreteras del país", maintenance["descripcion"])
+        self.assertNotEqual(new_roads["codigo_presupuestario"], maintenance["codigo_presupuestario"])
+        self.assertEqual(new_roads["importe_eur"], 1593547100)
+
+    def test_road_maintenance_is_reachable_both_from_sankey_and_finder(self):
+        sankey = (ROOT / "app/components/public-finance-sankey.js").read_text(encoding="utf-8")
+        finder = (ROOT / "app/components/partidas-search.js").read_text(encoding="utf-8")
+        engine = (ROOT / "app/components/spending-query.js").read_text(encoding="utf-8")
+        self.assertIn('roadUrl.searchParams.set("q", "mantenimiento de carreteras")', sankey)
+        self.assertIn("Mantenimiento de carreteras · 453C", sankey)
+        self.assertIn('["programa","Programas presupuestarios"]', finder)
+        self.assertIn('programa:"Programa de los PGE"', finder)
+        self.assertIn('part.importe_eur/1000000', finder)
+        self.assertIn('Conservación y mantenimiento de carreteras', finder)
+        self.assertIn('carretera: "04.5"', engine)
+        self.assertIn('item.tipo === "programa" ? 195', engine)
 
     def test_search_is_reachable_from_all_pages(self):
         for name in ("index.md", "finanzas-publicas.md", "metodologia.md",
