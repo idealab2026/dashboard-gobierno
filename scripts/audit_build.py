@@ -12,6 +12,10 @@ if f.exists():
     html=f.read_text(encoding="utf-8")
     if "pf-explorer-host" not in html and "sankey" not in html.lower():
         errors.append("Falta contenedor del Sankey V2")
+# A logo and icon are required on every release, not merely in source.
+for name in ("logo-idea-lab.svg", "favicon.svg"):
+    if not (d / name).exists():
+        errors.append("Falta identidad corporativa: " + name)
 if not list(d.rglob("*.js")): errors.append("No se generó JavaScript interactivo")
 if not list(d.rglob("*.csv")): errors.append("No se generaron las fuentes CSV")
 markers=("mam"+"g97","ate"+"nea","litos"+"artesania","mayor"+"domo","idealab.research2026@gmail.com","1WQJdVDAdrUoWt1CK6A2zjWyHgZutQ4BA","1P3BRnEQ3f89GqF5c0PR0kIznDk5SseXtNaLiDarWxfs")
