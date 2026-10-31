@@ -3197,6 +3197,7 @@ const indicatorsToShow = preferredIds
 ```js
 import {PublicFinanceExplorer} from "./components/public-finance-sankey.js";
 import {AdministrationSankeys} from "./components/administration-sankeys.js";
+import {MinistryBudgetTree} from "./components/ministry-budget-tree.js";
 
 const spotlightFinanceRaw = await FileAttachment("./data/public-finance.csv").csv({typed:true});
 const spotlightSources = await FileAttachment("./data/public-finance-sources.csv").csv({typed:true});
@@ -3265,25 +3266,41 @@ function presentSelectedScope(mode,id){
   const data=mode==="ministries"?ministries:regions;
   const chosen=data.find(item=>String(item.id)===String(id));
   if(!chosen){presentNational();return;}
-  // El selector opuesto vuelve a «España · conjunto»; nunca fusionamos
-  // presupuestos ministeriales y gasto regional como si fueran el mismo dinero.
+  // Cada contabilidad conserva su universo: PGE por secciones e IGAE regional
+  // NO se mezclan con los recursos y empleos consolidados S.13.
   if(mode==="ministries")regionSelect.value="";
   else ministrySelect.value="";
-  const heading=mode==="ministries"?"Presupuesto por ministerio":"Gasto por comunidad autónoma";
+  const isMinistry=mode==="ministries";
+  const heading=isMinistry?"Presupuestos por ministerio":"Gasto por comunidad autónoma";
   scopeDesktopTitle.textContent=heading;
   scopeMobileTitle.textContent=heading;
-  scopeIntro.textContent=chosen.name+". "+chosen.year_label+
-    ". Selecciona una rama para consultar los programas o funciones oficiales. No es el desglose de ingresos del Estado español.";
-  scopeStatus.textContent=chosen.year_label+" · "+chosen.amount_kind;
+  scopeIntro.textContent=isMinistry
+    ? "Explora los 22 ministerios en el mismo Sankey. Pulsa uno para abrir sus áreas de gasto y programas hacia la derecha, sin perder el mapa completo. PGE 2025-P prorrogados para 2026: créditos presupuestarios, no gasto ejecutado."
+    : chosen.name+". "+chosen.year_label+
+      ". Selecciona una rama para consultar las funciones oficiales. No es el desglose de ingresos del Estado español.";
+  scopeStatus.textContent=isMinistry
+    ? "22 ministerios · PGE 2025-P · prorrogado para 2026"
+    : chosen.year_label+" · "+chosen.amount_kind;
   scopeCta.textContent="Ver análisis por administraciones";
-  scopeCta.href="/administraciones.html?tipo="+(mode==="ministries"?"ministerio":"ccaa")+
-    "&id="+encodeURIComponent(chosen.id);
-  yearBadge.querySelector("strong").textContent=mode==="ministries"?"2025-P":"2024";
-  yearBadge.querySelector("span").textContent=mode==="ministries"?
-    "PGE · presupuesto prorrogado":"IGAE · gasto regional COFOG";
-  sankeyHost.replaceChildren(AdministrationSankeys(administrationSankeyData,{
-    embedded:true,mode,selectedId:chosen.id
-  }));
+  const adminHref=(ministryId)=>"/administraciones.html?tipo=ministerio&id="+encodeURIComponent(ministryId);
+  scopeCta.href=isMinistry?adminHref(chosen.id):
+    "/administraciones.html?tipo=ccaa&id="+encodeURIComponent(chosen.id);
+  yearBadge.querySelector("strong").textContent=isMinistry?"2025-P":"2024";
+  yearBadge.querySelector("span").textContent=isMinistry
+    ?"PGE · presupuestos prorrogados":"IGAE · gasto regional COFOG";
+  sankeyHost.replaceChildren(isMinistry
+    ?MinistryBudgetTree(administrationSankeyData,{
+      selectedId:chosen.id,
+      onSelectMinistry:(nextId)=>{
+        // Mantener sincronizados el selector, la documentación y la rama activa
+        // sin desmontar el SVG ministerial cuando se cambia desde el propio árbol.
+        ministrySelect.value=String(nextId);
+        scopeCta.href=adminHref(nextId);
+      }
+    })
+    :AdministrationSankeys(administrationSankeyData,{
+      embedded:true,mode,selectedId:chosen.id
+    }));
 }
 function presentNational(){
   ministrySelect.value="";
