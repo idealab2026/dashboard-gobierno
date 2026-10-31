@@ -10,7 +10,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parent
-DEFAULT_DRAFT = ROOT / "drafts" / "2026-10-30-presentacion-sankey.json"
+DEFAULT_DRAFT = ROOT / "drafts" / "2026-10-31-midas-competicion-sintetica.json"
 
 
 def validate(draft: dict) -> tuple[str, int]:
@@ -21,7 +21,7 @@ def validate(draft: dict) -> tuple[str, int]:
     content = draft.get("text")
     if not isinstance(content, str) or not content.strip():
         raise ValueError("Texto vacío")
-    allowed_urls = {"https://idealab2026.github.io/dashboard-gobierno/#mapa-dinero", "https://idealab2026.github.io/"}
+    allowed_urls = {"https://idealab2026.github.io/dashboard-gobierno/#mapa-dinero", "https://idealab2026.github.io/", "https://idealab2026.github.io/laboratorio-cuantitativo/"}
     seen_urls = re.findall(r"https?://[^\s]+", content)
     if any(url not in allowed_urls for url in seen_urls):
         raise ValueError("Solo se permite el enlace público oficial al Sankey IDEA LAB")
