@@ -80,6 +80,14 @@ class BrandIdentityTests(unittest.TestCase):
                 self.assertIn('href="/"', nav)
                 self.assertIn("il-parent-brand" if wrapper == "il-header-identity" else "il-site-parent", nav)
 
+    def test_homepage_has_single_sankey_section_divider(self):
+        """Prevent the grey hero rule from reappearing beside the gold Sankey rule."""
+        home = (ROOT / "app" / "index.md").read_text(encoding="utf-8")
+        self.assertIn("border-top:3px solid #b89b5e", home)
+        self.assertRegex(home, r"\.hero\s*\{[^}]*border-bottom:\s*0")
+        self.assertIn(">Ver análisis completo</a>", home)
+        self.assertNotIn(">Ver análisis completo ↗</a>", home)
+
     def test_x_bio_fits_limit(self):
         content = (ROOT / "editorial" / "PERFIL_X.md").read_text(encoding="utf-8")
         result = re.search(r"^> (Somos el canal editorial de IDEA LAB\..+)$", content, flags=re.M)
