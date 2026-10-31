@@ -179,6 +179,7 @@ footer: IDEA LAB · Investigación, análisis y divulgación
       <a href="/#resumen">España en un minuto</a>
       <a href="/finanzas-publicas.html">Finanzas públicas</a>
       <a href="/buscador-partidas.html">Buscar partidas</a>
+    <a href="/administraciones.html">Administraciones</a>
       <a href="/#economia">Economía</a>
       <a href="/#empleo">Empleo</a>
       <a href="/#vivienda">Vivienda</a>
