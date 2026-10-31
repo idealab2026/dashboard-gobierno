@@ -708,7 +708,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     const boxH=56,rowGap=15;
     const maxCount=Math.max(1,...columns.map(column=>column.children.length));
     const height=Math.max(760,maxCount*(boxH+rowGap)+90);
-    const width=1320+Math.max(columns.length,1)*stageStride;
+    const width=1320+(Math.max(columns.length,1)+1)*stageStride;
     const scale=Math.max(1,chart.clientWidth/1320);
     svg.setAttribute("viewBox","0 0 "+width+" "+height);
     // Explicit physical width preserves the original node text dimensions
@@ -767,37 +767,64 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
         sourceX+stageStride*(columnIndex-1)+stageGap+nodeW;
 
       if(!children.length){
-        // There is no invented third-level figure. The branch terminates
-        // inside the SVG and links to separate documentary classifications.
-        const y=Math.max(52,Math.min(height-160,parentY-55));
-        const end=svgEl("g",{class:"pf-extension-end"});
-        end.append(svgEl("rect",{x,y,width:390,height:150,rx:10}));
-        const title=svgEl("text",{
-          x:x+13,y:y+26,class:"pf-extension-end-title"
-        });
-        title.textContent="ÚLTIMO NIVEL COFOG CUANTIFICADO";
-        end.append(title);
+        // A COFOG aggregate is not a terminal of the research graph.
+        // Continue horizontally into a CLEARLY DISTINCT documentary
+        // classification, never pretending its amounts add to the COFOG flow.
+        const relevant=relatedBudgetPrograms(parent.code,currentYear,options.relatedPrograms||[]);
+        const routeY=Math.max(70,Math.min(height-200,parentY-55));
+        const bridge=svgEl("g",{class:"pf-extension-end"});
+        bridge.append(svgEl("rect",{x,y:routeY,width:390,height:112,rx:9}));
+        const title=svgEl("text",{x:x+13,y:routeY+26,class:"pf-extension-end-title"});
+        title.textContent="CONTINUIDAD DOCUMENTAL · PGE";bridge.append(title);
         for(const [n,line] of [
-          "La IGAE no publica aquí más ramas",
-          "con importes propios verificables.",
-          "Programas y contratos: fuentes distintas."
+          "Otra clasificación y perímetro: sin flujo",
+          "monetario conciliado con COFOG."
         ].entries()){
-          const text=svgEl("text",{x:x+13,y:y+55+n*20});
-          text.textContent=line;end.append(text);
+          const t=svgEl("text",{x:x+13,y:routeY+54+n*21});
+          t.textContent=line;bridge.append(t);
         }
-        const anchor=svgEl("a",{
-          href:"buscador-partidas.html?cofog="+encodeURIComponent(parent.code)+
-            "&anio="+currentYear,
-          target:"_blank",rel:"noopener noreferrer"
-        });
-        const link=svgEl("text",{x:x+13,y:y+132});
-        link.textContent="Investigar partidas relacionadas →";
-        anchor.append(link);end.append(anchor);
+        const marker=svgEl("text",{x:x+13,y:routeY+100});
+        marker.textContent="Explora las ramas relacionadas a la derecha →";
+        bridge.append(marker);
         ribbons.append(svgEl("path",{
-          d:makeRibbon(incomingX,parentY,x,y+75,2),
+          d:makeRibbon(incomingX,parentY,x,routeY+56,2),
           class:"pf-extension-ribbon"
         }));
-        nodes.append(end);
+        nodes.append(bridge);
+        const nextX=x+stageStride;
+        const nextHeading=svgEl("text",{x:nextX,y:23,class:"pf-extension-heading"});
+        nextHeading.textContent="PROGRAMAS Y FUENTES · RELACIÓN TEMÁTICA";
+        nodes.append(nextHeading);
+        const choices=relevant.length ? relevant.slice(0,8).map(item=>({
+          title:item.titulo,year:item.anio,url:item.fuente_url,
+          subtitle:"PGE "+item.anio+" · importe no sumable al COFOG"
+        })) : [{
+          title:"Consultar programas presupuestarios",
+          subtitle:"Catálogo oficial · sin conciliación automática",
+          url:"buscador-partidas.html?cofog="+encodeURIComponent(parent.code)+"&anio="+currentYear
+        },{
+          title:"Buscar proyectos y contratos",
+          subtitle:"Contratación pública · clasificación diferente",
+          url:"https://contrataciondelestado.es/wps/portal/plataforma"
+        }];
+        const itemGap=13,itemH=68;
+        const top=Math.max(55,Math.min(height-choices.length*(itemH+itemGap)-35,
+          routeY+56-(choices.length*(itemH+itemGap)-itemGap)/2));
+        choices.forEach((item,i)=>{
+          const yy=top+i*(itemH+itemGap);
+          const link=svgEl("a",{href:item.url,target:"_blank",
+            rel:"noopener noreferrer", "aria-label":item.title+" · consultar fuente"});
+          const box=svgEl("g",{class:"pf-extension-node"});
+          box.append(svgEl("rect",{x:nextX,y:yy,width:nodeW,height:itemH,rx:8}));
+          const headline=svgEl("text",{x:nextX+12,y:yy+24,class:"pf-extension-label"});
+          headline.textContent=wrapText(item.title,43,1)[0]||item.title;
+          const sub=svgEl("text",{x:nextX+12,y:yy+48,class:"pf-extension-value"});
+          sub.textContent=item.subtitle;
+          box.append(headline,sub);link.append(box);nodes.append(link);
+          ribbons.append(svgEl("path",{d:makeRibbon(x+nodeW,routeY+56,nextX,yy+itemH/2,1.4),
+            class:"pf-extension-ribbon"}));
+        });
+        focusX=nextX;
         continue;
       }
 
