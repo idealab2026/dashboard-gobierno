@@ -353,7 +353,7 @@ body {
   background: rgba(255,255,255,.98); border-bottom: 1px solid #e2e8f0;
   box-shadow: 0 1px 5px rgba(11,36,71,.04);
 }
-.il-header-identity {display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:0;flex:none;}
+.il-header-identity {display:inline-flex;flex-direction:row;align-items:center;gap:10px;min-width:0;flex:none;white-space:nowrap;}
 .idealab-nav .idealab-brand {
   display:inline-flex;align-items:center;flex:none;
   color:#0b2447!important;font-family:Georgia,serif;
@@ -451,6 +451,23 @@ body {
   .il-parent-brand .idealab-brand-logo {width:68px;}
   .idealab-nav .idealab-nav-links .idealab-nav-priority {font-size:.68rem!important;padding-inline:7px;}
   .idealab-nav .idealab-nav-mobile > summary {padding-inline:8px;}
+}
+
+
+/* Identidad corporativa compacta: una única línea en todos los anchos. */
+@media (max-width:1100px) {
+  .il-header-identity, .il-site-identity {gap:6px;}
+  .il-parent-brand > span, .il-site-parent > span {display:none;}
+  .il-parent-brand .idealab-brand-logo, .il-site-parent .il-site-logo {
+    display:block;width:28px!important;height:28px!important;max-width:28px;
+    aspect-ratio:1!important;object-fit:cover!important;object-position:left center!important;
+  }
+}
+@media (max-width:390px) {
+  .il-header-identity, .il-site-identity {gap:4px;}
+  .idealab-nav .idealab-brand, .il-site-navigation .il-site-brand {font-size:.95rem!important;}
+  .idealab-nav .idealab-nav-links .idealab-nav-priority {font-size:.67rem!important;padding-inline:6px!important;}
+  .il-site-navigation .il-site-home {font-size:.70rem!important;padding-inline:7px!important;}
 }
 
 </style>
