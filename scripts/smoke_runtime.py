@@ -176,7 +176,7 @@ def main() -> None:
             search_dom = search_result.stdout
             checks_search = {
                 "Formulario de búsqueda": 'class="spending-finder"' in search_dom,
-                "Documentos oficiales indexados": 'class="sf-record"' in search_dom,
+                "Documentos oficiales indexados": ('class="sf-record sf-card-open"' in search_dom and 'class="sf-card-lineage"' in search_dom),
                 "Campo de texto": 'type="search"' in search_dom,
                 "Proyectos de AECID": "Prevención de la violencia" in search_dom,
             }
