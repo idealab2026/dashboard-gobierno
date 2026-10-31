@@ -319,12 +319,12 @@ def main() -> None:
                   "sin importes autonómicos","ad-subgroup")),
                 ("?tipo=ccaa&id=10&nivel=subfuncion&codigo=07.3","terminal","07.3",
                  ("Extremadura","Importe territorial no disponible",
-                  "La serie autonómica COFOG 2024","Presupuestos autonómicos")),
+                  "La serie autonómica COFOG 2024","presupuestos y programas autonómicos")),
                 ("?tipo=ministerio&id=17&nivel=area&codigo=4","detalle","4",
                  ("Transportes y Movilidad Sostenible","programa presupuestario real","Vista general")),
                 ("?tipo=ministerio&id=17&nivel=programa&codigo=453C","terminal","453C",
                  ("Crédito presupuestario del programa","No son pagos ni obligaciones reconocidas",
-                  "Fuente original"))
+                  "Consultar tabla ministerial en Hacienda"))
             ]:
                 deep_url=f"http://127.0.0.1:{server.server_port}/{BASE}/administraciones.html"+query
                 browser=subprocess.run(
@@ -340,6 +340,19 @@ def main() -> None:
                 if ('data-drill-level="'+expected_level+'"' not in page or
                     'data-drill-code="'+expected_code+'"' not in page):
                     raise AssertionError("No avanzó la jerarquía "+query)
+                # A drill must preserve the entire source Sankey SVG. The
+                # previous implementation destroyed it and rendered only a
+                # standalone terminal card beneath the original position.
+                if ('class="ad-flow"' not in page or
+                    'class="ad-stage is-drilling"' not in page or
+                    'class="ad-drill-panel"' not in page or
+                    'class="ad-drill-body"' not in page):
+                    raise AssertionError("Sankey original desapareció al profundizar "+query)
+                import re as _re
+                branches = _re.findall(r'class="ad-branch"',page)
+                min_branches = 10 if "tipo=ccaa" in query else 3
+                if len(branches)<min_branches:
+                    raise AssertionError("Ramas originales perdidas "+query)
                 if "RuntimeError:" in page:
                     raise AssertionError("Error Observable en nivel "+query)
                 print("Desglose de administración validado:",query)
