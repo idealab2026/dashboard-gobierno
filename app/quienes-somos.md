@@ -176,7 +176,7 @@ footer: IDEA LAB · Investigación, análisis y divulgación
     <summary aria-label="Abrir menú del observatorio">Menú ☰</summary>
     <div class="il-site-menu-links">
       <a href="/">Inicio</a>
-      <a href="/#resumen">Indicadores</a>
+      <a href="/#resumen">España en un minuto</a>
       <a href="/finanzas-publicas.html">Finanzas públicas</a>
       <a href="/#economia">Economía</a>
       <a href="/#empleo">Empleo</a>
