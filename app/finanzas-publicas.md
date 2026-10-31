@@ -397,7 +397,8 @@ body {
   min-width:178px;display:grid;gap:2px;padding:8px;background:#fff;
   border:1px solid #dce3eb;border-radius:10px;box-shadow:0 14px 32px rgba(11,36,71,.13);
 }
-.idealab-nav .idealab-nav-areas-panel {left:0;}
+.idealab-nav .idealab-nav-areas-panel {left:0;min-width:218px;}
+.idealab-nav .idealab-nav-areas-panel .il-areas-overview {font-weight:800!important;color:#0b2447!important;border-bottom:1px solid #e2e8f0;border-radius:0;padding-bottom:11px;margin-bottom:3px;}
 .idealab-nav .il-nav-more-panel {right:0;}
 .idealab-nav :is(.idealab-nav-areas-panel,.il-nav-more-panel) a {
   display:block;padding:9px 10px;min-height:20px;border-radius:6px;white-space:nowrap;
@@ -490,10 +491,10 @@ body {
   </div>
   <div class="idealab-nav-links">
     <a class="idealab-nav-priority" href="/#mapa-dinero">Mapa del dinero</a>
-    <a href="/#resumen">Indicadores</a>
     <details class="idealab-nav-areas">
       <summary>Áreas temáticas</summary>
       <div class="idealab-nav-areas-panel">
+        <a class="il-areas-overview" href="/#resumen">España en un minuto</a>
         <a href="/#economia">Economía</a>
         <a href="/#empleo">Empleo</a>
         <a href="/#vivienda">Vivienda</a>
@@ -519,9 +520,9 @@ body {
     <div class="idealab-nav-mobile-panel">
       <a href="/">Inicio</a>
       <a href="/#mapa-dinero">Mapa del dinero</a>
-      <a href="/#resumen">Indicadores</a>
       <a href="/finanzas-publicas.html" aria-current="page">Finanzas públicas</a>
       <div class="idealab-nav-mobile-heading">Áreas temáticas</div>
+      <a class="il-areas-overview" href="/#resumen">España en un minuto</a>
       <a href="/#economia">Economía</a>
       <a href="/#empleo">Empleo</a>
       <a href="/#vivienda">Vivienda</a>
