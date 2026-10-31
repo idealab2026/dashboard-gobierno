@@ -252,7 +252,10 @@ def main() -> None:
             hospital_dom=hospital.stdout
             for required in (
                 'class="sf-lineage-list"',
-                "Linaje de las partidas encontradas",
+                'class="sf-record"',
+                'class="sf-record-top"',
+                'class="sf-lineage-list"',
+                'open=""',
                 'id="linaje-07-3"',
                 "07 · Salud",
                 "07.3 · Servicios hospitalarios",
@@ -262,17 +265,17 @@ def main() -> None:
                 "07.3.2",
                 "07.3.3",
                 "07.3.4",
-                "Clase COFOG · importe no publicado",
+                "Subcategorías (4) · sin importe desglosado",
                 './?detalle-cofog=07.3#mapa-dinero',
                 './?detalle-cofog=07.3.1#mapa-dinero',
-                "Explorar esta ruta en el Sankey"
+                "Ver en Sankey"
             ):
                 if required not in hospital_dom:
                     raise AssertionError(
                         "El linaje hospitalario no aparece en el buscador: "+required)
             if "RuntimeError:" in hospital_dom:
                 raise AssertionError("RuntimeError en linaje hospitalario")
-            print("Linaje de búsqueda hospital verificado: S.13 → 07 → 07.3 → 4 clases sin cuantía")
+            if 'class="sf-lineage-card"' in hospital_dom:\n                raise AssertionError("La vista compacta no debe duplicar resultado y linaje en dos tarjetas")\n            if 'class="sf-sources-details"' not in hospital_dom:\n                raise AssertionError("Fuentes extensas deben estar disponibles en detalles plegables")\n            print("Resultado hospital compactado: ficha única, S.13 → 07 → 07.3 y 4 clases")
 
             # Road maintenance query must lead to an actual 453C State Budget
             # program, never to a fabricated execution figure from COFOG 04.5.
