@@ -18,9 +18,7 @@ export const COFOG_ALIASES = Object.freeze({
   colegio: "09", ensenanza: "09", escuelas: "09", escuela: "09",
   universidad: "09.4", universidades: "09.4",
   vivienda: "06", viviendas: "06",
-  defensa: "02", militar: "02",
-  pensiones: "10", pension: "10",
-  desempleo: "10", paro: "10"
+  defensa: "02", militar: "02"
 });
 const STOP_WORDS = new Set([
   "de", "del", "la", "el", "los", "las", "en", "a", "al", "y", "o", "por",
