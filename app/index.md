@@ -1554,15 +1554,137 @@ html {
   .il-public-finance-pair .is-tax-table td:nth-child(2) { white-space: normal; overflow-wrap: anywhere; }
 }
 
+
+/* Cabecera V3: producto primero, afiliación corporativa única y menús compactos. */
+.idealab-nav {
+  position: sticky; top: 0; z-index: 1100;
+  display: flex; flex-direction: row; align-items: center; justify-content: space-between;
+  flex-wrap: nowrap; gap: 18px; min-height: 66px; padding: 10px 14px;
+  background: rgba(255,255,255,.98); border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 5px rgba(11,36,71,.04);
+}
+.il-header-identity {display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:0;flex:none;}
+.idealab-nav .idealab-brand {
+  display:inline-flex;align-items:center;flex:none;
+  color:#0b2447!important;font-family:Georgia,serif;
+  font-weight:800;letter-spacing:-.025em;font-size:clamp(1.06rem,1.35vw,1.28rem);
+  white-space:nowrap;text-decoration:none!important;line-height:1.1;
+}
+.il-parent-brand {
+  display:inline-flex;align-items:center;gap:5px;max-width:100%;
+  color:#607189!important;text-decoration:none!important;
+  font-family:system-ui,-apple-system,sans-serif;font-size:.67rem;
+  font-weight:600;letter-spacing:0;line-height:1.2;
+}
+.il-parent-brand span {white-space:nowrap;}
+.il-parent-brand .idealab-brand-logo {
+  width:72px;height:auto;max-width:72px;aspect-ratio:660/156;
+}
+.il-parent-brand:hover {color:#0b2447!important;}
+.idealab-nav .idealab-nav-links {
+  min-width:0;width:auto;flex:1;display:flex;align-items:center;justify-content:flex-end;
+  gap:clamp(8px,1.15vw,18px);flex-wrap:nowrap;overflow:visible;
+  white-space:nowrap;padding:0;
+}
+.idealab-nav .idealab-nav-links > a,
+.idealab-nav .idealab-nav-links > details > summary {
+  color:#44566d!important;text-decoration:none!important;font-family:system-ui,-apple-system,sans-serif;
+  font-size:.80rem;font-weight:650;line-height:1.3;white-space:nowrap;
+}
+.idealab-nav .idealab-nav-links > a:hover,
+.idealab-nav .idealab-nav-links > details > summary:hover {color:#0b2447!important;}
+.idealab-nav .idealab-nav-links .idealab-nav-priority {color:#0b2447!important;font-weight:750!important;}
+.idealab-nav .idealab-nav-links a.is-active {color:#0b2447!important;font-weight:800!important;}
+.idealab-nav :is(.idealab-nav-areas,.il-nav-more) {position:relative;font-family:system-ui,-apple-system,sans-serif;}
+.idealab-nav :is(.idealab-nav-areas,.il-nav-more) > summary {
+  list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:4px;min-height:32px;
+}
+.idealab-nav :is(.idealab-nav-areas,.il-nav-more) > summary::-webkit-details-marker {display:none;}
+.idealab-nav :is(.idealab-nav-areas,.il-nav-more) > summary::after {content:"▾";font-size:.7rem;color:#718096;}
+.idealab-nav :is(.idealab-nav-areas,.il-nav-more)[open] > summary::after {content:"▴";}
+.idealab-nav :is(.idealab-nav-areas-panel,.il-nav-more-panel) {
+  position:absolute;top:calc(100% + 10px);z-index:1200;
+  min-width:178px;display:grid;gap:2px;padding:8px;background:#fff;
+  border:1px solid #dce3eb;border-radius:10px;box-shadow:0 14px 32px rgba(11,36,71,.13);
+}
+.idealab-nav .idealab-nav-areas-panel {left:0;}
+.idealab-nav .il-nav-more-panel {right:0;}
+.idealab-nav :is(.idealab-nav-areas-panel,.il-nav-more-panel) a {
+  display:block;padding:9px 10px;min-height:20px;border-radius:6px;white-space:nowrap;
+  font-size:.79rem!important;font-weight:600!important;color:#314863!important;text-decoration:none!important;
+}
+.idealab-nav :is(.idealab-nav-areas-panel,.il-nav-more-panel) a:hover {background:#f3f6f9;}
+.idealab-nav a:focus-visible,
+.idealab-nav summary:focus-visible {outline:2px solid #b89b5e;outline-offset:3px;}
+@media (max-width:1100px) {
+  .idealab-nav {
+    position:sticky!important;display:flex!important;flex-direction:row!important;
+    align-items:center!important;justify-content:space-between!important;flex-wrap:nowrap!important;
+    gap:7px!important;min-height:56px!important;padding:7px 9px!important;
+  }
+  .idealab-nav .idealab-nav-links {display:contents!important;}
+  .idealab-nav .idealab-nav-links > :not(.idealab-nav-priority) {display:none!important;}
+  .idealab-nav .idealab-nav-links .idealab-nav-priority {
+    display:inline-flex!important;flex:none;align-items:center;justify-content:center;
+    min-height:38px;margin-left:auto;padding:0 9px;border-radius:8px;
+    border:1px solid #dbe3ec;background:#f7f9fc;
+    font-size:.72rem!important;font-weight:750!important;
+  }
+  .idealab-nav .idealab-nav-mobile {display:block!important;position:relative;flex:none;}
+  .idealab-nav .idealab-nav-mobile > summary {
+    display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 11px;
+    list-style:none;cursor:pointer;border-radius:8px;background:#0b2447;
+    color:#fff;font-family:system-ui,-apple-system,sans-serif;font-size:.78rem;font-weight:700;
+  }
+  .idealab-nav .idealab-nav-mobile > summary::-webkit-details-marker {display:none;}
+  .idealab-nav .idealab-nav-mobile-panel {
+    position:absolute;right:0;top:calc(100% + 9px);z-index:1500;
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 5px;
+    width:min(320px,calc(100vw - 25px));max-height:calc(100dvh - 75px);
+    overflow:auto;overscroll-behavior:contain;background:white;
+    border:1px solid #dce3eb;border-radius:11px;padding:10px;
+    box-shadow:0 16px 32px rgba(11,36,71,.18);
+  }
+  .idealab-nav .idealab-nav-mobile-panel a {
+    display:flex;align-items:center;min-height:38px;padding:8px 9px;
+    font-family:system-ui,-apple-system,sans-serif;font-size:.78rem;
+    border-radius:7px;color:#203c5b!important;text-decoration:none!important;
+    overflow-wrap:anywhere;
+  }
+  .idealab-nav .idealab-nav-mobile-panel a:hover {background:#f3f6f9;}
+  .idealab-nav .idealab-nav-mobile-heading {grid-column:1/-1;}
+  .il-parent-brand .idealab-brand-logo {width:67px;}
+}
+@media (max-width:380px) {
+  .idealab-nav .idealab-brand {font-size:.99rem!important;}
+  .il-parent-brand span {display:none;}
+  .il-parent-brand .idealab-brand-logo {width:68px;}
+  .idealab-nav .idealab-nav-links .idealab-nav-priority {font-size:.68rem!important;padding-inline:7px;}
+  .idealab-nav .idealab-nav-mobile > summary {padding-inline:8px;}
+}
+
+
+/* Portada editorial: prioridad al título, explicación breve y un CTA. */
+@media (min-width:769px) {
+  .hero {padding:18px 0 12px;margin-bottom:12px;}
+  .hero h1 {margin:7px 0 10px;font-size:clamp(2.7rem,4.2vw,4rem);}
+  .hero-subtitle {max-width:90ch!important;font-size:1rem;line-height:1.5;}
+  .hero-actions {margin-top:15px;}
+  .hero-actions a {font-family:system-ui,-apple-system,sans-serif;font-size:.84rem;}
+  .hero-meta {margin-top:8px;}
+}
+
 </style>
 
-<nav class="idealab-nav" aria-label="Navegación del observatorio España en Datos">
-  <a class="idealab-brand" href="https://idealab2026.github.io/" aria-label="Visitar la web corporativa de IDEA LAB">
-    <img class="idealab-brand-logo" src="./logo-idea-lab.svg" alt="IDEA LAB" width="154" height="37" />
-    <span class="idealab-brand-product">· España en Datos</span>
-  </a>
+
+<nav class="idealab-nav" aria-label="Navegación de España en Datos">
+  <div class="il-header-identity">
+    <a class="idealab-brand" href="/" aria-label="España en Datos, inicio">España en Datos</a>
+    <a class="il-parent-brand" href="https://idealab2026.github.io/" aria-label="UN PRODUCTO DE IDEA LAB · Visitar la web corporativa">
+      <span>Un producto de</span><img class="idealab-brand-logo" src="./logo-idea-lab.svg" alt="IDEA LAB" width="72" height="17" />
+    </a>
+  </div>
   <div class="idealab-nav-links">
-    <a href="/" class="il-nav-start">Inicio</a>
     <a class="idealab-nav-priority" href="#mapa-dinero">Mapa del dinero</a>
     <a href="#resumen">Indicadores</a>
     <details class="idealab-nav-areas">
@@ -1578,11 +1700,15 @@ html {
       </div>
     </details>
     <a href="/finanzas-publicas.html">Finanzas públicas</a>
-    <a href="/metodologia.html">Metodología</a>
-    <a href="/actualizaciones.html">Actualización</a>
-    <a href="/quienes-somos.html">Quiénes somos</a>
-      <a href="https://idealab2026.github.io/" aria-label="Web corporativa de IDEA LAB">IDEA LAB ↗</a>
-    <a class="idealab-nav-x" href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer" aria-label="Canal editorial de IDEA LAB en X">En X</a>
+    <details class="il-nav-more">
+      <summary>Más</summary>
+      <div class="il-nav-more-panel">
+        <a href="/metodologia.html">Metodología</a>
+        <a href="/actualizaciones.html">Actualizaciones</a>
+        <a href="/quienes-somos.html">Quiénes somos</a>
+        <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">Canal en X ↗</a>
+      </div>
+    </details>
   </div>
   <details class="idealab-nav-mobile">
     <summary aria-label="Abrir menú de navegación">Menú <span aria-hidden="true">☰</span></summary>
@@ -1590,21 +1716,20 @@ html {
       <a href="/">Inicio</a>
       <a href="#mapa-dinero">Mapa del dinero</a>
       <a href="#resumen">Indicadores</a>
+      <a href="/finanzas-publicas.html">Finanzas públicas</a>
       <div class="idealab-nav-mobile-heading">Áreas temáticas</div>
       <a href="#economia">Economía</a>
       <a href="#empleo">Empleo</a>
       <a href="#vivienda">Vivienda</a>
       <a href="#estado">Sector público</a>
-      <a href="#pensiones">Pensiones y demografía</a>
+      <a href="#pensiones">Pensiones</a>
       <a href="#sociedad">Sociedad</a>
       <a href="#mundo">Mundo</a>
-      <div class="idealab-nav-mobile-heading">Observatorio</div>
-      <a href="/finanzas-publicas.html">Finanzas públicas</a>
+      <div class="idealab-nav-mobile-heading">Más información</div>
       <a href="/metodologia.html">Metodología</a>
-      <a href="/actualizaciones.html">Actualización</a>
+      <a href="/actualizaciones.html">Actualizaciones</a>
       <a href="/quienes-somos.html">Quiénes somos</a>
-      <a href="https://idealab2026.github.io/" aria-label="Web corporativa de IDEA LAB">IDEA LAB ↗</a>
-      <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">En X ↗</a>
+      <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">Canal en X ↗</a>
     </div>
   </details>
 </nav>
@@ -2808,15 +2933,13 @@ const indicatorCount = availableIndicators.length;
 
 
 <div id="inicio" class="hero">
-  <div class="hero-kicker"><a href="https://idealab2026.github.io/" style="color:inherit;text-decoration:underline;text-underline-offset:4px">UN PRODUCTO DE IDEA LAB ↗</a></div>
+  <div class="hero-kicker">Observatorio económico, social e institucional</div>
   <h1>España en Datos</h1>
   <div class="hero-subtitle">
-    <span class="il-hero-long">Nuestro observatorio económico, social e institucional de España. Reunimos, contrastamos y visualizamos datos de fuentes oficiales para ofrecer una mirada rigurosa y comprensible de la realidad.</span><span class="il-hero-short">Economía, sociedad y sector público de España con datos de fuentes oficiales.</span>
+    <span class="il-hero-long">Nuestro observatorio económico, social e institucional reúne y visualiza información de fuentes oficiales para comprender la realidad de España.</span><span class="il-hero-short">Datos oficiales para comprender la economía y la sociedad españolas.</span>
   </div>
   <div class="hero-actions">
     <a href="#mapa-dinero">Explorar el mapa del dinero</a>
-    <a href="/quienes-somos.html">Quiénes somos</a>
-      <a href="https://idealab2026.github.io/" aria-label="Web corporativa de IDEA LAB">IDEA LAB ↗</a>
   </div>
 </div>
 
