@@ -3041,7 +3041,9 @@ const spotlightSankey = PublicFinanceExplorer(
   {year:spotlightYears[0]}
 );
 display(spotlightSankey);
+```
 
+```js
 // 1. Imprimimos el título y la descripción arriba de todo (ocupando el ancho completo)
 const header = document.createElement("div");
 header.id = "resumen";
@@ -3106,7 +3108,9 @@ seccionContainer.append(columnaAnalisis);
 
 // Mostramos el bloque de dos columnas
 display(seccionContainer);
+```
 
+```js
 const financePair = document.createElement("div");
 financePair.className = "il-public-finance-pair";
 financePair.setAttribute("aria-label", "Desglose de gasto público e impuestos");
