@@ -321,7 +321,7 @@ def main() -> None:
                  ("Extremadura","Importe territorial no disponible",
                   "La serie autonómica COFOG 2024","Presupuestos autonómicos")),
                 ("?tipo=ministerio&id=17&nivel=area&codigo=4","detalle","4",
-                 ("Transportes y Movilidad Sostenible","Programas","Volver")),
+                 ("Transportes y Movilidad Sostenible","programa presupuestario real","Vista general")),
                 ("?tipo=ministerio&id=17&nivel=programa&codigo=453C","terminal","453C",
                  ("Crédito presupuestario del programa","No son pagos ni obligaciones reconocidas",
                   "Fuente original"))
