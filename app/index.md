@@ -1580,12 +1580,6 @@ if (idealabMobileMenu) {
 }
 ```
 
-<div class="il-data-notice" role="note"><strong>Datos históricos.</strong> Algunas series están en revisión o excluidas por metadatos ambiguos. <a href="/metodologia.html">Fuentes y límites</a>.</div>
-<details class="il-mobile-data-disclosure">
-  <summary><span aria-hidden="true">ⓘ</span> Datos históricos · Alcance y fuentes</summary>
-  <p>Algunas series están en revisión o excluidas por metadatos ambiguos. Los años y estados de cada indicador se indican en su ficha. <a href="/metodologia.html">Consultar metodología y limitaciones</a>.</p>
-</details>
-
 ```js
 import {KpiCard} from "./components/kpi-card.js";
 
