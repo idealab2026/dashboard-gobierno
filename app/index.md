@@ -1517,8 +1517,8 @@ html {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 14px;
-  align-items: stretch;
-  margin: 12px 0 18px;
+  align-items: start;
+  margin: 12px 0 10px;
   width: 100%;
   min-width: 0;
 }
@@ -1689,6 +1689,14 @@ html {
   .idealab-nav .idealab-brand, .il-site-navigation .il-site-brand {font-size:.95rem!important;}
   .idealab-nav .idealab-nav-links .idealab-nav-priority {font-size:.67rem!important;padding-inline:6px!important;}
   .il-site-navigation .il-site-home {font-size:.70rem!important;padding-inline:7px!important;}
+}
+
+
+/* Contrato de alineación: tablas, nota de fuentes e indicadores parten del mismo eje. */
+.il-public-finance-section {width:100%;max-width:none;min-width:0;margin:0;padding:0;box-sizing:border-box;}
+.il-public-finance-section > .il-spotlight-footnote {
+  display:block;width:100%;max-width:none;box-sizing:border-box;
+  margin:0 0 1rem;padding:0;
 }
 
 </style>
@@ -3090,10 +3098,30 @@ if(highlightedTaxes.length) {
   table.append(tbody);panel.append(table);financePair.append(panel);
 }
 if (financePair.children.length === 1) financePair.classList.add("is-single");
-display(financePair);
-```
 
-<div class="il-spotlight-footnote">La necesidad de financiación (déficit) se representa separada de los ingresos no financieros. <a href="/metodologia.html">Consulta las limitaciones</a> y <a href="/actualizaciones.html">las fechas de actualización</a>.</div>
+// La nota comparte exactamente el mismo contenedor horizontal que las tablas.
+// Antes se renderizaba como HTML suelto y aparecía desplazada a la izquierda.
+const financeSection = document.createElement("div");
+financeSection.className = "il-public-finance-section";
+financeSection.append(financePair);
+const financeNote = document.createElement("p");
+financeNote.className = "il-spotlight-footnote";
+const methodologyLink = document.createElement("a");
+methodologyLink.href = "/metodologia.html";
+methodologyLink.textContent = "Consulta las limitaciones";
+const updatesLink = document.createElement("a");
+updatesLink.href = "/actualizaciones.html";
+updatesLink.textContent = "las fechas de actualización";
+financeNote.append(
+  "La necesidad de financiación (déficit) se representa separada de los ingresos no financieros. ",
+  methodologyLink,
+  " y ",
+  updatesLink,
+  "."
+);
+financeSection.append(financeNote);
+display(financeSection);
+```
 
 ```js
 // 1. Imprimimos el título y la descripción arriba de todo (ocupando el ancho completo)
