@@ -536,7 +536,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     if (!hasChildren) {
       const terminal = htmlEl("p", "pf-drill-terminal");
       const code = text(row.code);
-      const isGroup = /^\\d{2}\\.\\d/.test(code);
+      const isGroup = /^\d{2}\.\d/.test(code);
       terminal.textContent = isGroup
         ? `Fin del desglose numérico COFOG para ${code} en la serie IGAE ${currentYear}. España no publica de forma general un tercer nivel COFOG por clases. Para llegar a programas, capítulos, proyectos o pagos hay que cambiar a la fuente presupuestaria correspondiente; no se distribuye artificialmente el importe de esta función.`
         : `No hay más subpartidas cuantificadas para este código en el conjunto cargado (${currentYear}). Puedes continuar por otras fuentes oficiales sin inventar una relación numérica.`;
@@ -603,7 +603,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
         const a = document.createElement("a");
         if (url.startsWith("/buscador-partidas.html")) {
           const target = new URL("buscador-partidas.html", window.location.href);
-          if (/^\\d{2}(?:\\.\\d+)?$/.test(String(row.code))) {
+          if (/^\d{2}(?:\.\d+)?$/.test(String(row.code))) {
             target.searchParams.set("cofog",String(row.code));
             target.searchParams.set("anio",String(currentYear));
           }
