@@ -124,6 +124,18 @@ def main() -> None:
                 raise AssertionError(f"Chrome no ejecuta consulta: {filtered.stderr[-1200:]}")
             filtered_dom = filtered.stdout
             if "Empleo y resiliencia para mujeres migrantes" not in filtered_dom:
+                import re as _re
+                result_header = _re.search(
+                    r'<div class="sf-summary"[^>]*>(.{0,1200})</div>',
+                    filtered_dom, _re.DOTALL
+                )
+                print("DIAGNÓSTICO Honduras:", {
+                    "dom_chars": len(filtered_dom),
+                    "summary": result_header.group(1)[:850] if result_header else "(ninguno)",
+                    "honduras_occurrences": filtered_dom.lower().count("honduras"),
+                    "empty_state": "Sin coincidencias en el índice disponible" in filtered_dom,
+                    "runtime_error": "RuntimeError:" in filtered_dom,
+                })
                 raise AssertionError("El filtro enviado desde portada no encuentra Honduras")
             if "RuntimeError:" in filtered_dom:
                 raise AssertionError("Error Observable al abrir consulta prefiltrada")
