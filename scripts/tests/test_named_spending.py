@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[2]
 ALLOWED = {
-    "datos.aecid.es", "www.boe.es", "boe.es",
+    "datos.aecid.es", "www.boe.es", "boe.es", "www.sepg.pap.hacienda.gob.es",
 }
 
 
