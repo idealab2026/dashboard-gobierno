@@ -83,22 +83,60 @@ toc: false
 .il-site-logo {display:block; width:clamp(122px,12vw,158px); height:auto; aspect-ratio:660/156; object-fit:contain;}
 @media(max-width:768px){.il-site-logo{width:118px;}}
 
+
+/* Misma jerarquía corporativa en todas las páginas informativas. */
+.il-site-navigation {
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;
+  min-height:64px;gap:10px;padding:8px 12px;
+  font-family:system-ui,-apple-system,sans-serif;
+}
+.il-site-identity {display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;}
+.il-site-navigation .il-site-brand {
+  display:inline-flex;font:800 clamp(1.05rem,1.4vw,1.28rem)/1.14 Georgia,serif;
+  letter-spacing:-.025em;white-space:nowrap;color:#0b2447;
+}
+.il-site-parent {display:inline-flex;align-items:center;gap:5px;font-size:.67rem;
+  color:#607189!important;font-weight:600;line-height:1.1;white-space:nowrap;}
+.il-site-parent .il-site-logo {display:block;width:72px;height:auto;aspect-ratio:660/156;}
+.il-site-navigation .il-site-home {font-size:.79rem;margin-left:auto;
+  white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;}
+.il-site-navigation .il-site-menu {flex:none;}
+.il-site-navigation .il-site-menu > summary {font-family:system-ui,-apple-system,sans-serif;}
+.il-site-navigation a:focus-visible,.il-site-navigation summary:focus-visible {outline:2px solid #b89b5e;outline-offset:3px;}
+@media (max-width:380px) {
+ .il-site-navigation .il-site-brand {font-size:1rem;}
+ .il-site-parent span {display:none;}
+ .il-site-navigation .il-site-home {padding-inline:7px;font-size:.71rem;}
+ .il-site-navigation .il-site-menu>summary {padding-inline:8px;font-size:.73rem;}
+}
+
 </style>
 
 <nav class="il-site-navigation" aria-label="Navegación del observatorio">
-  <a class="il-site-brand" href="https://idealab2026.github.io/" aria-label="IDEA LAB · Volver al inicio"><img class="il-site-logo" src="./logo-idea-lab.svg" alt="IDEA LAB" width="146" height="35" /></a>
-  <a class="il-site-home" href="/">← Inicio</a>
+  <div class="il-site-identity">
+    <a class="il-site-brand" href="/" aria-label="España en Datos, inicio">España en Datos</a>
+    <a class="il-site-parent" href="https://idealab2026.github.io/" aria-label="IDEA LAB · Web corporativa">
+      <span>Un producto de</span><img class="il-site-logo" src="./logo-idea-lab.svg" alt="IDEA LAB" width="72" height="17" />
+    </a>
+  </div>
+  <a class="il-site-home" href="/#mapa-dinero">Mapa del dinero</a>
   <details class="il-site-menu">
     <summary aria-label="Abrir menú del observatorio">Menú ☰</summary>
     <div class="il-site-menu-links">
       <a href="/">Inicio</a>
-      <a href="/#mapa-dinero">Mapa del dinero</a>
       <a href="/#resumen">Indicadores</a>
       <a href="/finanzas-publicas.html">Finanzas públicas</a>
-      <a href="/actualizaciones.html">Actualización</a>
+      <a href="/#economia">Economía</a>
+      <a href="/#empleo">Empleo</a>
+      <a href="/#vivienda">Vivienda</a>
+      <a href="/#estado">Sector público</a>
+      <a href="/#pensiones">Pensiones</a>
+      <a href="/#sociedad">Sociedad</a>
+      <a href="/#mundo">Mundo</a>
       <a href="/metodologia.html">Metodología</a>
+      <a href="/actualizaciones.html">Actualizaciones</a>
       <a href="/quienes-somos.html">Quiénes somos</a>
-      <a href="https://idealab2026.github.io/" aria-label="Web corporativa de IDEA LAB">IDEA LAB ↗</a>
+      <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">Canal en X ↗</a>
     </div>
   </details>
 </nav>
