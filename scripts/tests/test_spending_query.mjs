@@ -7,6 +7,7 @@ import {OFFICIAL_DRILL_ROUTES, relatedBudgetPrograms} from "../../app/components
 import {canonicalFinanceCode} from "../../app/components/finance-code.js";
 import {COFOG_STRUCTURE,cofogsBelow} from "../../app/components/cofog-structure.js";
 import {OFFICIAL_BUDGET_PROGRAMS,matchingBudgetPrograms} from "../../app/components/official-budget-catalog.js";
+import {spendingLineage,sankeyDeepLink,relatedProgramLineage} from "../../app/components/spending-lineage.js";
 import {compareFinanceCodes,sortedFinanceChildren,financeExpansionPath,financeExpansionColumns} from "../../app/components/finance-hierarchy.js";
 
 const source = readFileSync(new URL("../../app/data/seed/fact_finanzas_publicas_2024.csv", import.meta.url), "utf8").replace(/^\uFEFF/, "");
@@ -209,4 +210,43 @@ test("programs match the full transport tree, including ALL modes without a manu
     mode+" "+expected);
  assert.ok(!matchingBudgetPrograms("07.3",2024).length,
   "do not fabricate PGE links in Health");
+});
+
+test("search hospital shows verifiable COFOG ancestry and all four hospital classes, not invented amounts",()=>{
+ const found=searchSpendingRecords(items,"hospital");
+ assert.equal(found.length,1);
+ assert.equal(found[0].cofog_codigo,"07.3");
+ const lineage=spendingLineage(found[0],items);
+ assert.deepEqual(lineage.steps.map(n=>n.code),["S13.GASTO","07","07.3"]);
+ assert.equal(lineage.steps[1].amount_mill_eur,102942);
+ assert.equal(lineage.steps[2].amount_mill_eur,43650);
+ assert.deepEqual(lineage.descendants.map(n=>n.code),
+  ["07.3.1","07.3.2","07.3.3","07.3.4"]);
+ assert.ok(lineage.descendants.every(n=>n.amount_mill_eur===null));
+ assert.equal(lineage.href,"./?detalle-cofog=07.3#mapa-dinero");
+ assert.equal(lineage.descendants[0].href,"./?detalle-cofog=07.3.1#mapa-dinero");
+});
+test("other function searches have their own real lineage rather than hardcoded hospital branches",()=>{
+ for(const code of ["04.5","09.1","10.2","07.2"]){
+  const record=items.find(r=>r.cofog_codigo===code);
+  if(!record)continue; // verified taxonomy groups missing in this IGAE extract
+  const lineage=spendingLineage(record,items);
+  assert.equal(lineage.code,code);
+  assert.ok(lineage.steps.at(-1).code===code);
+  assert.ok(lineage.steps.some(n=>n.code===code.slice(0,2)));
+  assert.ok(lineage.descendants.every(n=>n.href?.includes("detalle-cofog")));
+ }
+ assert.equal(sankeyDeepLink("abc"),null);
+ assert.equal(spendingLineage({tipo:"intervencion",cofog_codigo:"07.3"},items),null);
+});
+test("PGE thematic cross-reference is NEVER presented as an audited IGAE budget flow",()=>{
+ const related=relatedProgramLineage({
+   tipo:"programa",cofog_referencia:"04.5.1",anio:2024,
+   importe_eur:1208409410
+ },items);
+ assert.equal(related.code,"04.5.1");
+ assert.match(related.relation,/temática/);
+ assert.match(related.caution,/no constituye una porción comprobada/);
+ assert.equal(related.steps.at(-1).amount_mill_eur,null);
+ assert.equal(relatedProgramLineage({tipo:"programa"},items),null);
 });
