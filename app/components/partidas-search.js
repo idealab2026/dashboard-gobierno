@@ -1,5 +1,6 @@
 /* Buscador público de gastos verificables. Sin dependencias ni telemetría. */
-const fold = value => String(value ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+import {searchSpendingRecords, normalizeSpending} from "./spending-query.js";
+const fold = normalizeSpending;
 const euro = new Intl.NumberFormat("es-ES", {maximumFractionDigits:0});
 const make = (tag, className, text) => {
   const el = document.createElement(tag);
@@ -48,6 +49,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   .sf-noresults p{font-size:.85rem}
   .sf-portals{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;font-size:.81rem;font-weight:700}
   .sf-footnote{font-size:.78rem;color:#637187;line-height:1.5;margin:8px 0;text-align:justify;text-align-last:left}
+  .sf-alias-explanation{width:100%;font-weight:650;color:#264260;line-height:1.4}
   .sf-scope{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:11px 12px;margin:7px 0 12px;border:1px solid #d2ddeb;background:#f4f8fc;border-radius:9px;font-size:.81rem;color:#264260}
   .sf-scope strong{color:#0b2447}
   .sf-dimension-jump{display:inline-block;margin:3px 0 10px;font-size:.82rem;font-weight:760;color:#16436e;text-decoration:underline;text-underline-offset:3px}
@@ -164,7 +166,7 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
     const tags=make("div","sf-tags");
     const kinds={intervencion:"Intervención AECID",agregado:"Gasto COFOG agregado",convocatoria:"Convocatoria",norma:"Norma de concesión"};
     tags.append(make("span","sf-tag",kinds[item.tipo]||item.tipo));
-    if(related)tags.append(make("span","sf-tag sf-tag--related","Solo relación temática"));
+    if(related)tags.append(make("span","sf-tag sf-tag--related","Correspondencia temática COFOG"));
     tags.append(make("span","sf-tag",item.anio));
     box.append(tags,make("h3","",item.titulo));
     const amount=make("strong","sf-amount",euro.format(item.importe_eur)+(item.tipo==="agregado"?" M€":" €"));
@@ -183,26 +185,31 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
     return box;
   }
   function render(){
-    const q=fold(input.value), tokens=q.split(" ").filter(Boolean);
-    const matching=all.filter(x=>
-      (!selectedCode || x.tipo==="agregado" && (x.cofog_codigo===selectedCode || x.cofog_codigo?.startsWith(selectedCode+"."))) &&
-      (!type.value||x.tipo===type.value) &&
-      (!year.value||String(x.anio)===year.value) &&
-      (!country.value || x.pais===country.value) &&
-      (!tokens.length || tokens.some(t=>x._search.includes(t) || (x.tipo==="agregado" && /^(tren|ferrocar|ferroviar)/.test(t) && fold(x.titulo)==="transporte")))
-    ).map(item=>{
-      const exact=tokens.every(t=>item._search.includes(t));
-      const hits=tokens.filter(t=>item._search.includes(t)).length;
-      return {...item,_exact:exact,_score:(exact?1000:0)+hits*20+(item.tipo==="intervencion"?8:0)};
-    }).sort((a,b)=>b._score-a._score || b.anio-a.anio || a.titulo.localeCompare(b.titulo,"es"));
+    const q=fold(input.value);
+    const matching=searchSpendingRecords(all,input.value,{
+      cofog:selectedCode,tipo:type.value,anio:year.value,pais:country.value
+    });
     results.replaceChildren();
     const slice=matching.slice(0,70);
     summary.replaceChildren();
-    summary.append(make("span","",matching.length+" resultados en el índice parcial"+(matching.length>70?" · primeros 70":"")+(selectedCode?" · COFOG "+selectedCode+" y subfunciones":"")));
-    if(q&&matching.some(x=>!x._exact))summary.append(make("span","", "Los resultados temáticos no prueban financiación de la actividad buscada"));
+    summary.append(make("span","",matching.length+" resultados en el índice parcial"+
+      (matching.length>70?" · primeros 70":"")+
+      (selectedCode?" · COFOG "+selectedCode+" y subfunciones":"")));
+    const aliasMatch=q&&matching.some(item=>item._matchKind==="cofog-alias");
+    if(aliasMatch){
+      const explanation=/\\bsanidad\\b/.test(q)
+       ? "Sanidad corresponde a la función oficial COFOG 07 «Salud»; se muestran su total y subfunciones, sin sumar dos veces."
+       : "Resultados por correspondencia temática con la clasificación oficial COFOG; no son contratos ni proyectos individuales.";
+      summary.append(make("span","sf-alias-explanation",explanation));
+    }
     if(!matching.length){
-      const no=make("div","sf-noresults");no.append(make("strong","","Sin coincidencias en el índice disponible."),make("p","", "No significa que la partida no exista o que no se haya destinado dinero. Consulta las fuentes oficiales o intenta otra expresión, país u organismo."));results.append(no);
-    }else for(const item of slice)results.append(card(item,q&&!item._exact));
+      const no=make("div","sf-noresults");
+      no.append(
+        make("strong","","Sin coincidencias en el índice disponible."),
+        make("p","","No significa que la partida no exista o que no se haya destinado dinero. Consulta las fuentes oficiales o intenta otra expresión, país u organismo.")
+      );
+      results.append(no);
+    }else for(const item of slice)results.append(card(item,item._matchKind==="cofog-alias"));
   }
   for(const el of [input,type,year,country])el.addEventListener(el===input?"input":"change",render);
   render();
