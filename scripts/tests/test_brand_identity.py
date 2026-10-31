@@ -70,10 +70,10 @@ class BrandIdentityTests(unittest.TestCase):
             with self.subTest(page=page):
                 source = (ROOT / "app" / page).read_text(encoding="utf-8")
                 wrapper = "il-header-identity" if page in ("index.md", "finanzas-publicas.md") else "il-site-identity"
-                rule = re.search(r"\\." + wrapper + r"\\s*\\{([^}]*)\\}", source)
+                rule = re.search(r"\." + wrapper + r"\s*\{([^}]*)\}", source)
                 self.assertIsNotNone(rule, "Falta regla del contenedor de identidad")
-                self.assertRegex(rule.group(1), r"flex-direction\\s*:\\s*row")
-                self.assertNotRegex(rule.group(1), r"flex-direction\\s*:\\s*column")
+                self.assertRegex(rule.group(1), r"flex-direction\s*:\s*row")
+                self.assertNotRegex(rule.group(1), r"flex-direction\s*:\s*column")
                 nav = source.split("<nav", 1)[1].split("</nav>", 1)[0]
                 self.assertEqual(nav.count('href="https://idealab2026.github.io/"'), 1)
                 self.assertIn('src="./logo-idea-lab.svg"', nav)
