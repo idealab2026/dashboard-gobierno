@@ -1,6 +1,6 @@
 import {OFFICIAL_DRILL_ROUTES, relatedBudgetPrograms} from "./official-drill-routes.js";
 import {canonicalFinanceCode} from "./finance-code.js";
-import {compareFinanceCodes,sortedFinanceChildren} from "./finance-hierarchy.js";
+import {compareFinanceCodes,sortedFinanceChildren,financeExpansionPath,financeExpansionColumns} from "./finance-hierarchy.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -367,72 +367,45 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       .pf-footnote {display:none!important;}
     }
 
-    /* Keep original Sankey at left; progressive COFOG tree at right. */
-    .pf-explorer.is-tree-open .pf-layout{display:grid;
-      grid-template-columns:minmax(0,1fr) minmax(390px,44%);gap:14px;align-items:start;
-      max-width:100%;min-width:0}
-    .pf-explorer.is-tree-open .pf-chart{position:sticky;top:12px;min-width:0;width:100%;
-      max-width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;
-      border:1px solid #e1e8ef;border-radius:10px;box-sizing:border-box}
-    .pf-explorer.is-tree-open .pf-chart svg{min-width:720px;max-width:none}
-    .pf-explorer.is-tree-open .pf-drawer{position:sticky;top:12px;right:auto;bottom:auto;
-      display:block;transform:none;width:100%;max-height:calc(100vh - 28px);
-      border:1px solid #dae2ec;border-radius:10px;box-shadow:0 9px 25px rgba(9,36,71,.07);z-index:2}
-    .pf-explorer.is-tree-open .pf-drawer-inner{max-height:calc(100vh - 28px);
-      overflow-y:auto;padding:14px;box-sizing:border-box}
-    .pf-explorer.is-tree-open .pf-drawer-backdrop{display:none!important}
-    .pf-explorer.is-tree-open .pf-scroll-hint{grid-column:1/-1}
-    .pf-tree-head{padding-right:31px}
-    .pf-tree-kicker{font:800 .68rem/1.4 system-ui;color:#9b772f;letter-spacing:.07em;
-      text-transform:uppercase}
-    .pf-tree-head h2{font:700 1.3rem/1.35 Georgia,serif;color:#0b2447;margin:6px 0}
-    .pf-tree-head p{font:.76rem/1.55 system-ui;color:#5c6d83;text-align:justify;text-align-last:left}
-    .pf-tree-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:5px;
-      border-block:1px solid #e3e9f0;padding:9px 0;margin:10px 0}
-    .pf-tree-crumbs button{border:0!important;background:transparent!important;
-      cursor:pointer;font:700 .72rem/1.45 system-ui;color:#1c547c;padding:5px!important;text-align:left}
-    .pf-tree-crumbs strong{font:750 .73rem/1.4 system-ui;color:#0b2447}
-    .pf-tree-chevron{color:#9aabbc}
-    .pf-tree-scroller{display:flex;align-items:stretch;gap:17px;width:100%;max-width:100%;
-      overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:#aec0d1 #eef3f7;
-      min-height:200px;padding:6px 4px 13px;scroll-behavior:smooth}
-    .pf-tree-column{flex:0 0 218px;min-width:0;border:1px solid #dce4ed;
-      background:#f8fafc;border-radius:9px;padding:9px;position:relative;box-sizing:border-box}
-    .pf-tree-column+.pf-tree-column:before,.pf-tree-terminal:before{
-      content:"→";position:absolute;left:-15px;top:48%;font:800 17px system-ui;color:#a98645}
-    .pf-tree-col-heading{font:800 .74rem/1.45 system-ui;color:#304d6a;margin:0 0 8px}
-    .pf-tree-options{display:flex;flex-direction:column;gap:6px}
-    .pf-tree-option{display:block;width:100%;padding:9px 10px;text-align:left;background:#fff;
-      border:1px solid #dfe6ef;border-radius:7px;color:#183858;cursor:pointer;overflow-wrap:anywhere}
-    .pf-tree-option:hover,.pf-tree-option:focus-visible{background:#edf5fc;border-color:#396994;
-      outline:2px solid transparent}
-    .pf-tree-option[aria-current="step"]{background:#fff6e1;border-color:#b38b42;
-      box-shadow:inset 3px 0 #b38b42}
-    .pf-tree-code{display:block;font:800 .72rem/1.4 system-ui;color:#876426}
-    .pf-tree-name{display:block;font:700 .76rem/1.4 system-ui;margin:3px 0}
-    .pf-tree-amount{display:block;font:600 .7rem/1.4 system-ui;color:#64758b}
-    .pf-tree-terminal{position:relative;flex:0 0 250px;box-sizing:border-box;
-      background:#fffbf0;border:1px solid #e5d6b4;border-radius:9px;padding:12px}
-    .pf-tree-terminal strong{font:800 .82rem/1.4 system-ui;color:#0b2447}
-    .pf-tree-terminal p{font:.74rem/1.6 system-ui;color:#5b6777;text-align:justify;text-align-last:left}
-    .pf-tree-evidence{border-top:1px solid #e3e8ef;padding-top:10px;margin-top:12px}
-    .pf-tree-evidence summary{font:800 .77rem/1.5 system-ui;color:#18476d;cursor:pointer}
-    .pf-tree-evidence .pf-detail-subtitle{display:none}
-    @media(max-width:1050px){
-      .pf-explorer.is-tree-open .pf-layout{display:block}
-      .pf-explorer.is-tree-open .pf-chart{position:relative;top:auto;border:0}
-      .pf-explorer.is-tree-open .pf-chart svg{min-width:790px!important}
-      .pf-explorer.is-tree-open .pf-drawer{position:fixed;top:0;right:0;bottom:0;
-        max-height:100dvh;width:min(96vw,625px);z-index:1200;border-radius:10px 0 0 10px;
-        box-shadow:-15px 0 35px rgba(7,31,58,.25)}
-      .pf-explorer.is-tree-open .pf-drawer-inner{height:100%;max-height:100dvh;overflow-y:auto}
-      .pf-explorer.is-tree-open .pf-drawer-backdrop{display:block!important}
-      .pf-explorer.is-tree-open.is-detail-open .pf-drawer-backdrop{opacity:1;pointer-events:auto}
-    }
-    @media print{
-      .pf-explorer.is-tree-open .pf-layout{display:block}
-      .pf-explorer.is-tree-open .pf-drawer{display:none}
-    }
+
+    /* Expansion of ONE SVG with a horizontal scrollbar, not a second panel. */
+    .pf-layout{display:block!important;min-width:0;max-width:100%}
+    .pf-chart{min-width:0;max-width:100%;box-sizing:border-box}
+    .pf-chart.is-expanded{overflow-x:auto!important;overflow-y:hidden!important;
+      -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
+      border:1px solid #dae4ee;border-radius:10px;
+      scrollbar-color:#98aac1 #edf3f8;scrollbar-width:thin}
+    .pf-chart.is-expanded svg{max-width:none!important;height:auto;display:block}
+    .pf-extension-ribbon{fill:rgba(190,151,84,.34);cursor:pointer;stroke:none}
+    .pf-extension-ribbon:hover{fill:rgba(190,151,84,.53)}
+    .pf-extension-node{cursor:pointer}
+    .pf-extension-node rect{fill:#f7f2e8;stroke:#c6d4e2;stroke-width:1.3}
+    .pf-extension-node:hover rect,.pf-extension-node:focus-visible rect{
+      stroke:#a37d37;stroke-width:2.4;fill:#fff4dc}
+    .pf-extension-node[aria-current="step"] rect{stroke:#a17a34;stroke-width:2.8;fill:#fff1d3}
+    .pf-extension-heading{fill:#937033;font:800 13px system-ui;letter-spacing:.07em}
+    .pf-extension-label{fill:#122f50;font:750 13px system-ui}
+    .pf-extension-value{fill:#516880;font:600 11px system-ui}
+    .pf-extension-end rect{fill:#fff9ed;stroke:#d7bc83;stroke-width:1.4}
+    .pf-extension-end text{fill:#4b6278;font:600 13px system-ui}
+    .pf-extension-end .pf-extension-end-title{fill:#8a662b;font-weight:800}
+    .pf-extension-end a text{fill:#19547f;font-weight:800;text-decoration:underline}
+    .pf-inline-trail{display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+      padding:9px 11px;border:1px solid #dbe5ef;border-radius:9px;
+      background:#f6f9fc;margin:8px 0;min-width:0}
+    .pf-inline-trail[hidden],.pf-expand-hint[hidden]{display:none!important}
+    .pf-inline-trail button{border:0!important;background:transparent!important;
+      font:750 .74rem/1.4 system-ui;color:#17527c;padding:5px!important;
+      text-align:left;cursor:pointer}
+    .pf-inline-trail button:hover{text-decoration:underline}
+    .pf-inline-trail strong{font:750 .74rem/1.4 system-ui;color:#0b2447}
+    .pf-inline-trail span{color:#8998ab}
+    .pf-inline-trail .pf-trail-close{border:1px solid #decda5!important;
+      border-radius:7px;background:#fff!important;padding:6px 9px!important;
+      color:#74531d!important;margin-left:auto}
+    .pf-expand-hint{font:650 .72rem/1.5 system-ui;color:#536880;margin:6px 0}
+    @media(max-width:768px){.pf-inline-trail{gap:3px;padding:6px}
+      .pf-inline-trail button{font-size:.68rem!important}}
 
     @media print {
       .pf-toolbar {display:none;}
@@ -501,8 +474,13 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
   const detail = htmlEl("div");
   drawerInner.append(closeButton, detail);
   drawer.append(drawerInner);
-  layout.append(scrollHint, chart, drawer);
-  root.append(layout, backdrop);
+  const trail=htmlEl("nav","pf-inline-trail");
+  trail.hidden=true;trail.setAttribute("aria-label","Ruta del desglose del gasto");
+  const expandHint=htmlEl("p","pf-expand-hint");
+  expandHint.hidden=true;
+  expandHint.textContent="↔ Desliza hacia la derecha para seguir las ramas conectadas";
+  layout.append(trail,scrollHint,chart,expandHint,drawer);
+  root.append(layout,backdrop);
 
   const footnote = htmlEl("div", "pf-footnote");
   root.append(footnote);
