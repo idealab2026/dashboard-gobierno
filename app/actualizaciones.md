@@ -245,3 +245,9 @@ El workflow público consulta semanalmente fuentes oficiales del INE y la IGAE y
 La comprobación está programada los lunes a las **07:17 UTC**, y también puede ejecutarse manualmente desde el repositorio público. Las ejecuciones programadas de GitHub pueden demorarse.
 
 [Volver al resumen](/) · [Abrir finanzas públicas](/finanzas-publicas.html)
+
+```js
+// Analítica de visitas y eventos: permanece desactivada sin cuenta IDEA LAB configurada.
+import {installSiteAnalytics} from "./components/site-analytics.js";
+installSiteAnalytics();
+```
