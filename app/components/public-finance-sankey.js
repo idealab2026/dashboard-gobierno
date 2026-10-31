@@ -398,6 +398,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     .pf-extension-node.is-taxonomy[aria-current="step"] rect{fill:#e6f0f9;stroke:#345e82;stroke-width:2.3}
     .pf-class-line{fill:none;stroke:#aab9c8;stroke-width:1.5;stroke-dasharray:5 5}
     .pf-doc-line{fill:none;stroke:#b58a46;stroke-width:1.5;stroke-dasharray:4 5;opacity:.85;pointer-events:none}
+    .pf-extension-node.is-program-selected rect{stroke:#9b722e;stroke-width:3;fill:#fff0d3}
     .pf-extension-node.is-taxonomy{outline:none}
     .pf-extension-node.is-taxonomy:focus-visible rect{stroke:#345e82;stroke-width:2.3}
     .pf-extension-node.is-taxonomy[aria-current="step"] rect{fill:#d9eafa;stroke:#24557e;stroke-width:3}
@@ -932,7 +933,13 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
             "aria-label":"Programa "+item.codigo_presupuestario+
               ": "+item.titulo+" · ver PGE oficial"
           });
-          const box=svgEl("g",{class:"pf-extension-node"});
+          const requestedProgram=new URLSearchParams(window.location.search).get("programa-pge");
+          const highlighted=item.codigo_presupuestario===requestedProgram;
+          const box=svgEl("g",{
+            class:highlighted?"pf-extension-node is-program-selected":"pf-extension-node",
+            "data-program-code":item.codigo_presupuestario
+          });
+          if(highlighted)box.setAttribute("aria-current","step");
           box.append(svgEl("rect",{
             x:nextX,y:yy,width:nodeW,height:cardH,rx:7
           }));
