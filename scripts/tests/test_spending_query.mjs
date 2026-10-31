@@ -4,6 +4,7 @@ import {readFileSync} from "node:fs";
 import {dsvFormat} from "d3-dsv";
 import {searchSpendingRecords, normalizeSpending} from "../../app/components/spending-query.js";
 import {OFFICIAL_DRILL_ROUTES, relatedBudgetPrograms} from "../../app/components/official-drill-routes.js";
+import {canonicalFinanceCode} from "../../app/components/finance-code.js";
 
 const source = readFileSync(new URL("../../app/data/seed/fact_finanzas_publicas_2024.csv", import.meta.url), "utf8").replace(/^\uFEFF/, "");
 const items = dsvFormat(";").parse(source)
@@ -109,4 +110,17 @@ test("budget programmes follow related COFOG function without becoming numerical
   assert.deepEqual(relatedBudgetPrograms("04",2024,named).map(x=>x.codigo_presupuestario).sort(),["453B","453C"]);
   assert.deepEqual(relatedBudgetPrograms("01.3",2024,named),[]);
   assert.deepEqual(relatedBudgetPrograms("04.5",2023,named),[]);
+});
+
+test("typed CSV COFOG code normalization preserves official parent-child relationships",()=>{
+  assert.equal(canonicalFinanceCode(1),"01");
+  assert.equal(canonicalFinanceCode(1.3),"01.3");
+  assert.equal(canonicalFinanceCode(4.5),"04.5");
+  assert.equal(canonicalFinanceCode("01.3"),"01.3");
+  assert.equal(canonicalFinanceCode(10),"10");
+  assert.equal(canonicalFinanceCode("S13.GASTO"),"S13.GASTO");
+  assert.equal(canonicalFinanceCode("D.5"),"D.5");
+  assert.equal(canonicalFinanceCode("01.2+01.5+01.6+01.8"),"01.2+01.5+01.6+01.8");
+  const parent=canonicalFinanceCode(1),child=canonicalFinanceCode(1.3);
+  assert.ok(child.startsWith(parent+"."));
 });
