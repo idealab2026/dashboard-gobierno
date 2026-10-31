@@ -1,6 +1,7 @@
 /* COFOG spending lineage: official hierarchy and observed amounts only.
    A subject match is NOT evidence of financing or a fiscal transfer. */
 import {COFOG_STRUCTURE,cofogsBelow,cofogsFind} from "./cofog-structure.js";
+import {OFFICIAL_BUDGET_PROGRAMS} from "./official-budget-catalog.js";
 
 const CODE=/^\d{2}(?:\.\d+){0,2}$/;
 const isCode=code=>CODE.test(String(code||""));
@@ -57,14 +58,25 @@ export function spendingLineage(item,aggregateRows=[]){
 export function relatedProgramLineage(item,aggregateRows=[]){
   if(item?.tipo!=="programa"||!isCode(item.cofog_referencia))return null;
   // A PGE program is not an accounting child of an IGAE aggregate.
+  // Se utiliza la correspondencia temática documentada más específica,
+  // nunca se deduce una asignación contable a partir del título.
+  const verifiedProgram=OFFICIAL_BUDGET_PROGRAMS.find(x=>
+    x.codigo_presupuestario===item.codigo_presupuestario &&
+    Number(x.anio)===Number(item.anio));
+  const reference=verifiedProgram?.cofog_referencia||item.cofog_referencia;
   const relation=spendingLineage({
-    tipo:"agregado",cofog_codigo:item.cofog_referencia,
+    tipo:"agregado",cofog_codigo:reference,
     anio:item.anio,importe_eur:null
   },aggregateRows);
   if(!relation)return null;
   return {
     ...relation,
     relation:"temática, no contable",
+    href:verifiedProgram&&relation.href
+      ?relation.href.replace("#mapa-dinero",
+        "&programa-pge="+encodeURIComponent(verifiedProgram.codigo_presupuestario)+
+        "#mapa-dinero")
+      :relation.href,
     caution:"Correspondencia temática con COFOG. El crédito del programa de los PGE no constituye una porción comprobada de los importes consolidados de la IGAE. Los ejercicios y perímetros pueden ser distintos."
   };
 }
