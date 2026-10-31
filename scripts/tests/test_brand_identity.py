@@ -99,6 +99,45 @@ class BrandIdentityTests(unittest.TestCase):
         self.assertIn('methodologyLink.href = "/metodologia.html"', home)
         self.assertIn('updatesLink.href = "/actualizaciones.html"', home)
 
+    def test_espana_en_un_minuto_is_visible_before_detail_tables(self):
+        """KPI summary must follow the Sankey, not the two long finance tables."""
+        home = (ROOT / "app" / "index.md").read_text(encoding="utf-8")
+        self.assertIn("<h2>España en un minuto</h2>", home)
+        self.assertIn('header.id = "resumen"', home)
+        self.assertLess(home.index("display(spotlightSankey);"), home.index('header.id = "resumen"'))
+        self.assertLess(home.index("display(seccionContainer);"), home.index('const financePair = document.createElement("div")'))
+        self.assertLess(home.index("display(seccionContainer);"), home.index("display(financeSection);"))
+        self.assertIn('href="#resumen"', home)
+
+    def test_public_finance_download_buttons_are_hidden_everywhere(self):
+        """CSV and Excel actions are deliberately absent from the public UI."""
+        component = (ROOT / "app" / "components" / "public-finance-sankey.js").read_text(encoding="utf-8")
+        for identifier in ("csvAnchor", "xlsxAnchor", "mobileCsv", "mobileExcel",
+                           "downloadBranch", "downloadCsv", "Descargar CSV",
+                           "Descargar Excel", "Excel completo", "Fuentes y descargas"):
+            self.assertNotIn(identifier, component)
+        self.assertIn('mobileSummary.textContent = "ⓘ Fuentes y metodología"', component)
+        self.assertIn('methodologyButton.textContent = "Metodología y fuentes"', component)
+        for page in ("index.md", "finanzas-publicas.md"):
+            content = (ROOT / "app" / page).read_text(encoding="utf-8")
+            self.assertNotIn("workbookUrl:", content)
+            self.assertNotIn("dataUrl:", content)
+
+    def test_navigation_dropdowns_use_hover_on_desktop_and_click_on_touch(self):
+        """Open on pointer enter; close when the cursor leaves or clicks outside."""
+        for page in ("index.md", "finanzas-publicas.md"):
+            with self.subTest(page=page):
+                content = (ROOT / "app" / page).read_text(encoding="utf-8")
+                self.assertIn('const navDropdowns =', content)
+                self.assertIn('item.addEventListener("pointerenter"', content)
+                self.assertIn('item.addEventListener("pointerleave"', content)
+                self.assertIn('event.pointerType !== "mouse"', content)
+                self.assertIn('pointerCanHover.matches', content)
+                self.assertIn('item.open = false', content)
+                self.assertIn('top:100%!important', content)
+                self.assertIn('const compactNav = document.querySelector(".idealab-nav-mobile")', content)
+                self.assertIn('event.key === "Escape"', content)
+
     def test_x_bio_fits_limit(self):
         content = (ROOT / "editorial" / "PERFIL_X.md").read_text(encoding="utf-8")
         result = re.search(r"^> (Somos el canal editorial de IDEA LAB\..+)$", content, flags=re.M)
