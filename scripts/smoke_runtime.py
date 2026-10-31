@@ -238,12 +238,9 @@ def main() -> None:
                     "NIVEL 3 COFOG", "01.3.1",
                     "01.3.2", "01.3.3")),
                 ("04.5",("04.1","04.5", "NIVEL 3 COFOG",
-                    "04.5.1", "04.5.2", "04.5.3", "04.5.4", "04.5.5",
-                    "453A", "453B", "453C", "441N", "441O",
-                    "455M", "454M")),
+                    "04.5.1", "04.5.2", "04.5.3", "04.5.4", "04.5.5")),
                 ("07.3",("07.1","07.3","NIVEL 3 COFOG",
-                    "07.3.1", "07.3.2", "07.3.3", "07.3.4",
-                    "Sin programas indexados para esta clase")),
+                    "07.3.1", "07.3.2", "07.3.3", "07.3.4")),
                 ("09.1",("09.1.1", "09.1.2", "NIVEL 3 COFOG")),
             ]:
                 selected_url=url+"?detalle-cofog="+code
@@ -279,8 +276,63 @@ def main() -> None:
                     raise AssertionError("Faltan las bandas conectadas al Sankey "+code)
                 if "RuntimeError:" in page:
                     raise AssertionError("Error Observable en COFOG "+code)
+                if ('data-selected-class=' in page or
+                    'class="pf-doc-line"' in page or
+                    'PROGRAMAS RELACIONADOS (OTRO PERÍMETRO)' in page):
+                    raise AssertionError("Los programas PGE se abren antes de seleccionar una clase: "+code)
                 print("Sankey SVG original extendido y verificado:",code,
-                    "sin paneles nuevos y con códigos COFOG ordenados")
+                    "sin programas desplegados hasta seleccionar clase")
+
+            # A level-III click must selectively reveal documentary programs.
+            # The deep link reproduces exactly the same state transition as
+            # clicking a COFOG class node in the SVG.
+            for class_code,expected in [
+                ("04.5.1",("453B", "453C")),
+                ("04.5.2",("441N", "454M")),
+                ("04.5.3",("453A", "45AC")),
+                ("04.5.4",("441O", "455M")),
+                ("07.3.1",("Sin programas indexados para esta clase",)),
+            ]:
+                selected_url=url+"?detalle-cofog="+class_code
+                result=subprocess.run(
+                    [*args[:-1],"--virtual-time-budget=12000",selected_url],
+                    text=True,capture_output=True,timeout=85
+                )
+                if result.returncode:
+                    raise AssertionError("Chrome no abre clase COFOG "+class_code)
+                page=result.stdout
+                if ('data-selected-class="'+class_code+'"' not in page or
+                    'aria-current="step"' not in page or
+                    'class="pf-inline-extension"' not in page):
+                    raise AssertionError("No se seleccionó clase "+class_code)
+                for fragment in expected:
+                    if fragment not in page:
+                        raise AssertionError("Programa relacionado ausente en "+
+                                             class_code+": "+fragment)
+                current_anchor=_re_cofog.search(
+                    r'<g class="pf-extension-node is-taxonomy"[^>]*data-code="'+
+                    _re_cofog.escape(class_code)+
+                    r'"[^>]*data-anchor-y="([^"]+)"',page
+                )
+                if not current_anchor:
+                    raise AssertionError("Falta coordenada en clase "+class_code)
+                links=_re_cofog.findall(
+                    r'<path [^>]*class="pf-doc-line"[^>]*'+
+                    r'data-source-code="([^"]+)"[^>]*data-source-y="([^"]+)"',
+                    page
+                )
+                if class_code.startswith("04.5"):
+                    if not links:
+                        raise AssertionError("Faltan conexiones documentales de "+class_code)
+                    if any(source!=class_code or y!=current_anchor.group(1)
+                           for source,y in links):
+                        raise AssertionError("Conexiones no ancladas a la clase seleccionada: "+
+                                             class_code+" "+repr(links[:4]))
+                elif links:
+                    raise AssertionError("Conexiones documentales inventadas en "+class_code)
+                if "RuntimeError:" in page:
+                    raise AssertionError("Error JS al seleccionar clase "+class_code)
+                print("Clase COFOG "+class_code+" verificada: programas selectivos y origen correcto")
 
             # Each administration has its own audited flow: ministry PGE and
             # CCAA IGAE are rendered separately with their vintage visible.
