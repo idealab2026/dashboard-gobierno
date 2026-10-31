@@ -50,6 +50,8 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
   .sf-footnote{font-size:.78rem;color:#637187;line-height:1.5;margin:8px 0;text-align:justify;text-align-last:left}
   .sf-scope{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:11px 12px;margin:7px 0 12px;border:1px solid #d2ddeb;background:#f4f8fc;border-radius:9px;font-size:.81rem;color:#264260}
   .sf-scope strong{color:#0b2447}
+  .sf-dimension-jump{display:inline-block;margin:3px 0 10px;font-size:.82rem;font-weight:760;color:#16436e;text-decoration:underline;text-underline-offset:3px}
+  .sf-dimension-jump:focus-visible{outline:2px solid #b89b5e;outline-offset:3px}
   .sf-scope button{border:1px solid #aebed2;background:#fff;border-radius:7px;padding:7px 9px;font-size:.76rem;font-weight:750;color:#0b2447;cursor:pointer}
   .sf-investigation{margin:18px 0 12px}
   .sf-investigation h2{font:700 1.4rem Georgia,serif;margin:10px 0;color:#0b2447}
@@ -100,6 +102,9 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
     const b=make("button","",label);b.type="button";b.addEventListener("click",()=>{selectedCode="";clearScope.hidden=true;scopeLabel.textContent="Sin filtro COFOG · resultados temáticos no equivalen a un desglose de la función";input.value=label;type.value="";year.value="";country.value="";render();input.focus();});examples.append(b);
   }
   root.append(examples);
+  const quickGuide=make("a","sf-dimension-jump","Consultar por ministerio, comunidad autónoma o ferrocarril");
+  quickGuide.href="#investigar-por-administracion";
+  root.append(quickGuide);
   clearScope.addEventListener("click",()=>{selectedCode="";clearScope.hidden=true;scopeLabel.textContent="Sin filtro COFOG · consulta el catálogo general";render();});
   const summary=make("div","sf-summary"), results=make("div","sf-results");
   root.append(summary,results);
