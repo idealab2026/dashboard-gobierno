@@ -311,6 +311,40 @@ def main() -> None:
                     raise AssertionError("Sankey ministerial o regional ausente: "+type_arg)
                 print("Sankey validado en Chrome",type_arg)
 
+            # Deep browser checks: each Sankey branch must advance in place to
+            # a visible next stage and reach an explicit final evidence level.
+            for query,expected_level,expected_code,required in [
+                ("?tipo=ccaa&id=10&nivel=funcion&codigo=07","detalle","07",
+                 ("Extremadura","2.333","Subfunciones oficiales",
+                  "sin importes autonómicos","ad-subgroup")),
+                ("?tipo=ccaa&id=10&nivel=subfuncion&codigo=07.3","terminal","07.3",
+                 ("Extremadura","Importe territorial no disponible",
+                  "La serie autonómica COFOG 2024","Presupuestos autonómicos")),
+                ("?tipo=ministerio&id=17&nivel=area&codigo=4","detalle","4",
+                 ("Transportes y Movilidad Sostenible","Programas","Volver")),
+                ("?tipo=ministerio&id=17&nivel=programa&codigo=453C","terminal","453C",
+                 ("Crédito presupuestario del programa","No son pagos ni obligaciones reconocidas",
+                  "Fuente original"))
+            ]:
+                deep_url=f"http://127.0.0.1:{server.server_port}/{BASE}/administraciones.html"+query
+                browser=subprocess.run(
+                    [*args[:-1],"--virtual-time-budget=14000",deep_url],
+                    text=True,capture_output=True,timeout=85
+                )
+                if browser.returncode:
+                    raise AssertionError("Fallo Chrome en subnivel: "+query)
+                page=browser.stdout
+                for fragment in required:
+                    if fragment not in page:
+                        raise AssertionError("Falta siguiente nivel "+query+": "+fragment)
+                if ('data-drill-level="'+expected_level+'"' not in page or
+                    'data-drill-code="'+expected_code+'"' not in page):
+                    raise AssertionError("No avanzó la jerarquía "+query)
+                if "RuntimeError:" in page:
+                    raise AssertionError("Error Observable en nivel "+query)
+                print("Desglose de administración validado:",query)
+
+
 
         finally:
             server.shutdown()
