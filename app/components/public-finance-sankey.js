@@ -904,13 +904,11 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
           sub.textContent="La taxonomía sí está completa; el PGE no.";
           empty.append(head,sub);
           const a=svgEl("a",{
-            href:"buscador-partidas.html?cofog="+
-              encodeURIComponent(selectedClass||parent.code)+
-              "&anio="+currentYear, target:"_blank",
-            rel:"noopener noreferrer"
+            href:"administraciones.html",
+            target:"_blank",rel:"noopener noreferrer"
           });
           const t=svgEl("text",{x:nextX+12,y:startY+82});
-          t.textContent="Consultar otros documentos oficiales →";
+          t.textContent="Ver programas de los 22 ministerios →";
           a.append(t);empty.append(a);nodes.append(empty);
         }
         for(const [i,item] of programs.entries()){
@@ -1465,7 +1463,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
 
     badge.textContent = `${currentYear} · ${expenseRows.length} funciones COFOG`;
     const hasAdjustment = incomeRows.some(d => d.is_vintage_adjustment);
-    footnote.innerHTML = `<b>Interacción.</b> Pulsa un nodo o una rama para consultar el desglose, porcentaje, metodología y fuente oficial.${hasAdjustment ? " La pequeña rama de ajuste estadístico es técnica y no representa un ingreso económico." : ""}`;
+    footnote.innerHTML = `<b>Interacción.</b> Pulsa una rama y desplázate horizontalmente. COFOG: 69 grupos y 109 clases en el catálogo ONU; la IGAE de esta serie solo cuantifica el segundo nivel. Los programas PGE pertenecen a otra clasificación y no se suman como si fueran flujos de este Sankey.${hasAdjustment ? " La rama de ajuste estadístico es técnica, no un ingreso económico." : ""}`;
   }
 
   const closeDrawer = () => {
