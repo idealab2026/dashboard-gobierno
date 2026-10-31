@@ -103,6 +103,25 @@ class NamedSpendingTests(unittest.TestCase):
         self.assertNotIn("primeros 70",component)
         self.assertIn("registros del índice",component)
 
+    def test_coverage_chart_reports_all_records_and_filters_by_classification(self):
+        source=(ROOT/"app/components/partidas-search.js").read_text(encoding="utf-8")
+        helper=(ROOT/"app/components/spending-coverage.js").read_text(encoding="utf-8")
+        self.assertIn('Cobertura del índice',source)
+        self.assertIn('coverageSummary([...records,...aggregates])',source)
+        self.assertIn('const coverageTabs=make("div","sf-class-tabs")',source)
+        self.assertIn('const coverageBars=make("div","sf-class-chart")',source)
+        self.assertIn('row.setAttribute("aria-pressed",String(active))',source)
+        self.assertIn('found.filter(item=>matchesClassification(',source)
+        self.assertIn('renderCoverage();',source)
+        self.assertIn('const urlMode=currentParams.get("clasificacion")',source)
+        self.assertIn('const urlGroup=currentParams.get("grupo")',source)
+        self.assertIn('indexCoverage.groups[coverageMode]',source)
+        self.assertIn('indexCoverage.total',source)
+        self.assertIn('grupo',source)
+        self.assertNotIn('registros indexados en España en su totalidad',source)
+        self.assertIn('if(counted!==total)throw Error(',helper)
+        self.assertIn('ids.has(id)',helper)
+
     def test_search_is_reachable_from_all_pages(self):
         for name in ("index.md", "finanzas-publicas.md", "metodologia.md",
                      "actualizaciones.md", "quienes-somos.md"):
