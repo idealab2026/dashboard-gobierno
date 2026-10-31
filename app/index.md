@@ -1497,15 +1497,28 @@ html {
   .idealab-brand-product {display:none!important;}
 }
 
+
+/* Afiliación corporativa visible también en la portada móvil compacta. */
+@media (max-width: 768px) {
+  .hero .hero-kicker {
+    display: block !important;
+    margin: 0 0 4px !important;
+    font-size: .62rem !important;
+    line-height: 1.25 !important;
+    letter-spacing: .06em !important;
+  }
+  .hero .hero-kicker a { color: #987333 !important; text-decoration: underline !important; }
+}
+
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación del observatorio España en Datos">
-  <a class="idealab-brand" href="https://idealab2026.github.io/" aria-label="IDEA LAB · España en Datos">
+  <a class="idealab-brand" href="https://idealab2026.github.io/" aria-label="Visitar la web corporativa de IDEA LAB">
     <img class="idealab-brand-logo" src="./logo-idea-lab.svg" alt="IDEA LAB" width="154" height="37" />
     <span class="idealab-brand-product">· España en Datos</span>
   </a>
   <div class="idealab-nav-links">
-    <a href="/" class="il-nav-start">Inicio</a>
+    <a href="/dashboard-gobierno/" class="il-nav-start">Inicio</a>
     <a class="idealab-nav-priority" href="#mapa-dinero">Mapa del dinero</a>
     <a href="#resumen">Indicadores</a>
     <details class="idealab-nav-areas">
@@ -1530,7 +1543,7 @@ html {
   <details class="idealab-nav-mobile">
     <summary aria-label="Abrir menú de navegación">Menú <span aria-hidden="true">☰</span></summary>
     <div class="idealab-nav-mobile-panel">
-      <a href="/">Inicio</a>
+      <a href="/dashboard-gobierno/">Inicio</a>
       <a href="#mapa-dinero">Mapa del dinero</a>
       <a href="#resumen">Indicadores</a>
       <div class="idealab-nav-mobile-heading">Áreas temáticas</div>
@@ -2757,7 +2770,7 @@ const indicatorCount = availableIndicators.length;
 
 
 <div id="inicio" class="hero">
-  <div class="hero-kicker"><a href="https://idealab2026.github.io/" style="color:inherit;text-decoration:underline;text-underline-offset:4px">UN PRODUCTO DE IDEA LAB</a> · OBSERVATORIO DE ESPAÑA</div>
+  <div class="hero-kicker"><a href="https://idealab2026.github.io/" style="color:inherit;text-decoration:underline;text-underline-offset:4px">UN PRODUCTO DE IDEA LAB ↗</a></div>
   <h1>España en Datos</h1>
   <div class="hero-subtitle">
     <span class="il-hero-long">Nuestro observatorio económico, social e institucional de España. Reunimos, contrastamos y visualizamos datos de fuentes oficiales para ofrecer una mirada rigurosa y comprensible de la realidad.</span><span class="il-hero-short">Economía, sociedad y sector público de España con datos de fuentes oficiales.</span>
