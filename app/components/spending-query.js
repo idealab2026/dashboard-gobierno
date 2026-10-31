@@ -46,14 +46,16 @@ export function searchSpendingRecords(items, query, options = {}) {
   const selectedCountry = String(options.pais || "");
   const matches = [];
   for (const item of items) {
-    const code = item.tipo === "agregado" ? String(item.cofog_codigo || "") : "";
+    const code = item.tipo === "agregado" ? String(item.cofog_codigo || "") :
+      item.tipo === "regional" ? String(item.codigo_funcion || "") : "";
     if (selectedCode && (!code || (code !== selectedCode && !code.startsWith(selectedCode + ".")))) continue;
     if (selectedType && item.tipo !== selectedType) continue;
     if (selectedYear && String(item.anio) !== selectedYear) continue;
     if (selectedCountry && item.pais !== selectedCountry && item.entidad !== selectedCountry) continue;
     const haystack = item._search || normalizeSpending([
       item.titulo, item.pais, item.sector, item.entidad, item.organismo,
-      item.descripcion, item.id, item.trazabilidad, item.clasificacion, item.anio
+      item.descripcion, item.id, item.trazabilidad, item.clasificacion, item.anio,
+      item.codigo_presupuestario, item.codigo_funcion, item.codigo_seccion, item.periodo
     ].join(" "));
     let synonymHits = 0, directHits = 0;
     const matchesAll = terms.every(term => {
