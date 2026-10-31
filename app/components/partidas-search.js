@@ -219,6 +219,75 @@ export function createSpendingSearch({records = [], aggregates = [], coverage = 
     .spending-finder .sf-lineage-step:not(:last-child):after{margin-right:8px}
     .spending-finder .sf-lineage-child{flex:1 1 45%}
   }
+
+  /* V6: breadcrumb arriba y tarjeta navegable debajo; información sólo tras pulsar. */
+  .spending-finder .sf-results{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,470px),1fr));
+    gap:12px 16px;align-items:start;margin:0 0 12px;width:100%;max-width:none}
+  .spending-finder .sf-result-group{max-width:760px;min-width:0;box-sizing:border-box}
+  .spending-finder .sf-card-lineage{display:flex;flex-wrap:wrap;align-items:center;
+    gap:3px 5px;min-height:20px;margin:0 0 6px;padding:0 1px;
+    font:600 .69rem/1.45 system-ui,-apple-system,sans-serif;color:#708198}
+  .spending-finder .sf-crumb{color:#61758b;overflow-wrap:anywhere}
+  .spending-finder .sf-crumb-current{color:#967332;font-weight:750}
+  .spending-finder .sf-crumb-divider{color:#a8b4c1;padding:0 1px}
+  .spending-finder .sf-theme-relationship{color:#947332;
+    font:600 .64rem/1.3 system-ui;margin-left:4px}
+  .spending-finder .sf-record.sf-card-open{display:block;width:100%;min-width:0;
+    padding:13px 15px;border:1px solid #dfe6ed;border-radius:9px;
+    background:#fff;box-shadow:none;transition:border-color .12s,background .12s;
+    text-decoration:none!important;color:#183350!important;cursor:pointer;outline-offset:3px}
+  .spending-finder a.sf-card-open:hover,.spending-finder a.sf-card-open:focus-visible{
+    border-color:#b69a65;background:#fffcf6}
+  .spending-finder .sf-record-top{display:flex;gap:8px;align-items:center;
+    justify-content:space-between;flex-wrap:wrap}
+  .spending-finder .sf-record-intro{flex:1 1 180px;min-width:0}
+  .spending-finder .sf-record-meta{font-size:.65rem;color:#8793a4;margin-bottom:3px}
+  .spending-finder .sf-record h3{font:700 1.02rem/1.32 Georgia,serif;
+    margin:0;color:#0b2447;overflow-wrap:anywhere}
+  .spending-finder .sf-record-figure{align-items:flex-end;gap:2px;flex:none}
+  .spending-finder .sf-record .sf-amount{font:800 1.16rem/1.15 system-ui;
+    white-space:nowrap;color:#0b2447}
+  .spending-finder .sf-record-figure small{font-size:.64rem;color:#7d8b9c;
+    max-width:165px;white-space:normal;text-align:right}
+  .spending-finder .sf-card-bottom{display:flex;align-items:center;
+    justify-content:space-between;gap:8px;margin:9px 0 0;
+    font:550 .69rem/1.4 system-ui;color:#718198}
+  .spending-finder .sf-card-entity{overflow:hidden;text-overflow:ellipsis;
+    white-space:nowrap;max-width:67%}
+  .spending-finder .sf-card-arrow{color:#856629;font-weight:700;white-space:nowrap}
+  .spending-finder .sf-result-details{margin:2px 0 0;padding:0 4px;min-width:0}
+  .spending-finder .sf-result-details>summary{cursor:pointer;display:inline-flex;
+    align-items:center;gap:5px;color:#718096;font:550 .69rem/1.4 system-ui}
+  .spending-finder .sf-result-details>summary:hover{color:#254969}
+  .spending-finder .sf-result-detail-body{padding:8px 6px 10px;
+    border-bottom:1px solid #e7ecf2}
+  .spending-finder .sf-result-detail-body p{margin:0 0 6px;
+    font:.72rem/1.45 system-ui;color:#64758a;text-align:justify;text-align-last:left}
+  .spending-finder .sf-result-detail-body>a{display:inline-block;
+    margin:6px 0;color:#20527b;font:700 .72rem/1.4 system-ui}
+  .spending-finder .sf-lineage-list{margin:6px 0;padding:0;border:0}
+  .spending-finder .sf-lineage-list>summary{font:650 .72rem/1.4 system-ui;
+    color:#375873;cursor:pointer}
+  .spending-finder .sf-lineage-child-grid{display:flex;flex-wrap:wrap;gap:5px;padding:8px 0}
+  .spending-finder .sf-lineage-child{display:block;flex:1 1 190px;max-width:100%;
+    padding:6px 8px;border:1px solid #e1e7ee;border-radius:6px;
+    font:600 .7rem/1.35 system-ui;background:#fafbfd;color:#244769!important}
+  .spending-finder .sf-summary{display:flex;align-items:center;gap:12px;
+    justify-content:flex-start;border:0;margin:8px 0 10px;padding:0;
+    font:650 .74rem/1.4 system-ui;color:#52657d}
+  .spending-finder .sf-summary-explainer>summary{font:500 .69rem/1.3 system-ui;
+    color:#70839a;cursor:pointer}
+  .spending-finder .sf-summary-explainer p{font:.7rem/1.4 system-ui;
+    color:#64758b;margin:5px 0}
+  .spending-finder .sf-scope{font-size:.69rem;margin:4px 0}
+  @media(max-width:650px){
+    .spending-finder .sf-results{grid-template-columns:minmax(0,1fr);gap:12px}
+    .spending-finder .sf-record.sf-card-open{padding:11px 12px}
+    .spending-finder .sf-record-figure{align-items:flex-start}
+    .spending-finder .sf-record-figure small{text-align:left}
+    .spending-finder .sf-card-lineage{font-size:.65rem}
+  }
   `;
   root.append(styles);
   const controls=make("div","sf-controls");
