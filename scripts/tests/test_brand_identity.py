@@ -166,6 +166,30 @@ class BrandIdentityTests(unittest.TestCase):
         self.assertIn("display(seccionContainer);", cells[kpi])
         self.assertIn("display(financeSection);", cells[tables])
 
+    def test_one_minute_dashboard_is_first_in_thematic_dropdown(self):
+        """The overview needs a discoverable menu item, not only an anchor target."""
+        for page, target in (("index.md", "#resumen"),
+                             ("finanzas-publicas.md", "/#resumen")):
+            with self.subTest(page=page):
+                source = (ROOT / "app" / page).read_text(encoding="utf-8")
+                nav = source.split("<nav", 1)[1].split("</nav>", 1)[0]
+                dropdown = nav.split('<div class="idealab-nav-areas-panel">', 1)[1]
+                self.assertRegex(
+                    dropdown,
+                    r'^\s*<a class="il-areas-overview" href="' +
+                    re.escape(target) + r'">España en un minuto</a>'
+                )
+                self.assertEqual(nav.count(f'href="{target}">España en un minuto'), 2)
+                self.assertNotIn(">Indicadores</a>", nav)
+                self.assertIn(f'href="{target}">Economía</a>', nav)
+                self.assertIn("pointerenter", source)
+        home = (ROOT / "app" / "index.md").read_text(encoding="utf-8")
+        self.assertIn('header.id = "resumen"', home)
+        for page in ("metodologia.md", "actualizaciones.md", "quienes-somos.md"):
+            source = (ROOT / "app" / page).read_text(encoding="utf-8")
+            nav = source.split("<nav", 1)[1].split("</nav>", 1)[0]
+            self.assertEqual(nav.count('href="/#resumen">España en un minuto</a>'), 1)
+
     def test_x_bio_fits_limit(self):
         content = (ROOT / "editorial" / "PERFIL_X.md").read_text(encoding="utf-8")
         result = re.search(r"^> (Somos el canal editorial de IDEA LAB\..+)$", content, flags=re.M)
