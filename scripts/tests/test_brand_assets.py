@@ -32,7 +32,7 @@ class IDEAAssetsTests(unittest.TestCase):
     def test_favicon_in_global_head(self):
         config = (ROOT / "observablehq.config.js").read_text(encoding="utf-8")
         self.assertIn('rel="icon"', config)
-        self.assertIn('href="./favicon.svg"', config)
+        self.assertRegex(config, r'href="\./favicon\.svg(?:\?v=[^"]+)?"')
         self.assertIn('name="theme-color"', config)
 
 
