@@ -6,6 +6,6 @@ export default {
  toc: false,
  pager: false,
  preserveExtension: true,
- head: `<link rel="icon" type="image/svg+xml" href="./favicon.svg"><meta name="theme-color" content="#07304b">`,
+ head: `<link rel="icon" type="image/svg+xml" href="./favicon.svg?v=20261031"><meta name="theme-color" content="#07304b">`,
  theme: "light"
 };
