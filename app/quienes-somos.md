@@ -8,12 +8,12 @@ footer: IDEA LAB · Investigación, análisis y divulgación
 
 <style>
 :root{--il-ink:#102a4c;--il-muted:#52627a;--il-border:#e2e7ee;--il-paper:#f7f9fc;--il-accent:#b49a63;}
-.observablehq{max-width:1050px;margin:0 auto;padding:0 clamp(16px,3vw,34px)}
+.observablehq{max-width:1680px;margin:0 auto;padding:0 clamp(16px,3vw,34px)}
 .il-about{color:var(--il-ink);padding:clamp(12px,2.5vw,30px) 0 40px}
 .il-about-return{display:inline-block;margin:4px 0 22px;color:#294c7d;font-size:.9rem;text-decoration:none}
 .il-about-kicker{color:#a38a55;font-size:.77rem;letter-spacing:.12em;text-transform:uppercase;font-weight:750}
 .il-about h1{font-size:clamp(2.4rem,5.4vw,4rem);line-height:1.1;margin:.55rem 0 1rem}
-.il-about-lead{color:#43556b;font-size:clamp(1.05rem,1.7vw,1.28rem);max-width:75ch;line-height:1.65;margin-bottom:1.45rem}
+.il-about-lead{color:#43556b;font-size:clamp(1.05rem,1.7vw,1.28rem);max-width:none;line-height:1.65;margin-bottom:1.45rem}
 .il-about h2{font-size:1.48rem;line-height:1.2;margin:0 0 .85rem}
 .il-about p,.il-about li{line-height:1.65}
 .il-about section{border-top:1px solid var(--il-border);padding:1.65rem 0}
@@ -62,6 +62,54 @@ footer: IDEA LAB · Investigación, análisis y divulgación
   .il-site-brand{font-size:.93rem;}
   .il-site-home{padding:9px;font-size:.76rem;}
   .il-site-menu>summary{padding:9px;font-size:.76rem;}
+}
+
+
+/* IDEA LAB EDITORIAL LAYOUT: unbroken full-width content on every page.
+   Keep numeric figures, tables, navigation and Sankey labels left/right aligned. */
+.observablehq, #observablehq-main {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1680px !important;
+  margin-inline: auto;
+  padding-inline: clamp(12px, 2.6vw, 46px);
+}
+:is(.observablehq, #observablehq-main) > :is(p, blockquote, h1, h2, h3, ul, ol) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+}
+:is(.observablehq, #observablehq-main) > p,
+:is(.observablehq, #observablehq-main) > blockquote p {
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+@media (max-width: 768px) {
+  .observablehq, #observablehq-main { padding-inline: 12px; }
+}
+
+/* About: remove reading-column caps; use side-by-side purpose paragraphs. */
+.il-about { width: 100%; max-width: none; box-sizing: border-box; }
+.il-about-lead, .il-about section > p, .il-about-card p, .il-about-note {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  text-align: justify;
+  text-align-last: left;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+@media (min-width: 1100px) {
+  .il-about section:first-of-type {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .75rem 1.8rem;
+    align-items: start;
+  }
+  .il-about section:first-of-type > h2 { grid-column: 1 / -1; }
+  .il-about section:first-of-type > p { margin: 0; min-width: 0; }
 }
 
 </style>
