@@ -35,6 +35,9 @@ export function searchSpendingRecords(items, query, options = {}) {
   const q = normalizeSpending(query);
   const phraseHealthPublic = /\bsalud publica\b/.test(q);
   let terms = q.split(" ").filter(word => word && !STOP_WORDS.has(word));
+  // «Atención sanitaria» es una expresión corriente para referirse al
+  // conjunto de la función salud, no una fila de gasto llamada «atención».
+  if (/\\batencion sanitaria\\b/.test(q)) terms = terms.filter(t=>t!=="atencion");
   // La expresión "salud pública" sí corresponde específicamente al grupo 07.4.
   if (phraseHealthPublic) terms = terms.filter(t => t !== "salud").concat(["saludpublica"]);
   const selectedCode = String(options.cofog || "");
