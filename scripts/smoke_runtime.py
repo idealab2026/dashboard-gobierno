@@ -255,6 +255,29 @@ def main() -> None:
                     raise AssertionError("No hay detalle verificable de programa de Transporte: " + required)
             print("Detalle Transporte 04.5 OK: programas 453B/453C y capítulos respaldados")
 
+            # Each administration has its own audited flow: ministry PGE and
+            # CCAA IGAE are rendered separately with their vintage visible.
+            for type_arg, expected in [
+                ("?tipo=ministerio&id=17",("Transportes y Movilidad Sostenible",
+                   "2025-P", "11.457", "Administraciones" )),
+                ("?tipo=ccaa&id=1", ("Andalucía","2024","COFOG","Salud"))
+            ]:
+                admin_url=f"http://127.0.0.1:{server.server_port}/{BASE}/administraciones.html"+type_arg
+                admin_browser = subprocess.run(
+                    [*args[:-1], "--virtual-time-budget=10000", admin_url],
+                    text=True, capture_output=True, timeout=85
+                )
+                if admin_browser.returncode:
+                    raise AssertionError("Chrome no abre Sankeys por administración: "+type_arg)
+                admin_dom=admin_browser.stdout
+                for needle_text in expected:
+                    if needle_text not in admin_dom:
+                        raise AssertionError(f"Falta {needle_text} en Sankey {type_arg}")
+                if 'class="ad-flow"' not in admin_dom or "RuntimeError:" in admin_dom:
+                    raise AssertionError("Sankey ministerial o regional ausente: "+type_arg)
+                print("Sankey validado en Chrome",type_arg)
+
+
         finally:
             server.shutdown()
             server.server_close()
