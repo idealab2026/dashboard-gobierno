@@ -284,7 +284,7 @@ def main() -> None:
                              'class="il-tm-canvas"',
                              'class="il-tm-cell',
                              "2024",
-                             "Protección social",
+                             "Pensiones e incapacidad",
                              "2024 · 725.001 millones",
                              'class="il-tm-year-select"',
                              'class="il-tm-timeline"'):
