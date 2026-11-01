@@ -142,7 +142,7 @@ export function createTreasuryDebtView(data=TREASURY_DEBT_2024){
  * Gross issues and principal repayments are flows; net issuance is a difference,
  * NOT a destination for the money received. No link is drawn to the S.13 fund.
  */
-export function createIntegratedTreasuryRibbon(onExplore,data=TREASURY_DEBT_2024){
+export function createIntegratedTreasuryRibbon(onExplore,data=TREASURY_DEBT_2024,{interest=null,onInterest=null}={}){
   const b=validateTreasuryDebt(data);
   const main=dom("section","pf-integrated-financing");
   main.setAttribute("aria-label","Deuda pública en el mapa principal: emisiones, amortizaciones y saldo neto del Tesoro");
@@ -198,6 +198,16 @@ export function createIntegratedTreasuryRibbon(onExplore,data=TREASURY_DEBT_2024
   pill(900,150,390,91,"Emisión neta · saldo, no pago",b.net,"pf-integrated-balance");
   container.append(svg);
   main.append(container);
+  if(interest&&Number.isFinite(Number(interest.value))&&Number(interest.value)>0){
+    const existing=dom("div","pf-integrated-interest");
+    existing.append(dom("strong","","Intereses de deuda · COFOG 01.7"),
+      dom("span","",fmt(Number(interest.value))+" · ya incluidos en el gasto S.13 del gráfico superior"));
+    if(typeof onInterest==="function"){
+      const link=dom("button","","Explorar intereses en el Sankey ↗");
+      link.type="button";link.addEventListener("click",onInterest);existing.append(link);
+    }
+    main.append(existing);
+  }
   main.append(dom("p","pf-integrated-disclaimer",
     "Las entradas y salidas mostradas son del Tesoro, no de todas las Administraciones Públicas. "+
     "El saldo neto es la diferencia emisión − amortización, no un destino del dinero; "+
