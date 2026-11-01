@@ -71,7 +71,7 @@ test("compact atlas renders all six interactive previews with search and modal",
  assert.match(gallery,/dialog\.addEventListener\("close"/);
  assert.match(gallery,/dialog\.addEventListener\("click"/);
  assert.match(gallery,/lastTrigger\.focus/);
- assert.match(gallery,/queryMicrotask\(\(\)=>openChart\(initial\)\)/);
+ assert.match(gallery,/queueMicrotask\(\(\)=>openChart\(initial\)\)/);
  assert.match(gallery,/objective\.append\(sub,objectiveGrid\)/);
  assert.doesNotMatch(page,/<div id="cofog-treemap-root"><\/div>/);
  assert.doesNotMatch(page,/<div class="il-audit"/);
