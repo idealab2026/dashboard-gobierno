@@ -134,3 +134,74 @@ export function createTreasuryDebtView(data=TREASURY_DEBT_2024){
   root.append(source);
   return root;
 }
+
+
+/**
+ * A persistent, legible secondary tier INSIDE the principal money diagram.
+ * Separate scope (State Treasury vs ESA S.13) and separate accounting basis.
+ * Gross issues and principal repayments are flows; net issuance is a difference,
+ * NOT a destination for the money received. No link is drawn to the S.13 fund.
+ */
+export function createIntegratedTreasuryRibbon(onExplore,data=TREASURY_DEBT_2024){
+  const b=validateTreasuryDebt(data);
+  const main=dom("section","pf-integrated-financing");
+  main.setAttribute("aria-label","Deuda pública en el mapa principal: emisiones, amortizaciones y saldo neto del Tesoro");
+  main.dataset.perimeter="treasury-state";
+  const heading=dom("div","pf-integrated-heading");
+  const intro=dom("div","pf-integrated-headline");
+  intro.append(
+    dom("strong","","02 · DEUDA Y FINANCIACIÓN"),
+    dom("span","","Tesoro del Estado · "+data.year+" · no consolidado S.13")
+  );
+  const more=dom("button","pf-integrated-explore","Ver desglose de deuda ↗");
+  more.type="button";
+  if(typeof onExplore==="function")more.addEventListener("click",onExplore);
+  heading.append(intro,more);
+  main.append(heading);
+  const container=dom("div","pf-integrated-canvas");
+  const svg=svgEl("svg",{
+    viewBox:"0 0 1320 244",
+    role:"img",
+    "aria-label":"Tesoro del Estado 2024: entrada por emisiones brutas 259.365 millones, salida por amortización del principal 204.332 millones, emisión neta saldo 55.034 millones. Diferencia de redondeo de un millón en la suma de líneas."
+  });
+  const tag=(x,y,value,klass)=>{
+    addText(svg,x,y,value,"pf-integrated-svg-text "+klass);
+  };
+  const pill=(x,y,w,h,top,major,cls)=>{
+    const g=svgEl("g",{class:"pf-integrated-svg-box "+cls});
+    g.append(svgEl("rect",{x,y,width:w,height:h,rx:8}));
+    const lab=svgEl("text",{x:x+15,y:y+27,class:"pf-integrated-svg-title"});
+    lab.textContent=top;g.append(lab);
+    const value=svgEl("text",{x:x+15,y:y+66,class:"pf-integrated-svg-number"});
+    value.textContent=fmt(major);g.append(value);svg.append(g);
+  };
+  // Dashed boundary: a visual sibling, NEVER an S.13 monetary connection.
+  svg.append(svgEl("path",{
+    d:"M 8 7 L 1312 7",
+    class:"pf-integrated-boundary"
+  }));
+  tag(32,37,"ENTRADAS DEL TESORO","pf-integrated-overline");
+  tag(503,37,"OPERACIONES FINANCIERAS","pf-integrated-overline");
+  tag(903,37,"SALIDAS Y SALDO NETO","pf-integrated-overline");
+  // The visual widths are proportional only WITHIN this perimeter.
+  // The net difference is dotted and expressly NOT an expense.
+  const width=39;
+  svg.append(svgEl("path",{d:curve(360,125,470,125,width),
+    class:"pf-integrated-svg-link pf-integrated-gross"}));
+  svg.append(svgEl("path",{d:curve(793,110,900,99,width*b.repayments/b.gross),
+    class:"pf-integrated-svg-link pf-integrated-amort"}));
+  svg.append(svgEl("path",{d:curve(793,142,900,182,width*b.net/b.gross),
+    class:"pf-integrated-svg-link pf-integrated-difference"}));
+  pill(32,76,328,96,"Nueva deuda emitida",b.officialGross,"pf-integrated-in");
+  pill(470,76,323,96,"Tesoro · emisiones brutas",b.gross,"pf-integrated-central");
+  pill(900,48,390,91,"Capital devuelto (amortización)",b.repayments,"pf-integrated-out");
+  pill(900,150,390,91,"Emisión neta · saldo, no pago",b.net,"pf-integrated-balance");
+  container.append(svg);
+  main.append(container);
+  main.append(dom("p","pf-integrated-disclaimer",
+    "Las entradas y salidas mostradas son del Tesoro, no de todas las Administraciones Públicas. "+
+    "El saldo neto es la diferencia emisión − amortización, no un destino del dinero; "+
+    "las líneas oficiales difieren en 1 M€ por redondeo. "+
+    "No debe sumarse a COFOG ni interpretarse como una conciliación de caja del S.13."));
+  return main;
+}
