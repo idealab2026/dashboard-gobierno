@@ -148,7 +148,7 @@ export function createVisualizationGallery({treemap,socialRoot,rows,history,soci
     const a=el("a","",s+" ↗");
     a.href=[
       "https://www.ine.es",
-      "https://www.observatoriodelaemancipacion.org",
+      "https://cdn.mivau.gob.es/portal-web-mivau/Datos_MIVAU/CSV/VDP006_01.csv",
       "https://www.sanidad.gob.es"
     ][i];a.target="_blank";a.rel="noopener noreferrer";return a;
   }));
