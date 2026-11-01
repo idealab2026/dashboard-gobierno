@@ -20,7 +20,7 @@ try:
   w=E.fromstring(z.read("xl/workbook.xml"))
   sheets=w.find("m:sheets",NS)
   print("IGAE_COF_HIST bytes",len(data),"sheets",[(s.attrib.get("name"),s.attrib.get("sheetId")) for s in sheets])
-  for sh in sorted(x for x in z.namelist() if re.fullmatch(r"xl/worksheets/sheet\\d+\\.xml",x))[:3]:
+  for sh in sorted(x for x in z.namelist() if re.fullmatch(r"xl/worksheets/sheet\d+\.xml",x))[:3]:
     x=E.fromstring(z.read(sh))
     print("IGAE_COF_SHEET",sh)
     printed=0
