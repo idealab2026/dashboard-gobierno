@@ -74,9 +74,10 @@ function svgEl(name, attrs = {}) {
   return el;
 }
 
-function htmlEl(name, className = "") {
+function htmlEl(name, className = "", textContent) {
   const el = document.createElement(name);
   if (className) el.className = className;
+  if (textContent !== undefined) el.textContent = String(textContent);
   return el;
 }
 
