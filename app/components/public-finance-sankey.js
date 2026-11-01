@@ -523,6 +523,16 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     .pf-integrated-svg-number{font:850 28px system-ui,sans-serif;fill:#0b2447}
     .pf-integrated-central .pf-integrated-svg-title,
     .pf-integrated-central .pf-integrated-svg-number{fill:white}
+
+    .pf-integrated-interest{display:flex;gap:5px 12px;align-items:center;
+      flex-wrap:wrap;background:#f2f5f9;border:1px solid #d9e2eb;
+      border-radius:6px;padding:8px 11px;margin:7px 0 2px;
+      font:550 .72rem/1.4 system-ui,sans-serif;color:#4c6680}
+    .pf-integrated-interest strong{color:#173b60;font-weight:800}
+    .pf-integrated-interest button{margin-left:auto;border:0;background:none;
+      color:#1e537b;cursor:pointer;padding:3px 0;
+      font:750 .7rem/1.35 system-ui,sans-serif}
+    .pf-integrated-interest button:hover{text-decoration:underline}
     .pf-integrated-disclaimer{
       margin:8px 0 0!important;font:550 .68rem/1.55 system-ui,sans-serif;
       color:#718199;text-align:justify;max-width:none}
@@ -1641,7 +1651,12 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     // Same main visual surface: the Treasury strip is always visible below
     // the primary COFOG Sankey, irrespective of an open functional branch.
     // It is not a component on another page, another tab or a hidden drawer.
-    chart.append(svg,createIntegratedTreasuryRibbon(()=>setMode("treasury")));
+    chart.append(svg,createIntegratedTreasuryRibbon(
+      ()=>setMode("treasury"),
+      TREASURY_DEBT_2024,
+      {interest:currentYear===2024?byCode.get("01.7"):null,
+       onInterest:()=>{const item=byCode.get("01.7");if(item)openDetail(item);}}
+    ));
 
     badge.textContent = `${currentYear} · ${expenseRows.length} funciones COFOG · deuda Tesoro visible`;
     const hasAdjustment = incomeRows.some(d => d.is_vintage_adjustment);
