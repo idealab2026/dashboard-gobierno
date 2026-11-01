@@ -60,7 +60,17 @@ def extract(body):
         raise ValueError("MIVAU schema changed: "+str(rd.fieldnames))
     filtered=[]
     sample=[]
-    seen=set()
+    seen={}
+    single_province_codes={"4","6","17","18","19"}
+    official_names={
+      "Madrid, Comunidad de":"Madrid",
+      "Navarra, Comunidad Foral de":"Navarra",
+      "Asturias, Principado de":"Asturias",
+      "Murcia, Region de":"Región de Murcia",
+      "Balears, Illes":"Islas Baleares",
+      "Rioja, La":"La Rioja",
+      "Total nacional":"España"
+    }
     for row in rd:
         year=int(row["Año"])
         quarter=int(row["Trimestre"])
@@ -75,21 +85,21 @@ def extract(body):
         if year==2026 and quarter==2 and len(sample)<100:
             sample.append({"cpro":cpro,"province":prov,
                   "region":community,"code":code,"value":v})
-        # Source includes provincial figures, which MUST NOT be averaged to
-        # synthesize an autonomous community estimate.
-        if cpro not in ("","null","None","NA","-"):continue
-        territory=community
-        # Provincial aggregate lacking CPRO is only a territorial total when
-        # explicitly labelled as the same community or "Total".
-        norm=lambda s:unicodedata.normalize("NFKD",s).encode("ascii","ignore").decode().lower().strip()
-        if norm(prov) not in ("","total","total nacional","nacional",norm(community)):
-            continue
+        # Official totals are explicitly marked as "Total CCAA" or
+        # "Total nacional". In single-province communities the only published
+        # aggregate can be their provincial row; it is that same entire CCAA.
+        is_total=cpro in ("","null","None","NA") and prov in ("Total CCAA","Total nacional")
+        is_single=code in single_province_codes and cpro.isdigit()
+        if not (is_total or is_single):continue
+        territory=official_names.get(community,community)
+        if prov=="Total nacional":territory="España"
         if not territory:continue
-        if territory.lower() in ("total nacional","total","nacional"):territory="España"
-        if norm(territory) in ("comunidad de madrid","madrid"):territory="Madrid"
         key=(territory,year,quarter)
-        if key in seen:raise ValueError("Duplicated regional aggregate "+str(key))
-        seen.add(key)
+        if key in seen:
+            # MIVAU occasionally publishes the same Navarre total twice.
+            if abs(seen[key]-v)<.01:continue
+            raise ValueError("Conflicting duplicate aggregate "+str(key))
+        seen[key]=v
         filtered.append({"territory":territory,"year":year,"quarter":quarter,"value":v})
     print("HOUSING_AGGREGATE_DIAG",json.dumps(sample,ensure_ascii=False))
     print("HOUSING_PARSED_COUNTS",len(filtered),
