@@ -51,6 +51,8 @@ jobs:
           npm ci
       - name: Build 22 official ministry and 17 CCAA spending datasets
         run: python scripts/build_administration_sankeys.py
+      - name: Inspect COFOG historical xlsx for verified year extraction
+        run: python scripts/inspect_cofog_history.py
       - name: Weekly check against official INE and IGAE sources
         run: python scripts/refresh_official.py
       - name: Read latest literal INE observations
