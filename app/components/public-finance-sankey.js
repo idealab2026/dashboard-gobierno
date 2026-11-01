@@ -547,8 +547,35 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     .pf-integrated-explore:hover{border-color:#9ab0c6;background:#f1f5f8}
     .pf-integrated-explore:focus-visible{outline:2px solid #b58d47;outline-offset:2px}
     .pf-integrated-canvas{width:100%;overflow-x:auto;overflow-y:hidden}
-    .pf-chart .pf-integrated-canvas>svg{width:100%;height:auto;
-      min-width:780px;max-width:none;display:block}
+    .pf-integrated-canvas{overflow:visible;display:grid;grid-template-columns:minmax(140px,.8fr) minmax(0,2.1fr);
+      align-items:center;column-gap:18px;row-gap:9px}
+    .pf-integrated-issued{display:flex;flex-direction:column;gap:3px;color:#47607a}
+    .pf-integrated-issued span{font:750 .76rem/1.2 system-ui,sans-serif}
+    .pf-integrated-issued strong{font:900 clamp(1.3rem,2vw,1.9rem)/1.1 system-ui,sans-serif;
+      color:#0b2447;font-variant-numeric:tabular-nums}
+    .pf-integrated-issued small{font:600 .68rem/1.25 system-ui,sans-serif;color:#947034}
+    .pf-integrated-bar{display:flex;height:45px;overflow:hidden;border-radius:6px;
+      background:#f1f3f5;border:1px solid #d3dfe9;box-sizing:border-box}
+    .pf-integrated-bar-repay{background:#d0a15f;min-width:0}
+    .pf-integrated-bar-net{background:#91abc7;min-width:0}
+    .pf-integrated-bar-legend{grid-column:2;display:flex;gap:9px 18px;flex-wrap:wrap;
+      justify-content:space-between;min-width:0}
+    .pf-integrated-bar-key{display:flex;align-items:center;gap:6px;min-width:0}
+    .pf-integrated-dot{flex:none;width:9px;height:9px;border-radius:3px}
+    .pf-integrated-dot-repay{background:#d0a15f}
+    .pf-integrated-dot-net{background:#91abc7}
+    .pf-integrated-bar-key span:not(.pf-integrated-dot){
+      font:650 .7rem/1.3 system-ui,sans-serif;color:#62758a}
+    .pf-integrated-bar-key strong{font:850 .77rem/1.3 system-ui,sans-serif;
+      color:#193b60;font-variant-numeric:tabular-nums}
+    @media(max-width:760px){
+      .pf-integrated-canvas{grid-template-columns:1fr;gap:7px}
+      .pf-integrated-issued{gap:1px}
+      .pf-integrated-issued strong{font-size:1.45rem}
+      .pf-integrated-bar{height:28px}
+      .pf-integrated-bar-legend{grid-column:1;gap:6px}
+      .pf-integrated-bar-key{flex:1 1 170px;flex-wrap:wrap}
+    }
     .pf-integrated-boundary{fill:none;stroke:#b79a65;stroke-dasharray:5 7;
       stroke-width:1.4}
     .pf-integrated-svg-text{font:800 12px system-ui,sans-serif;
@@ -580,7 +607,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     .pf-integrated-disclaimer{
       margin:8px 0 0!important;font:550 .68rem/1.55 system-ui,sans-serif;
       color:#718199;text-align:justify;max-width:none}
-    .pf-chart.is-expanded .pf-integrated-financing{min-width:780px}
+    .pf-chart.is-expanded .pf-integrated-financing{min-width:0}
     @media(max-width:760px){
       .pf-chart .pf-integrated-financing{padding:10px 9px}
       .pf-integrated-headline strong{font-size:.72rem}
