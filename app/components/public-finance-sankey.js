@@ -496,6 +496,30 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     }
 
 
+
+    .pf-cash-concept{border:1px solid #d8e2ed;border-top:3px solid #af9470;
+      background:#fffdfa;padding:11px 14px;border-radius:8px;margin:8px 0;
+      width:100%;box-sizing:border-box;min-width:0}
+    .pf-cash-concept-heading{font:800 .86rem/1.3 system-ui,sans-serif;
+      color:#142f4e;margin-bottom:10px}
+    .pf-cash-concept-flow{display:grid;grid-template-columns:minmax(0,1fr) 20px
+      minmax(0,1fr) 20px minmax(0,1fr);align-items:center;gap:6px}
+    .pf-cash-concept-block{border:1px solid #dbe3eb;border-radius:7px;padding:10px 12px;
+      background:#f6f9fc;display:flex;flex-direction:column;gap:4px;min-width:0}
+    .pf-cash-concept-block:nth-child(3){background:#eff4f8;border-color:#aabed0}
+    .pf-cash-concept-block strong{font:800 .76rem/1.25 system-ui,sans-serif;color:#143352}
+    .pf-cash-concept-block span{font:550 .7rem/1.35 system-ui,sans-serif;color:#5e7388}
+    .pf-cash-concept-arrow{text-align:center;color:#b1884c;
+      font:850 1.2rem/1 system-ui,sans-serif}
+    .pf-cash-concept-note{display:block;text-align:right;margin-top:6px;
+      color:#79899b;font:550 .64rem/1.3 system-ui,sans-serif}
+    @media(max-width:760px){
+      .pf-cash-concept{padding:10px}
+      .pf-cash-concept-flow{grid-template-columns:minmax(0,1fr);gap:2px}
+      .pf-cash-concept-block{padding:8px 9px}
+      .pf-cash-concept-arrow{transform:rotate(90deg);font-size:1rem}
+      .pf-cash-concept-note{text-align:left}
+    }
     /* Two identities: no false conservation across separate accounting perimeters. */
     .pf-bridge-overview{display:grid;grid-template-columns:minmax(0,1fr);
       gap:7px;padding:11px 12px;margin:8px 0 10px;border:1px solid #dce3ec;
@@ -1855,6 +1879,32 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     // appears below it in the very same chart.
     chart.append(overview,svg);
     if(currentYear===TREASURY_DEBT_2024.year){
+      // The same money from tax receipts can be used for principal repayments.
+      // This schematic describes Treasury unit-of-cash, NOT measurable
+      // origin-to-destination flows across the distinct S.13 / State scopes.
+      const bridge=htmlEl("section","pf-cash-concept");
+      bridge.setAttribute("aria-label","Cómo pueden los impuestos financiar la amortización de deuda");
+      const bridgeHeading=htmlEl("div","pf-cash-concept-heading");
+      bridgeHeading.textContent="¿De dónde sale el dinero para devolver deuda?";
+      const bridgeFlow=htmlEl("div","pf-cash-concept-flow");
+      for(const [i,title,description] of [
+        [0,"Entradas en caja","Impuestos y otros cobros + nueva financiación + caja inicial"],
+        [1,"Tesorería del Estado","Unidad de caja: el dinero es fungible"],
+        [2,"Salidas y caja final","Servicios, intereses, capital devuelto y saldo final"]
+      ]){
+        if(i){
+          const arrow=htmlEl("span","pf-cash-concept-arrow");
+          arrow.textContent="→";arrow.setAttribute("aria-hidden","true");
+          bridgeFlow.append(arrow);
+        }
+        const block=htmlEl("div","pf-cash-concept-block");
+        block.append(htmlEl("strong","",title),htmlEl("span","",description));
+        bridgeFlow.append(block);
+      }
+      const bridgeNote=htmlEl("span","pf-cash-concept-note");
+      bridgeNote.textContent="Esquema conceptual del Estado · sin importes cruzados con S.13";
+      bridge.append(bridgeHeading,bridgeFlow,bridgeNote);
+      chart.append(bridge);
       chart.append(createIntegratedTreasuryRibbon(
         ()=>setMode("treasury"),
         TREASURY_DEBT_2024,
@@ -1899,6 +1949,11 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
   // Nunca se abre si el código no figura en los datos del ejercicio vigente.
   const deepCode = currentView==="cofog"?
     new URLSearchParams(window.location.search).get("detalle-cofog"):null;
+  if(currentView==="cofog" &&
+     new URLSearchParams(window.location.search).get("detalle-central")==="1"){
+    const center=rowMapForYear().get("S13.GASTO");
+    if(center)openDetail(center);
+  }
   if (deepCode && /^\d{2}(?:\.\d+){0,2}$/.test(deepCode)) {
     const selected = rowMapForYear().get(deepCode);
     if (selected?.side === "gasto") openDetail(selected);
