@@ -399,7 +399,7 @@ def main() -> None:
                 "Salarios brutos por edad",
                 "Vivienda: valor tasado por m²",
                 "¿Qué preocupa a los españoles?",
-                "28,43",
+                "28,4 %",
                 "55,7"
             ):
                 if fragment not in atlas_dom:
