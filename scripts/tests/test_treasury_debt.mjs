@@ -54,3 +54,18 @@ test("principal map contains two independent identities and one compact proporti
  assert.match(ribbon,/No debe sumarse a COFOG/);
  assert.doesNotMatch(file,/chart\.replaceChildren\(createIntegratedTreasuryRibbon/);
 });
+
+test("clicking the center populates a cash-accounting explanation rather than an empty drawer",()=>{
+ const source=readFileSync(new URL("../../app/components/public-finance-sankey.js",import.meta.url),"utf8");
+ assert.match(source,/centerGroup\.addEventListener\("click", \(\) => openDetail\(gasto\)\)/);
+ assert.match(source,/if\(row\.code==="S13\.GASTO"\)\{/);
+ assert.match(source,/detail\.append\(h\)/);
+ assert.match(source,/detail\.append\(facts\)/);
+ assert.match(source,/detail\.append\(paths\)/);
+ assert.match(source,/root\.classList\.add\("is-detail-open"\);\s*return;/);
+ assert.match(source,/detalle-central/);
+ assert.match(source,/pf-cash-concept/);
+ assert.match(source,/Impuestos y otros cobros \+ nueva financiación \+ caja inicial/);
+ assert.match(source,/Esquema conceptual del Estado/);
+ assert.doesNotMatch(source,/if\(row\.code==="S13\.GASTO"\)return;/);
+});
