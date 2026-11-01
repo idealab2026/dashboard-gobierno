@@ -1,0 +1,218 @@
+{
+  "schema": "idea-lab-social-trends-v1",
+  "pensions": {
+    "definition": "Pensiones efectivamente identificadas (incluidas Clases Pasivas) / gasto no financiero consolidado S.13, no todos los grupos COFOG 10.1-10.3.",
+    "unit": "% del gasto público",
+    "source": "IGAE · Informe COFOG 2020–2024",
+    "url": "https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Documents/AAPP_A/Funcional%202020-2024.pdf",
+    "rows": [
+      {
+        "year": 2020,
+        "pensions": 158071,
+        "spending": 580164
+      },
+      {
+        "year": 2021,
+        "pensions": 165784,
+        "spending": 611124
+      },
+      {
+        "year": 2022,
+        "pensions": 174507,
+        "spending": 637117
+      },
+      {
+        "year": 2023,
+        "pensions": 193192,
+        "spending": 680225
+      },
+      {
+        "year": 2024,
+        "pensions": 206130,
+        "spending": 725001
+      }
+    ]
+  },
+  "salaries": {
+    "definition": "Salario medio bruto mensual del empleo principal de asalariados, no mediana ni salario anual. EPA 2019–2024. Grupos de edad diferentes en tamaño y estructura.",
+    "source": "INE · Decil de salarios del empleo principal, EPA 2024",
+    "url": "https://www.ine.es/dyngs/Prensa/dsEPA2024.htm",
+    "years": [
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024
+    ],
+    "groups": [
+      {
+        "code": "16-24",
+        "label": "16–24 años",
+        "values": [
+          1184.7,
+          1207.1,
+          1228.9,
+          1319,
+          1387.4,
+          1372.8
+        ]
+      },
+      {
+        "code": "25-34",
+        "label": "25–34 años",
+        "values": [
+          1671.5,
+          1723.7,
+          1777.5,
+          1837,
+          2011.5,
+          2131.6
+        ]
+      },
+      {
+        "code": "35-44",
+        "label": "35–44 años",
+        "values": [
+          2015.8,
+          2048.5,
+          2125.8,
+          2172.8,
+          2279.7,
+          2399.8
+        ]
+      },
+      {
+        "code": "45-54",
+        "label": "45–54 años",
+        "values": [
+          2157.1,
+          2199.4,
+          2288.2,
+          2285.9,
+          2522.2,
+          2591.6
+        ]
+      },
+      {
+        "code": "55+",
+        "label": "55 años o más",
+        "values": [
+          2306.3,
+          2361.2,
+          2329.8,
+          2361.8,
+          2478,
+          2680.7
+        ]
+      }
+    ],
+    "total": [
+      1982.3,
+      2038.6,
+      2087.7,
+      2118.8,
+      2273,
+      2385.6
+    ]
+  },
+  "concerns": {
+    "year": 2026,
+    "month": "octubre",
+    "study": "CIS 3582",
+    "kind": "Porcentaje de entrevistados que mencionan cada asunto entre los tres principales problemas de España (respuesta múltiple; no suma 100%). Es percepción declarada, no incidencia objetiva.",
+    "url": "https://www.cis.es/es/estudios/barometro-de-octubre-2026",
+    "source": "CIS · Barómetro octubre de 2026, estudio 3582",
+    "rows": [
+      {
+        "key": "housing",
+        "label": "Vivienda",
+        "pct": 55.7
+      },
+      {
+        "key": "migration",
+        "label": "Inmigración",
+        "pct": 20.9
+      },
+      {
+        "key": "economy",
+        "label": "Economía",
+        "pct": 20.3
+      },
+      {
+        "key": "work",
+        "label": "Calidad del empleo",
+        "pct": 19.4
+      },
+      {
+        "key": "politics",
+        "label": "Gobierno y partidos políticos",
+        "pct": 15.1
+      },
+      {
+        "key": "health",
+        "label": "Sanidad",
+        "pct": 14.4
+      },
+      {
+        "key": "political_issues",
+        "label": "Problemas políticos generales",
+        "pct": 10.1
+      },
+      {
+        "key": "unemployment",
+        "label": "Paro",
+        "pct": 9.6
+      },
+      {
+        "key": "education",
+        "label": "Educación",
+        "pct": 8.7
+      }
+    ]
+  },
+  "objective": {
+    "housing": {
+      "value": 2355,
+      "unit": "€/m²",
+      "period": "2T 2026",
+      "description": "Valor tasado medio de vivienda libre en España; no es precio de compraventa.",
+      "url": "https://datos.gob.es/es/catalogo/e05233601-valor-tasado-de-la-vivienda"
+    },
+    "economy": {
+      "value": 4.9,
+      "unit": "% interanual",
+      "period": "sep. 2026",
+      "description": "IPC general, inflación interanual; no mide toda la economía.",
+      "url": "https://www.ine.es/prensa/ipc_tabla.htm"
+    },
+    "work": {
+      "value": 2385.6,
+      "unit": "€/mes bruto",
+      "period": "2024",
+      "description": "Salario medio de asalariados; distribución y composición del empleo influyen.",
+      "url": "https://www.ine.es/dyngs/Prensa/dsEPA2024.htm"
+    },
+    "unemployment": {
+      "value": 10.18,
+      "unit": "% población activa",
+      "period": "3T 2026",
+      "description": "Tasa de desempleo EPA, trimestre 3 de 2026.",
+      "url": "https://www.ine.es/dyngs/Prensa/EPA3T26.htm"
+    },
+    "migration": {
+      "value": 7437543,
+      "unit": "residentes de nacionalidad extranjera",
+      "period": "1 jul. 2026",
+      "description": "Población de nacionalidad extranjera (+4,9 % interanual); no mide delincuencia ni irregularidad.",
+      "url": "https://www.ine.es/dyngs/Prensa/ECP2T26.htm"
+    },
+    "health": {
+      "value": 102,
+      "unit": "días",
+      "period": "dic. 2025",
+      "description": "Tiempo medio en lista para primera consulta especializada del SNS; no todas las esperas sanitarias.",
+      "url": "https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/docs/LISTAS_PUBLICACION_Dic_2025.pdf"
+    }
+  }
+}
