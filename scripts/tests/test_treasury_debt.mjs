@@ -29,7 +29,7 @@ test("principal money map renders treasury band by default without replacing COF
  const file=readFileSync(new URL("../../app/components/public-finance-sankey.js",import.meta.url),"utf8");
  const ribbon=readFileSync(new URL("../../app/components/treasury-debt-flow.js",import.meta.url),"utf8");
  assert.match(file,/chart\.append\(svg,createIntegratedTreasuryRibbon\(/);
- assert.match(file,/spendingButton\.textContent="Mapa completo"/);
+ assert.match(file,/spendingButton\.textContent="Mapa principal · gasto y deuda"/);
  assert.match(file,/if\(currentView==="treasury"\)/);
  assert.match(file,/resetInlineSankey\(\)/);
  assert.match(file,/\.pf-integrated-financing/);
