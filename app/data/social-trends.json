@@ -177,42 +177,54 @@
       "unit": "€/m²",
       "period": "2T 2026",
       "description": "Valor tasado medio de vivienda libre en España; no es precio de compraventa.",
-      "url": "https://datos.gob.es/es/catalogo/e05233601-valor-tasado-de-la-vivienda"
+      "url": "https://datos.gob.es/es/catalogo/e05233601-valor-tasado-de-la-vivienda",
+      "change_pct": 12.49,
+      "change_caption": "Variación interanual frente a 2T 2025"
     },
     "economy": {
       "value": 4.9,
       "unit": "% interanual",
       "period": "sep. 2026",
       "description": "IPC general, inflación interanual; no mide toda la economía.",
-      "url": "https://www.ine.es/prensa/ipc_tabla.htm"
+      "url": "https://www.ine.es/prensa/ipc_tabla.htm",
+      "change_pp": 1.9,
+      "change_caption": "Puntos porcentuales vs. septiembre 2025"
     },
     "work": {
       "value": 2385.6,
       "unit": "€/mes bruto",
       "period": "2024",
       "description": "Salario medio de asalariados; distribución y composición del empleo influyen.",
-      "url": "https://www.ine.es/dyngs/Prensa/dsEPA2024.htm"
+      "url": "https://www.ine.es/dyngs/Prensa/dsEPA2024.htm",
+      "change_pct": 4.95,
+      "change_caption": "Variación del salario medio vs. 2023"
     },
     "unemployment": {
       "value": 10.18,
       "unit": "% población activa",
       "period": "3T 2026",
       "description": "Tasa de desempleo EPA, trimestre 3 de 2026.",
-      "url": "https://www.ine.es/dyngs/Prensa/EPA3T26.htm"
+      "url": "https://www.ine.es/dyngs/Prensa/EPA3T26.htm",
+      "change_pp": 0.31,
+      "change_caption": "Puntos porcentuales vs. 2T 2026"
     },
     "migration": {
       "value": 7437543,
       "unit": "residentes de nacionalidad extranjera",
       "period": "1 jul. 2026",
       "description": "Población de nacionalidad extranjera (+4,9 % interanual); no mide delincuencia ni irregularidad.",
-      "url": "https://www.ine.es/dyngs/Prensa/ECP2T26.htm"
+      "url": "https://www.ine.es/dyngs/Prensa/ECP2T26.htm",
+      "change_pct": 4.88,
+      "change_caption": "Población extranjera vs. julio 2025"
     },
     "health": {
       "value": 102,
       "unit": "días",
       "period": "dic. 2025",
       "description": "Tiempo medio en lista para primera consulta especializada del SNS; no todas las esperas sanitarias.",
-      "url": "https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/docs/LISTAS_PUBLICACION_Dic_2025.pdf"
+      "url": "https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/docs/LISTAS_PUBLICACION_Dic_2025.pdf",
+      "change_absolute": -3,
+      "change_caption": "Días de espera vs. diciembre 2024"
     }
   }
 }
