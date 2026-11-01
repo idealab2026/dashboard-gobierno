@@ -548,7 +548,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
   modeSwitch.setAttribute("role","group");
   modeSwitch.setAttribute("aria-label","Tipo de flujo de dinero público");
   const spendingButton=htmlEl("button");
-  spendingButton.type="button";spendingButton.textContent="Mapa completo";
+  spendingButton.type="button";spendingButton.textContent="Mapa principal · gasto y deuda";
   const financingButton=htmlEl("button");
   financingButton.type="button";financingButton.textContent="Ampliar deuda · Tesoro";
   modeSwitch.append(spendingButton,financingButton);
