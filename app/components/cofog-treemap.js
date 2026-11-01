@@ -69,7 +69,7 @@ export function treemapLayout(items,w,h){
  * Each group is reallocated exactly once; the resulting sixteen rectangles
  * exhaust the original ten official functions. Labels are editorial.
  */
-const R_AND_D=["01.5","02.4","03.5","04.8","05.5","06.5","07.5","08.3","09.7","10.8"];
+const R_AND_D=["01.4","01.5","02.4","03.5","04.8","05.5","06.5","07.5","08.5","09.7","10.8"];
 export function editorialCofogGroups(rows){
   const funcs=new Map(rows.filter(r=>r.level===1).map(r=>[r.code,r.value]));
   const groups=new Map(rows.filter(r=>r.level===2).map(r=>[r.code,r.value]));
@@ -86,13 +86,13 @@ export function editorialCofogGroups(rows){
     ["Transporte",g("04.5"),"04.5","#84878b",true],
     ["Investigación y desarrollo",rd,null,"#a0a5ad",false],
     ["Intereses de deuda",g("01.7"),"01.7","#ce2636",true],
-    ["Servicios públicos generales",f("01")-g("01.7")-g("01.5"),"01","#aab1b7",false],
+    ["Servicios públicos generales",f("01")-g("01.7")-g("01.4")-g("01.5"),"01","#aab1b7",false],
     ["Desempleo",g("10.5"),"10.5","#f2ce61",false],
     ["Familia e hijos",g("10.4"),"10.4","#e7cf8f",false],
     ["Otros servicios sociales",f("10")-pension-g("10.4")-g("10.5")-g("10.8"),"10","#dacda8",false],
     ["Orden público",f("03")-g("03.5"),"03","#b7bfc5",false],
     ["Defensa",f("02")-g("02.4"),"02","#c0c7ce",false],
-    ["Cultura y ocio",f("08")-g("08.3"),"08","#b8c2c9",false],
+    ["Cultura y ocio",f("08")-g("08.5"),"08","#b8c2c9",false],
     ["Medio ambiente",f("05")-g("05.5"),"05","#b6c9b9",false],
     ["Vivienda y urbanismo",f("06")-g("06.5"),"06","#a9b5be",false]
   ].map(([title,value,cofogHref,color,dark],i)=>({
