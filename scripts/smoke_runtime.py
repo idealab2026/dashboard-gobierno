@@ -120,6 +120,8 @@ def main() -> None:
                 'class="pf-integrated-canvas"',
                 "Nueva deuda emitida",
                 "Capital devuelto (amortización)",
+                "Intereses de deuda · COFOG 01.7",
+                "39.644 M€",
                 "Emisión neta · saldo, no pago",
                 "259.365 M€",
                 "204.332 M€",
