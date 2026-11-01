@@ -145,6 +145,38 @@ def main() -> None:
             if dom.index('class="pf-integrated-financing"') < dom.index('class="pf-center-box"'):
                 raise AssertionError("Deuda figura por encima de la clasificación COFOG")
             print("Mapa PRINCIPAL: S.13 y deuda Tesoro presentes sin cambiar vista")
+            for fragment in (
+                'class="pf-cash-concept"',
+                "¿De dónde sale el dinero para devolver deuda?",
+                "Impuestos y otros cobros + nueva financiación + caja inicial",
+                "Tesorería del Estado",
+                "Servicios, intereses, capital devuelto y saldo final",
+                "Esquema conceptual del Estado"
+            ):
+                if fragment not in dom:
+                    raise AssertionError("No se ve el circuito de caja conceptual: "+fragment)
+            # A click on the S.13 central node calls openDetail(center).
+            # The QA deeplink calls EXACTLY that same handler to ensure the
+            # drawer is populated rather than opened as an empty white box.
+            central_url=url+"?detalle-central=1#mapa-dinero"
+            central=subprocess.run([*args[:-1],"--virtual-time-budget=15000",central_url],
+                                   text=True,capture_output=True,timeout=85)
+            if central.returncode:
+                raise AssertionError("Chrome no abre el detalle del nodo S.13")
+            center_dom=central.stdout
+            for fragment in (
+                'class="pf-explorer is-detail-open',
+                'class="pf-center-facts"',
+                "¿De dónde sale y adónde va el dinero?",
+                "Cómo se paga la deuda",
+                "Impuestos + otros cobros + deuda emitida + caja inicial",
+                "Servicios + intereses + amortizaciones",
+                "Ver amortizaciones en el mismo mapa"
+            ):
+                if fragment not in center_dom:
+                    raise AssertionError("Panel S.13 vacío o incompleto: "+fragment)
+            print("Click en centro S.13: panel de caja y deuda poblado y accesible en Chrome")
+
 
 
             # Debt is a separate STATE Treasury flow within the same
