@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
 import {TREASURY_DEBT_2024,validateTreasuryDebt} from "../../app/components/treasury-debt-flow.js";
 
 test("debt issuance reconciles by instrument: principal repayments and NET issuance",()=>{
@@ -22,4 +23,22 @@ test("debt flow fails closed when amounts, perimeter or vintage are wrong",()=>{
  assert.throws(()=>validateTreasuryDebt({...data,year:2025}));
  assert.throws(()=>validateTreasuryDebt({...data,lines:[{...data.lines[0],repayments:100},data.lines[1]]}),/no concilian/);
  assert.throws(()=>validateTreasuryDebt({...data,official_gross:270000}),/Diferencia/);
+});
+
+test("principal money map renders treasury band by default without replacing COFOG",()=>{
+ const file=readFileSync(new URL("../../app/components/public-finance-sankey.js",import.meta.url),"utf8");
+ const ribbon=readFileSync(new URL("../../app/components/treasury-debt-flow.js",import.meta.url),"utf8");
+ assert.match(file,/chart\.append\(svg,createIntegratedTreasuryRibbon\(/);
+ assert.match(file,/spendingButton\.textContent="Mapa completo"/);
+ assert.match(file,/if\(currentView==="treasury"\)/);
+ assert.match(file,/resetInlineSankey\(\)/);
+ assert.match(file,/\.pf-integrated-financing/);
+ assert.match(file,/\.pf-integrated-canvas>svg/);
+ assert.match(ribbon,/data\.scope/);
+ assert.match(ribbon,/pf-integrated-boundary/);
+ assert.match(ribbon,/pf-integrated-disclaimer/);
+ assert.match(ribbon,/el saldo neto/i);
+ assert.match(ribbon,/no de todas las Administraciones Públicas/);
+ assert.match(ribbon,/no se debe sumarse|No debe sumarse/);
+ assert.doesNotMatch(file,/chart\.replaceChildren\(createIntegratedTreasuryRibbon/);
 });
