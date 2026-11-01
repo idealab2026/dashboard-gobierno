@@ -2036,6 +2036,7 @@ html {
   </div>
   <div class="idealab-nav-links">
     <a class="idealab-nav-priority" href="#mapa-dinero">Mapa del dinero</a>
+    <a href="/visualizaciones.html">Visualizaciones</a>
     <details class="idealab-nav-areas">
       <summary>Áreas temáticas</summary>
       <div class="idealab-nav-areas-panel">
@@ -2067,6 +2068,7 @@ html {
     <div class="idealab-nav-mobile-panel">
       <a href="/">Inicio</a>
       <a href="#mapa-dinero">Mapa del dinero</a>
+      <a href="/visualizaciones.html">Visualizaciones</a>
       <a href="/finanzas-publicas.html">Finanzas públicas</a>
       <a href="/buscador-partidas.html">Buscar partidas</a>
       <div class="idealab-nav-mobile-heading">Áreas temáticas</div>
