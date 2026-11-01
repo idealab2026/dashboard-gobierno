@@ -112,6 +112,30 @@ def main() -> None:
             if not all(checks.values()):
                 raise AssertionError(f"Runtime incompleto tras reintento: {checks}; HTML chars={len(dom)}")
             print(f"Observatorio OK en Chrome: {checks}")
+            # The default route must already show every published Treasury
+            # debt number IN the principal diagram, with no mode switch.
+            for fragment in (
+                'class="pf-integrated-financing"',
+                'data-perimeter="treasury-state"',
+                'class="pf-integrated-canvas"',
+                "Nueva deuda emitida",
+                "Capital devuelto (amortización)",
+                "Emisión neta · saldo, no pago",
+                "259.365 M€",
+                "204.332 M€",
+                "55.034 M€",
+                "No debe sumarse a COFOG",
+                "Mapa completo"
+            ):
+                if fragment not in dom:
+                    raise AssertionError("El mapa principal no muestra deuda: "+fragment)
+            if "Gasto público · S.13" not in dom and "Mapa completo" not in dom:
+                raise AssertionError("Se perdió la representación S.13")
+            if dom.index('class="pf-integrated-financing"') < dom.index('class="pf-center-box"'):
+                raise AssertionError("Deuda figura por encima de la clasificación COFOG")
+            print("Mapa PRINCIPAL: S.13 y deuda Tesoro presentes sin cambiar vista")
+
+
             # Debt is a separate STATE Treasury flow within the same
             # public Sankey component, not mixed with government S.13 COFOG.
             finance_url=url+"?vista=deuda#mapa-dinero"
