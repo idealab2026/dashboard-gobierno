@@ -84,7 +84,7 @@ export function editorialCofogGroups(rows){
     ["Educación",f("09")-g("09.7"),"09","#343a43",true],
     ["Asuntos económicos",f("04")-g("04.5")-g("04.8"),"04","#666a6e",true],
     ["Transporte",g("04.5"),"04.5","#84878b",true],
-    ["Investigación y desarrollo",rd,"04.8","#a0a5ad",false],
+    ["Investigación y desarrollo",rd,null,"#a0a5ad",false],
     ["Intereses de deuda",g("01.7"),"01.7","#ce2636",true],
     ["Servicios públicos generales",f("01")-g("01.7")-g("01.5"),"01","#aab1b7",false],
     ["Desempleo",g("10.5"),"10.5","#f2ce61",false],
@@ -310,9 +310,18 @@ export function createCofogTreemap({rows,history=null,initialYear=2024}={}){
           NUM.format(cell.value)+" M€ · "+PCT.format(pct)+" % de "+
           (drill?"la función":"todo el gasto")));
         row.append(text);
-        const href=make("a","","Ver en el Sankey ↗");
-        href.href="/?detalle-cofog="+encodeURIComponent(cell.cofogHref||cell.code)+"#mapa-dinero";
+        const href=make("a","",cell.cofogHref===null
+          ?"Explorar COFOG en el Sankey ↗":"Ver rama COFOG ↗");
+        href.href=cell.cofogHref===null
+          ?"/#mapa-dinero"
+          :"/?detalle-cofog="+encodeURIComponent(cell.cofogHref||cell.code)+"#mapa-dinero";
         row.append(href);panel.append(row);
+        if(cell.color){
+          panel.append(make("small","il-tm-editorial-note",
+            cell.cofogHref===null
+              ?"Esta área combina I+D de varias funciones: no existe un único nodo equivalente."
+              :"Vista editorial: el enlace abre la función COFOG relacionada, cuyo importe puede incluir otras áreas."));
+        }
         if(!drill && !editorial && datasets.get(year).some(x=>x.level===2&&x.code.startsWith(cell.code+"."))){
           const expand=make("button","il-tm-expand","Desglosar función →");
           expand.type="button";expand.addEventListener("click",()=>{
