@@ -246,6 +246,29 @@ def main() -> None:
                 raise AssertionError("Error Observable al abrir categoría prefiltrada")
             print("Cobertura interactiva validada: 591 registros, barras y filtro PGE 4")
 
+            # Separate editorial data-visualisation section: all ten 2024
+            # functions render, and no unvalidated historical years appear.
+            atlas_url=f"http://127.0.0.1:{server.server_port}/{BASE}/visualizaciones.html"
+            atlas=subprocess.run(
+                [*args[:-1],"--virtual-time-budget=10000",atlas_url],
+                text=True,capture_output=True,timeout=85
+            )
+            if atlas.returncode:
+                raise AssertionError("Chrome no abre el atlas de treemaps")
+            atlas_dom=atlas.stdout
+            for fragment in ('class="il-treemap"',
+                             'class="il-tm-canvas"',
+                             'class="il-tm-cell',
+                             "2024",
+                             "Protección social",
+                             "2024 · 725.001 millones",
+                             'class="il-tm-year-select"',
+                             "La evolución histórica se activará"):
+                if fragment not in atlas_dom:
+                    raise AssertionError("Fallo visualizaciones: falta "+fragment)
+            if any(s in atlas_dom for s in ("RuntimeError:","Uncaught SyntaxError")):
+                raise AssertionError("RuntimeError en visualizaciones COFOG")
+            print("Treemap 2024 verificado en Chrome, 10 funciones y 725001 M€")
             print(f"Buscador de partidas OK en Chrome: {checks_search}")
 
             # Verify a query submitted from the homepage is applied at the destination.
