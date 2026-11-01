@@ -25,23 +25,32 @@ test("debt flow fails closed when amounts, perimeter or vintage are wrong",()=>{
  assert.throws(()=>validateTreasuryDebt({...data,official_gross:270000}),/Diferencia/);
 });
 
-test("principal money map renders treasury band by default without replacing COFOG",()=>{
+test("principal map contains two independent identities and one compact proportional bar",()=>{
  const file=readFileSync(new URL("../../app/components/public-finance-sankey.js",import.meta.url),"utf8");
  const ribbon=readFileSync(new URL("../../app/components/treasury-debt-flow.js",import.meta.url),"utf8");
- assert.match(file,/chart\.append\(svg,createIntegratedTreasuryRibbon\(/);
- assert.match(file,/spendingButton\.textContent="Mapa principal · gasto y deuda"/);
+ assert.match(file,/chart\.append\(overview,svg\)/);
+ assert.match(file,/chart\.append\(createIntegratedTreasuryRibbon\(/);
+ assert.match(file,/pf-bridge-overview/);
+ assert.match(file,/pf-bridge-compare/);
+ assert.match(file,/summaryRow\("01 · Cuenta no financiera · S\.13"/);
+ assert.match(file,/summaryRow\("02 · Emisión y amortización · Tesoro"/);
+ assert.match(file,/\{value:recursos\.value,label:"Recursos"\}/);
+ assert.match(file,/\{value:deficit\.value,label:"Brecha B\.9"/);
+ assert.match(file,/\{value:gasto\.value,label:"Gasto"/);
+ assert.match(file,/\{value:debt\.repayments,label:"Capital devuelto"/);
+ assert.match(file,/\{value:debt\.net,label:"Emisión neta"/);
+ assert.match(file,/relación conceptual, no igualdad/);
+ assert.match(file,/currentYear===TREASURY_DEBT_2024\.year/);
  assert.match(file,/if\(currentView==="treasury"\)/);
- assert.match(file,/resetInlineSankey\(\)/);
- assert.match(file,/\.pf-integrated-financing/);
- assert.match(file,/\.pf-integrated-canvas>svg/);
- assert.match(ribbon,/data\.scope/);
- assert.match(ribbon,/pf-integrated-boundary/);
+ assert.match(ribbon,/pf-integrated-financing/);
+ assert.match(ribbon,/pf-integrated-bar/);
+ assert.match(ribbon,/pf-integrated-bar-repay/);
+ assert.match(ribbon,/pf-integrated-bar-net/);
+ assert.match(ribbon,/repay\.style\.width=\(ratio\*100\)/);
+ assert.match(ribbon,/net\.style\.width=\(\(1-ratio\)\*100\)/);
  assert.match(ribbon,/pf-integrated-interest/);
  assert.match(file,/byCode\.get\("01\.7"\)/);
  assert.match(ribbon,/ya incluidos en el gasto S\.13/);
- assert.match(ribbon,/pf-integrated-disclaimer/);
- assert.match(ribbon,/el saldo neto/i);
- assert.match(ribbon,/no de todas las Administraciones Públicas/);
- assert.match(ribbon,/no se debe sumarse|No debe sumarse/);
+ assert.match(ribbon,/No debe sumarse a COFOG/);
  assert.doesNotMatch(file,/chart\.replaceChildren\(createIntegratedTreasuryRibbon/);
 });
