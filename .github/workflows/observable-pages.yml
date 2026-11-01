@@ -53,6 +53,10 @@ jobs:
         run: python scripts/build_administration_sankeys.py
       - name: Build historical COFOG treemap from reconciled official IGAE 1995–2024
         run: python scripts/build_cofog_history.py
+      - name: Load official housing-appraisal quarterly histories by region
+        run: python scripts/build_housing_history.py
+      - name: Verify official social trends and reconciled pension denominator
+        run: node --test scripts/tests/test_social_trends.mjs
       - name: Inspect COFOG historical xlsx for verified year extraction
         run: python scripts/inspect_cofog_history.py
       - name: Weekly check against official INE and IGAE sources
