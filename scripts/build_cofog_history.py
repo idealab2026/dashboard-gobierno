@@ -121,6 +121,37 @@ def main():
                "unemployment_percent":round(100*g.get("10.5",0)/y12["total"],2),
                "interest_percent":round(100*g.get("01.7",0)/y12["total"],2)},
                ensure_ascii=False))
+        # Cross-check the editorial labels of the 2012 reference image.
+        f={x["code"]:x["value"] for x in y12["functions"]}
+        research_codes=("01.5","02.4","03.5","04.8","05.5",
+                        "06.5","07.5","08.3","09.7","10.8")
+        research=sum(g.get(k,0) for k in research_codes)
+        editorial={
+          "pensions":s,
+          "health":f["07"]-g.get("07.5",0),
+          "education":f["09"]-g.get("09.7",0),
+          "economy_other":f["04"]-g.get("04.5",0)-g.get("04.8",0),
+          "transport":g.get("04.5",0),
+          "research":research,
+          "interest":g.get("01.7",0),
+          "general":f["01"]-g.get("01.7",0)-g.get("01.5",0),
+          "unemployment":g.get("10.5",0),
+          "family":g.get("10.4",0),
+          "social_other":f["10"]-s-g.get("10.4",0)-g.get("10.5",0)-g.get("10.8",0),
+          "public_order":f["03"]-g.get("03.5",0),
+          "defence":f["02"]-g.get("02.4",0),
+          "culture":f["08"]-g.get("08.3",0),
+          "environment":f["05"]-g.get("05.5",0),
+          "housing":f["06"]-g.get("06.5",0)
+        }
+        if sum(editorial.values())!=y12["total"]:
+            raise ValueError("2012 editorial recomposition does not reconcile")
+        comparisons={k:round(100*v/y12["total"],2) for k,v in editorial.items()}
+        print("COFOG_2012_EDITORIAL_PERCENT",json.dumps(comparisons,ensure_ascii=False))
+        y24=annual[-1]
+        gp24={x["code"]:x["value"] for x in y24["groups"]}
+        p24=sum(gp24.get(k,0) for k in ("10.1","10.2","10.3"))
+        print("COFOG_2024_PENSIONS_SHARE",p24,round(100*p24/y24["total"],2))
     except Exception as err:
         report.update(status="unavailable",warning=type(err).__name__+": "+str(err)[:230])
         print("::warning::No official verified history, retaining the validated 2024 chart:",report["warning"])
