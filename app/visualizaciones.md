@@ -428,22 +428,145 @@ font:750 .76rem/1.3 system-ui,sans-serif;padding:9px 12px;cursor:pointer;white-s
 @media(max-width:330px){.il-gallery-grid{grid-template-columns:1fr}
  .il-gallery-card{height:220px}.il-gallery-preview{height:110px}}
 
+
+/* Atlas header: one deterministic, responsive navigation.
+   These selectors supersede the legacy desktop/mobile header rules. */
+.observablehq .idealab-nav.il-atlas-nav{
+  display:flex!important;flex-direction:row!important;align-items:center!important;
+  justify-content:space-between!important;flex-wrap:nowrap!important;
+  width:100%!important;max-width:100%!important;min-width:0!important;
+  min-height:60px!important;box-sizing:border-box!important;
+  position:sticky!important;top:0!important;z-index:1150!important;
+  gap:14px!important;padding:10px 13px!important;
+  background:#fff!important;border:0!important;border-bottom:1px solid #dfe6ed!important;
+  box-shadow:0 1px 3px rgba(11,36,71,.04)!important;
+}
+.observablehq .il-atlas-nav .il-header-identity{
+  display:flex!important;align-items:center!important;gap:9px!important;
+  min-width:0!important;max-width:100%!important;flex:0 1 auto!important;
+  white-space:nowrap;
+}
+.observablehq .il-atlas-nav .idealab-brand{
+  font:800 clamp(1.02rem,1.7vw,1.24rem)/1.15 Georgia,serif!important;
+  color:#0b2447!important;letter-spacing:-.02em!important;
+  text-decoration:none!important;white-space:nowrap!important;
+  flex:0 0 auto!important;
+}
+.observablehq .il-atlas-nav .il-parent-brand{
+  display:inline-flex!important;align-items:center!important;gap:5px!important;
+  max-width:100%!important;flex:0 1 auto!important;text-decoration:none!important;
+  font:650 .65rem/1.2 system-ui,sans-serif!important;color:#6c7d91!important;
+}
+.observablehq .il-atlas-nav .il-parent-brand img{
+  width:66px!important;height:auto!important;max-width:66px!important;
+  object-fit:contain!important;aspect-ratio:660/156!important;
+}
+.observablehq .il-atlas-nav .il-atlas-nav-actions{
+  display:flex;align-items:center;justify-content:flex-end;gap:clamp(8px,1.6vw,20px);
+  min-width:0;flex:0 1 auto;margin-left:auto;
+}
+.observablehq .il-atlas-nav .il-atlas-nav-shortcut{
+  color:#4d6179!important;font:700 .76rem/1.3 system-ui,sans-serif!important;
+  white-space:nowrap;text-decoration:none!important;
+}
+.observablehq .il-atlas-nav .il-atlas-nav-shortcut.is-active{
+  color:#0b2447!important;font-weight:850!important;
+}
+.observablehq .il-atlas-nav .il-atlas-menu{
+  display:block!important;position:relative!important;min-width:0!important;
+  flex:0 0 auto!important;
+}
+.observablehq .il-atlas-nav .il-atlas-menu > summary{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  list-style:none!important;gap:8px!important;min-height:37px!important;
+  box-sizing:border-box!important;padding:7px 12px!important;
+  border:1px solid #ccd8e3!important;border-radius:7px!important;
+  background:#f9fafc!important;color:#163352!important;
+  font:800 .77rem/1.2 system-ui,sans-serif!important;
+  white-space:nowrap!important;cursor:pointer!important;
+}
+.observablehq .il-atlas-nav .il-atlas-menu > summary::-webkit-details-marker{display:none!important}
+.observablehq .il-atlas-nav .il-atlas-menu > summary::marker{content:""}
+.observablehq .il-atlas-nav .il-atlas-menu[open] > summary{
+  background:#0b2447!important;border-color:#0b2447!important;color:#fff!important;
+}
+.observablehq .il-atlas-nav .il-atlas-menu .il-atlas-menu-panel{
+  display:none!important;position:absolute!important;right:0!important;
+  left:auto!important;top:calc(100% + 6px)!important;
+  z-index:1600!important;box-sizing:border-box!important;
+  width:min(350px,calc(100vw - 24px))!important;
+  max-height:min(74dvh,620px)!important;overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:4px!important;margin:0!important;padding:11px!important;
+  background:#fff!important;color:#173653!important;
+  border:1px solid #d5e0ea!important;border-radius:10px!important;
+  box-shadow:0 15px 40px rgba(13,37,68,.18)!important;
+}
+.observablehq .il-atlas-nav .il-atlas-menu[open] > .il-atlas-menu-panel{
+  display:grid!important;
+}
+.observablehq .il-atlas-nav .il-atlas-menu-panel a{
+  display:flex!important;min-width:0!important;align-items:center!important;
+  min-height:34px!important;padding:7px 9px!important;
+  background:transparent!important;color:#274561!important;
+  border-radius:6px!important;text-decoration:none!important;
+  font:650 .75rem/1.3 system-ui,sans-serif!important;
+  white-space:normal!important;overflow-wrap:anywhere!important;
+}
+.observablehq .il-atlas-nav .il-atlas-menu-panel a:hover,
+.observablehq .il-atlas-nav .il-atlas-menu-panel a:focus-visible{
+  background:#eef3f8!important;color:#0b2447!important;
+}
+.observablehq .il-atlas-nav .il-atlas-menu-panel a[aria-current="page"]{
+  font-weight:850!important;background:#edf2f9!important;
+}
+.observablehq .il-atlas-nav .il-atlas-menu-panel .idealab-nav-mobile-heading{
+  grid-column:1/-1!important;color:#8b6c38!important;background:transparent!important;
+  margin:8px 0 1px!important;padding:5px 7px 2px!important;
+  font:850 .65rem/1.25 system-ui,sans-serif!important;
+  letter-spacing:.08em!important;text-transform:uppercase!important;
+  border:0!important;
+}
+@media(max-width:800px){
+  .observablehq .il-atlas-nav .il-atlas-nav-shortcut{display:none!important}
+  .observablehq .idealab-nav.il-atlas-nav{min-height:54px!important;padding:8px 10px!important}
+  .observablehq .il-atlas-nav .il-parent-brand > span{display:none!important}
+  .observablehq .il-atlas-nav .il-parent-brand img{
+    width:28px!important;height:28px!important;max-width:28px!important;
+    aspect-ratio:1!important;object-fit:cover!important;object-position:left center!important;
+  }
+}
+@media(max-width:390px){
+  .observablehq .il-atlas-nav .idealab-brand{font-size:.98rem!important}
+  .observablehq .il-atlas-nav .il-header-identity{gap:5px!important}
+  .observablehq .il-atlas-nav .il-atlas-menu > summary{padding:7px 9px!important}
+  .observablehq .il-atlas-nav .il-atlas-menu-panel{grid-template-columns:1fr!important}
+}
+
 </style>
 
-<nav class="idealab-nav" aria-label="Navegación de España en Datos">
+<nav class="idealab-nav il-atlas-nav" aria-label="Navegación de España en Datos">
   <div class="il-header-identity">
     <a class="idealab-brand" href="/" aria-label="España en Datos, inicio">España en Datos</a>
-    <a class="il-parent-brand" href="https://idealab2026.github.io/" aria-label="UN PRODUCTO DE IDEA LAB · Visitar la web corporativa">
+    <a class="il-parent-brand" href="https://idealab2026.github.io/" aria-label="IDEA LAB, web corporativa">
       <span>Un producto de</span><img class="idealab-brand-logo" src="./logo-idea-lab.svg" alt="IDEA LAB" width="72" height="17" />
     </a>
   </div>
-  <div class="idealab-nav-links">
-    <a class="idealab-nav-priority" href="/#mapa-dinero">Mapa del dinero</a>
-    <a href="/visualizaciones.html" class="is-active" aria-current="page">Visualizaciones</a>
-    <details class="idealab-nav-areas">
-      <summary>Áreas temáticas</summary>
-      <div class="idealab-nav-areas-panel">
-        <a class="il-areas-overview" href="/#resumen">España en un minuto</a>
+  <div class="il-atlas-nav-actions">
+    <a class="il-atlas-nav-shortcut" href="/#mapa-dinero">Mapa del dinero</a>
+    <a class="il-atlas-nav-shortcut is-active" href="/visualizaciones.html" aria-current="page">Visualizaciones</a>
+    <details class="idealab-nav-mobile il-atlas-menu">
+      <summary aria-label="Abrir o cerrar menú de navegación">Menú <span aria-hidden="true">☰</span></summary>
+      <div class="idealab-nav-mobile-panel il-atlas-menu-panel">
+        <a href="/">Inicio</a>
+        <a href="/#mapa-dinero">Mapa del dinero</a>
+        <a href="/visualizaciones.html" aria-current="page">Visualizaciones</a>
+        <a href="/finanzas-publicas.html">Finanzas públicas</a>
+        <a href="/buscador-partidas.html">Buscar partidas</a>
+        <a href="/administraciones.html">Administraciones</a>
+        <div class="idealab-nav-mobile-heading">Áreas temáticas</div>
+        <a href="/#resumen">España en un minuto</a>
         <a href="/#economia">Economía</a>
         <a href="/#empleo">Empleo</a>
         <a href="/#vivienda">Vivienda</a>
@@ -451,14 +574,7 @@ font:750 .76rem/1.3 system-ui,sans-serif;padding:9px 12px;cursor:pointer;white-s
         <a href="/#pensiones">Pensiones</a>
         <a href="/#sociedad">Sociedad</a>
         <a href="/#mundo">Mundo</a>
-      </div>
-    </details>
-    <a href="/finanzas-publicas.html">Finanzas públicas</a>
-    <a href="/buscador-partidas.html">Buscar partidas</a>
-    <a href="/administraciones.html">Administraciones</a>
-    <details class="il-nav-more">
-      <summary>Más</summary>
-      <div class="il-nav-more-panel">
+        <div class="idealab-nav-mobile-heading">Más información</div>
         <a href="/metodologia.html">Metodología</a>
         <a href="/actualizaciones.html">Actualizaciones</a>
         <a href="/quienes-somos.html">Quiénes somos</a>
@@ -466,32 +582,24 @@ font:750 .76rem/1.3 system-ui,sans-serif;padding:9px 12px;cursor:pointer;white-s
       </div>
     </details>
   </div>
-  <details class="idealab-nav-mobile">
-    <summary aria-label="Abrir menú de navegación">Menú <span aria-hidden="true">☰</span></summary>
-    <div class="idealab-nav-mobile-panel">
-      <a href="/">Inicio</a>
-      <a href="/#mapa-dinero">Mapa del dinero</a>
-      <a href="/visualizaciones.html" aria-current="page">Visualizaciones</a>
-      <a href="/finanzas-publicas.html">Finanzas públicas</a>
-      <a href="/buscador-partidas.html">Buscar partidas</a>
-      <a href="/administraciones.html">Administraciones</a>
-      <div class="idealab-nav-mobile-heading">Áreas temáticas</div>
-      <a class="il-areas-overview" href="/#resumen">España en un minuto</a>
-      <a href="/#economia">Economía</a>
-      <a href="/#empleo">Empleo</a>
-      <a href="/#vivienda">Vivienda</a>
-      <a href="/#estado">Sector público</a>
-      <a href="/#pensiones">Pensiones</a>
-      <a href="/#sociedad">Sociedad</a>
-      <a href="/#mundo">Mundo</a>
-      <div class="idealab-nav-mobile-heading">Más información</div>
-      <a href="/metodologia.html">Metodología</a>
-      <a href="/actualizaciones.html">Actualizaciones</a>
-      <a href="/quienes-somos.html">Quiénes somos</a>
-      <a href="https://x.com/LARREALIDAD" target="_blank" rel="noopener noreferrer">Canal en X ↗</a>
-    </div>
-  </details>
 </nav>
+
+```js
+// Menú único: cierre al navegar, al hacer clic fuera o al pulsar Escape.
+const atlasMenu=document.querySelector(".il-atlas-nav .il-atlas-menu");
+if(atlasMenu){
+  atlasMenu.querySelectorAll(".il-atlas-menu-panel a").forEach(a=>{
+    a.addEventListener("click",()=>{atlasMenu.open=false;});
+  });
+  document.addEventListener("pointerdown",event=>{
+    if(atlasMenu.open&&!atlasMenu.contains(event.target))atlasMenu.open=false;
+  });
+  document.addEventListener("keydown",event=>{
+    if(event.key==="Escape")atlasMenu.open=false;
+  });
+}
+```
+
 
 <div class="il-gallery-intro">
   <span>OBSERVATORIO · ATLAS VISUAL</span>
