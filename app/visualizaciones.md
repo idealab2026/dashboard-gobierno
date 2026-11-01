@@ -217,6 +217,13 @@ font:.69rem/1.4 system-ui,sans-serif;color:#708097}
 .il-audit-links{margin:8px 0 30px;font:.77rem/1.65 system-ui,sans-serif;color:#647589}
 .il-audit-links a{color:#1f527c}
 
+
+.il-tm-modes{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:11px 0 10px}
+.il-tm-modes button{padding:9px 13px;border:1px solid #d3dde5;background:#fff;
+border-radius:5px;color:#47617c;cursor:pointer;font:700 .77rem/1.3 system-ui,sans-serif}
+.il-tm-modes button[aria-pressed="true"]{color:#fff;background:#0b2447;border-color:#0b2447}
+.il-tm-modes button:disabled{opacity:.45;cursor:not-allowed}
+.il-tm-modes button:focus-visible{outline:3px solid #c29b41;outline-offset:2px}
 .il-tm-timeline{display:flex;align-items:center;gap:13px;flex:1 1 390px;min-width:160px}
 .il-tm-timeline[hidden]{display:none}
 .il-tm-play{border:0;border-radius:5px;background:#0b2447;color:white;
@@ -344,11 +351,11 @@ document.getElementById("cofog-treemap-root").replaceChildren(treemap);
   </article>
   <article>
     <h3>02 · Las Hespérides · 2012</h3>
-    <p><strong>Comparación pendiente.</strong> El treemap de referencia utiliza agrupaciones editoriales: pensiones e I.T., intereses, desempleo. No son equivalentes a las diez funciones COFOG. Su 26,6 % no debe atribuirse a toda la protección social.</p>
+    <p><strong>Contraste numérico verificado.</strong> IGAE 2012: pensiones e incapacidad (COFOG 10.1–10.3), 26,59 %; desempleo (10.5), 6,78 %; operaciones de deuda (01.7), 6,70 %. Coinciden con 26,6 %, 6,8 % y 6,7 % de la imagen, tras redondear. No son toda la protección social.</p>
   </article>
   <article>
     <h3>03 · Serie 1995–2024</h3>
-    <p><strong>Serie sometida a conciliación.</strong> El selector histórico se habilita únicamente cuando el Excel oficial de IGAE supera la verificación anual de funciones y grupos. Si la fuente cambia o falla, permanece 2024 sin interpolaciones.</p>
+    <p><strong>30 ejercicios conciliados (1995–2024).</strong> El gráfico reproduce el peso anual de cada función y permite recorrer los años. La actualización se bloquea si falla la fuente, el formato o la conciliación. Nunca interpolamos.</p>
   </article>
 </div>
 
