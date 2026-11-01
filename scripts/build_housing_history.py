@@ -72,7 +72,7 @@ def extract(body):
         community=clean(row["Comunidad_Autónoma"])
         code=clean(row["CODAUTO"])
         cpro=clean(row["CPRO"])
-        if year==2026 and quarter==2 and len(sample)<60:
+        if year==2026 and quarter==2 and len(sample)<100:
             sample.append({"cpro":cpro,"province":prov,
                   "region":community,"code":code,"value":v})
         # Source includes provincial figures, which MUST NOT be averaged to
@@ -91,7 +91,7 @@ def extract(body):
         if key in seen:raise ValueError("Duplicated regional aggregate "+str(key))
         seen.add(key)
         filtered.append({"territory":territory,"year":year,"quarter":quarter,"value":v})
-    print("HOUSING_AGGREGATE_DIAG",json.dumps(sample[:40],ensure_ascii=False))
+    print("HOUSING_AGGREGATE_DIAG",json.dumps(sample,ensure_ascii=False))
     print("HOUSING_PARSED_COUNTS",len(filtered),
           sorted(set(d["territory"] for d in filtered)))
     return filtered
