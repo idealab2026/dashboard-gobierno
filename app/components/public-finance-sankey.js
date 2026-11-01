@@ -1,5 +1,6 @@
 import {OFFICIAL_DRILL_ROUTES, relatedBudgetPrograms} from "./official-drill-routes.js";
 import {canonicalFinanceCode} from "./finance-code.js";
+import {createTreasuryDebtView,TREASURY_DEBT_2024} from "./treasury-debt-flow.js";
 import {COFOG_STRUCTURE,cofogsBelow,cofogsFind} from "./cofog-structure.js";
 import {matchingBudgetPrograms} from "./official-budget-catalog.js";
 import {compareFinanceCodes,sortedFinanceChildren,financeExpansionPath,financeExpansionColumns} from "./finance-hierarchy.js";
@@ -169,6 +170,9 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     ? options.year
     : years[0];
   let currentRow = null;
+  // Financial flow ≠ COFOG and Tesoro del Estado ≠ S.13.
+  let currentView=new URLSearchParams(window.location.search).get("vista")==="deuda" &&
+    currentYear===TREASURY_DEBT_2024.year?"treasury":"cofog";
 
   const style = document.createElement("style");
   style.textContent = `
@@ -422,6 +426,57 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     @media(max-width:768px){.pf-inline-trail{gap:3px;padding:6px}
       .pf-inline-trail button{font-size:.68rem!important}}
 
+
+    .pf-mode-switch{display:flex;gap:5px;align-items:center;flex-wrap:wrap;
+      margin:8px 0 6px;border-bottom:1px solid #e2e8f0;padding-bottom:9px}
+    .pf-mode-switch button{cursor:pointer;font:750 .75rem/1.3 system-ui,sans-serif;
+      border:1px solid #d7e1eb;background:white;color:#36536e;
+      padding:9px 13px;border-radius:6px}
+    .pf-mode-switch button[aria-pressed="true"]{border-color:#0b2447;
+      background:#0b2447;color:#fff}
+    .pf-mode-switch button:focus-visible{outline:2px solid #bc9658;outline-offset:3px}
+    .pf-mode-caption{color:#61738a;font:550 .73rem/1.5 system-ui,sans-serif;
+      margin:0 0 8px;text-align:justify}
+    .pf-tesoro{min-width:0;width:100%;box-sizing:border-box;padding:0 3px}
+    .pf-tesoro-head{display:flex;justify-content:space-between;align-items:center;
+      gap:10px;flex-wrap:wrap;margin:9px 0 5px}
+    .pf-tesoro-head strong{font:800 clamp(1.15rem,2vw,1.65rem)/1.25 system-ui,sans-serif;color:#0b2447}
+    .pf-tesoro-head span{font:650 .72rem/1.3 system-ui,sans-serif;color:#927037}
+    .pf-tesoro-desc{font:500 .78rem/1.5 system-ui,sans-serif;color:#64768a;
+      margin:4px 0 11px;max-width:none}
+    .pf-tesoro-scroll{width:100%;overflow-x:auto;overflow-y:hidden;
+      border:1px solid #dfe6ee;border-radius:8px;background:white;
+      -webkit-overflow-scrolling:touch}
+    .pf-tesoro-scroll svg{display:block;height:auto;width:100%;min-width:760px;
+      max-width:none}
+    .pf-tesoro-caption{font:750 14px system-ui,sans-serif;letter-spacing:1.3px;fill:#99753a}
+    .pf-tesoro-ribbon{stroke:none;opacity:.68}
+    .pf-tesoro-main{fill:#9cb0c3}
+    .pf-tesoro-amort{fill:#d2a36b}
+    .pf-tesoro-net{fill:#8293aa}
+    .pf-tesoro-node rect{fill:#f8f4ec;stroke:#c9d4df;stroke-width:1.3}
+    .pf-tesoro-center rect{fill:#0b2447;stroke:#0b2447}
+    .pf-tesoro-amort-box rect{fill:#fbecd8;stroke:#c6a06b}
+    .pf-tesoro-net-box rect{fill:#eaf0f8;stroke:#a4b6cd}
+    .pf-tesoro-label{font:720 15px system-ui,sans-serif;fill:#102e52}
+    .pf-tesoro-number{font:800 24px system-ui,sans-serif;fill:#0b2447}
+    .pf-tesoro-center .pf-tesoro-label,.pf-tesoro-center .pf-tesoro-number{fill:#fff}
+    .pf-tesoro-explainer{font:650 13px system-ui,sans-serif;fill:#596d83}
+    .pf-tesoro-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;margin:12px 0}
+    .pf-tesoro-card{display:flex;flex-direction:column;gap:4px;
+      border:1px solid #dfe5ee;border-radius:7px;padding:11px 13px;
+      color:#54677e;font:550 .75rem/1.3 system-ui,sans-serif}
+    .pf-tesoro-card strong{font:800 .83rem/1.4 system-ui,sans-serif;color:#0b2447}
+    .pf-tesoro-note{font:.72rem/1.55 system-ui,sans-serif;color:#62768d;
+      text-align:justify;margin:10px 0}
+    .pf-tesoro-official{font:750 .75rem/1.4 system-ui,sans-serif;color:#1c5a87}
+    @media(max-width:680px){
+      .pf-mode-switch button{font-size:.69rem;padding:7px 9px}
+      .pf-mode-caption{font-size:.69rem}
+      .pf-tesoro-cards{grid-template-columns:1fr}
+      .pf-tesoro-scroll svg{min-width:780px}
+    }
     @media print {
       .pf-toolbar {display:none;}
       .pf-chart {overflow:visible; min-height:0;}
@@ -431,6 +486,36 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     }
   `;
   root.append(style);
+
+  const modeSwitch=htmlEl("div","pf-mode-switch");
+  modeSwitch.setAttribute("role","group");
+  modeSwitch.setAttribute("aria-label","Tipo de flujo de dinero público");
+  const spendingButton=htmlEl("button");
+  spendingButton.type="button";spendingButton.textContent="Gasto público · S.13";
+  const financingButton=htmlEl("button");
+  financingButton.type="button";financingButton.textContent="Deuda · Tesoro";
+  modeSwitch.append(spendingButton,financingButton);
+  const modeCaption=htmlEl("p","pf-mode-caption");
+  function setMode(mode){
+    currentView=mode;
+    spendingButton.setAttribute("aria-pressed",String(mode==="cofog"));
+    financingButton.setAttribute("aria-pressed",String(mode==="treasury"));
+    modeCaption.textContent=mode==="cofog"
+      ?"Contabilidad nacional por finalidad (S.13). El déficit es un saldo, no un ingreso de caja. Las amortizaciones de deuda se consultan en «Deuda · Tesoro»."
+      :"Mercado de deuda del Tesoro del Estado: emisiones, devoluciones y emisión neta. Son otros flujos y otro perímetro; no se suman al gasto COFOG del S.13.";
+    root.classList.remove("is-detail-open");
+    if(chart?.classList?.contains("is-expanded"))resetInlineSankey();
+    if(chart)renderChart();
+  }
+  spendingButton.addEventListener("click",()=>setMode("cofog"));
+  financingButton.addEventListener("click",()=>setMode("treasury"));
+  root.append(modeSwitch,modeCaption);
+  // Set after component initialization, without invoking a render yet.
+  spendingButton.setAttribute("aria-pressed",String(currentView==="cofog"));
+  financingButton.setAttribute("aria-pressed",String(currentView==="treasury"));
+  modeCaption.textContent=currentView==="cofog"
+    ?"Contabilidad nacional del S.13, no flujo de caja. Déficit = saldo contable, no entrada."
+    :"Tesoro del Estado, no S.13. Emisiones brutas, amortización y financiación neta (saldo, no gasto).";
 
   const toolbar = htmlEl("div", "pf-toolbar");
   const yearLabel = htmlEl("span", "pf-toolbar-label");
@@ -1313,6 +1398,14 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
 
   function renderChart() {
     chart.replaceChildren();
+    if(currentView==="treasury"){
+      chart.append(createTreasuryDebtView());
+      badge.textContent="2024 · Tesoro del Estado · emisiones y amortizaciones";
+      footnote.textContent="Otra clasificación y otro perímetro: este gráfico no permite atribuir los pagos de deuda a impuestos concretos, ni demuestra un balance de caja del S.13. La emisión neta es saldo, no gasto.";
+      trail.hidden=true;
+      expandHint.hidden=true;
+      return;
+    }
     const rows = rowsForYear();
     const byCode = rowMapForYear();
     const gasto = byCode.get("S13.GASTO");
@@ -1490,7 +1583,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
 
     badge.textContent = `${currentYear} · ${expenseRows.length} funciones COFOG`;
     const hasAdjustment = incomeRows.some(d => d.is_vintage_adjustment);
-    footnote.innerHTML = `<b>Interacción.</b> Pulsa una rama y desplázate horizontalmente. COFOG: 69 grupos y 109 clases en el catálogo ONU; la IGAE de esta serie solo cuantifica el segundo nivel. Los programas PGE pertenecen a otra clasificación y no se suman como si fueran flujos de este Sankey.${hasAdjustment ? " La rama de ajuste estadístico es técnica, no un ingreso económico." : ""}`;
+    footnote.innerHTML = `<b>No es un flujo de tesorería.</b> El déficit es la diferencia entre recursos y gastos no financieros, no una entrada efectiva de dinero; la devolución del principal se muestra en «Deuda · Tesoro». <b>Interacción.</b> Pulsa una rama y desplázate horizontalmente. COFOG: 69 grupos y 109 clases en el catálogo ONU; la IGAE de esta serie solo cuantifica el segundo nivel. Los programas PGE pertenecen a otra clasificación y no se suman como si fueran flujos de este Sankey.${hasAdjustment ? " La rama de ajuste estadístico es técnica, no un ingreso económico." : ""}`;
   }
 
   const closeDrawer = () => {
@@ -1512,6 +1605,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       detail: {name: "sankey_cambio_anio"}
     }));
     currentYear = Number(yearSelect.value);
+    if(currentView==="treasury"&&currentYear!==2024)setMode("cofog");
     root.classList.remove("is-detail-open");
     resetInlineSankey();
     currentRow = null;
