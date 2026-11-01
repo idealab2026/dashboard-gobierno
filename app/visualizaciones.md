@@ -154,6 +154,72 @@ html{scroll-behavior:smooth;font-size:16px}
 
 
 
+
+/* Social trends · dense, factual and readable in both desktop and mobile. */
+.il-social-root{width:100%;min-width:0;margin:54px auto 24px;font-family:system-ui,-apple-system,sans-serif}
+.il-social-intro{border-top:3px solid #b89b5e;padding:23px 0 8px;margin:0}
+.il-social-eyebrow{font-size:.72rem;letter-spacing:.14em;font-weight:850;color:#967035}
+.il-social-intro h2{font:750 clamp(1.55rem,3vw,2.65rem)/1.17 Georgia,serif;color:#0b2447;margin:8px 0}
+.il-social-intro p{color:#566a81;font-size:.88rem;line-height:1.45;margin:6px 0 14px;max-width:none;text-align:justify}
+.il-social-jump{display:flex;flex-wrap:wrap;gap:7px;padding-bottom:19px}
+.il-social-jump a{border:1px solid #ccd8e5;border-radius:6px;padding:8px 13px;
+ color:#264a6c!important;background:#fff;font:.73rem/1.2 system-ui,sans-serif;font-weight:750;
+ text-decoration:none!important}
+.il-social-jump a:hover{background:#f0f4f8}
+.il-social-card{border:1px solid #dbe3ed;border-radius:10px;padding:clamp(13px,2vw,25px);
+ margin:0 0 16px;background:white;min-width:0;scroll-margin-top:90px}
+.il-social-card-header h2{font:750 clamp(1.2rem,2.1vw,1.65rem)/1.2 Georgia,serif;
+ color:#0b2447;margin:0 0 4px}
+.il-social-card-header p{font:600 .75rem/1.4 system-ui,sans-serif;color:#697c90;margin:0 0 15px}
+.il-social-metric{display:flex;gap:5px 17px;align-items:baseline;flex-wrap:wrap;margin:0 0 8px}
+.il-social-metric strong{font:850 clamp(1.4rem,2.5vw,2.2rem)/1.15 system-ui,sans-serif;color:#0b2447}
+.il-social-metric span{font:600 .73rem/1.35 system-ui,sans-serif;color:#62748a}
+.il-social-chart-wrap{width:100%;min-width:0;overflow:hidden}
+.il-social-chart-wrap svg{display:block;width:100%;height:auto;max-width:100%}
+.il-social-controls{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin:8px 0 15px}
+.il-social-select-label{display:flex;flex-direction:column;gap:4px;
+ font:750 .70rem/1.25 system-ui,sans-serif;color:#3f5875}
+.il-social-select{min-width:165px;max-width:100%;padding:9px 11px;border:1px solid #c9d5e2;
+ border-radius:7px;background:#fff;color:#0b2447;font:650 .79rem/1.25 system-ui,sans-serif}
+.il-social-bars{display:grid;gap:11px;width:100%;margin:10px 0 16px}
+.il-social-bar-heading{display:flex;align-items:baseline;justify-content:space-between;
+ gap:9px;font:650 .80rem/1.3 system-ui,sans-serif;color:#284561}
+.il-social-bar-heading strong{color:#0b2447;font-weight:850;white-space:nowrap;font-variant-numeric:tabular-nums}
+.il-social-bar-track{height:15px;border-radius:3px;background:#eef2f7;overflow:hidden;margin-top:5px}
+.il-social-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#17395d,#bba067)}
+.il-social-stat-line{font:700 .76rem/1.4 system-ui,sans-serif;color:#425b74;margin:12px 0}
+.il-social-details{margin:11px 0;color:#61748a;font:550 .72rem/1.55 system-ui,sans-serif}
+.il-social-details summary{cursor:pointer;font-weight:750;color:#345674}
+.il-social-details p{margin:6px 0 10px;max-width:none;text-align:justify}
+.il-social-source{display:inline-block;margin:5px 0 0;
+ text-decoration:none!important;font:750 .72rem/1.4 system-ui,sans-serif;color:#1e5782!important}
+.il-social-source:hover{text-decoration:underline!important}
+.il-social-subtitle{font:750 1.05rem/1.3 Georgia,serif;color:#0b2447;margin:21px 0 12px}
+.il-social-objectives{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.il-social-objective{border:1px solid #dde5ec;border-radius:7px;padding:13px;
+ display:flex;flex-direction:column;gap:5px;min-width:0}
+.il-social-objective-topic{font:800 .72rem/1.2 system-ui,sans-serif;color:#8b6b35}
+.il-social-objective strong{font:850 clamp(1.05rem,1.6vw,1.4rem)/1.23 system-ui,sans-serif;
+ color:#0b2447;overflow-wrap:anywhere}
+.il-social-objective small{font-size:.68rem;color:#78889a}
+.il-social-objective p{font:550 .69rem/1.48 system-ui,sans-serif;color:#586b81;
+ margin:4px 0;text-align:justify}
+.il-social-objective a{font:750 .69rem/1.35 system-ui,sans-serif;color:#225c8b!important;text-decoration:none!important}
+.il-social-foot{font:550 .70rem/1.55 system-ui,sans-serif;color:#687d91;
+ border-top:1px solid #e8edf2;padding-top:11px;margin-top:17px}
+.il-social-no-data{font:700 .75rem/1.4 system-ui,sans-serif;color:#7e5a23}
+@media(max-width:900px){.il-social-objectives{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:540px){
+ .il-social-objectives{grid-template-columns:1fr 1fr;gap:7px}
+ .il-social-objective{padding:9px}
+ .il-social-objective strong{font-size:1rem}
+ .il-social-select-label{flex:1 1 140px}
+ .il-social-select{min-width:0;width:100%}
+ .il-social-card{margin-bottom:11px}
+ .il-social-bar-heading{font-size:.71rem}
+ .il-social-bar-track{height:12px}
+}
+
 </style>
 
 <style>
@@ -363,3 +429,15 @@ document.getElementById("cofog-treemap-root").replaceChildren(treemap);
   Fuentes: <a href="https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Paginas/iacogofseries.aspx" target="_blank" rel="noopener noreferrer">IGAE · serie anual COFOG desde 1995</a> · <a href="https://www.hacienda.gob.es/es-ES/CDI/Paginas/ContabilidadNacional/COFOG/Clasificacion-funcional-del-gasto-de-las-Administraciones-Publicas.aspx" target="_blank" rel="noopener noreferrer">Hacienda · metodología COFOG</a> · <a href="https://hesperides.edu.es/centro-ruth-richardson/monitor-pensiones/" target="_blank" rel="noopener noreferrer">Centro Ruth Richardson · gráficos interactivos</a>.
   La referencia externa sirve para contrastar decisiones de visualización; los datos del Observatorio se obtienen de fuentes oficiales.
 </div>
+
+
+<div id="social-indicators-root"></div>
+
+```js
+import {createSocialTrends} from "./components/social-trends.js";
+const socialData = await FileAttachment("./data/social-trends.json").json();
+const housingData = await FileAttachment("./data/housing-history.json").json();
+document.getElementById("social-indicators-root").replaceChildren(
+  createSocialTrends(socialData,housingData)
+);
+```
