@@ -2,6 +2,7 @@
  * Una cifra = una fila IGAE COFOG verificada; sin interpolar ejercicios.
  * SVG sin bibliotecas, sin telemetría, sin imitar el artwork ajeno.
  */
+import {cofogsFind} from "./cofog-structure.js";
 const FNS={
   "01":"Servicios públicos generales","02":"Defensa","03":"Orden público y seguridad",
   "04":"Asuntos económicos","05":"Medio ambiente","06":"Vivienda y servicios comunitarios",
@@ -81,6 +82,11 @@ export function createCofogTreemap({rows,history=null,initialYear=2024}={}){
         code:String(r.code),title:String(r.title||FNS[r.code]||r.code),
         level:1,value:Number(r.value),year:entry.year
       }));
+      for(const g of entry.groups||[]){
+        const resolved=cofogsFind(String(g.code));
+        checked.push({code:String(g.code),title:resolved?.title||String(g.code),
+          level:2,value:Number(g.value),year:entry.year});
+      }
       checked.push({code:"S13.GASTO",value:Number(entry.total),level:0,year:entry.year});
       assertRows(checked,entry.year);
       // Sólo se importa si la serie completa se ha reconciliado oficialmente.
@@ -110,6 +116,35 @@ export function createCofogTreemap({rows,history=null,initialYear=2024}={}){
   const region=make("div","il-tm-canvas");
   const panel=make("div","il-tm-selection");panel.hidden=true;
   const control=make("div","il-tm-controls");
+  const timeline=make("div","il-tm-timeline");
+  const play=make("button","il-tm-play","▶ Reproducir");
+  play.type="button";
+  const scrub=make("input","il-tm-range");
+  scrub.type="range";scrub.min=String(validated[0]);
+  scrub.max=String(validated.at(-1));scrub.step="1";
+  scrub.value=String(year);scrub.setAttribute("aria-label","Recorrer años COFOG");
+  timeline.append(play,scrub);
+  let playback=null;
+  const stopPlayback=()=>{
+    if(playback!==null){clearInterval(playback);playback=null;}
+    play.textContent="▶ Reproducir";
+  };
+  if(validated.length===1){play.disabled=true;scrub.disabled=true;timeline.hidden=true;}
+  play.addEventListener("click",()=>{
+    if(playback!==null){stopPlayback();return;}
+    if(year>=validated.at(-1))year=validated[0];
+    play.textContent="Ⅱ Pausar";
+    playback=setInterval(()=>{
+      const idx=validated.indexOf(year);
+      if(idx<0||idx>=validated.length-1){stopPlayback();return;}
+      year=validated[idx+1];select.value=String(year);
+      scrub.value=String(year);drill=null;render();
+    },700);
+  });
+  scrub.addEventListener("input",()=>{
+    stopPlayback();year=Number(scrub.value);
+    select.value=String(year);drill=null;render();
+  });
   const label=make("label","","Año");
   const select=make("select","il-tm-year-select");
   select.setAttribute("aria-label","Año de gasto COFOG");
@@ -122,12 +157,15 @@ export function createCofogTreemap({rows,history=null,initialYear=2024}={}){
   const tiny=make("span","il-tm-period",validated.length>1
     ?"Años publicados y conciliados · no se interpola"
     :"La evolución histórica se activará tras conciliar la serie oficial 1995–2024.");
-  control.append(label,tiny);
+  control.append(timeline,label,tiny);
   const note=make("p","il-tm-source");
   const back=make("button","il-tm-back","‹ Todas las funciones");
   back.type="button";back.hidden=true;
   back.addEventListener("click",()=>{drill=null;render();});
-  select.addEventListener("change",()=>{year=Number(select.value);drill=null;render();});
+  select.addEventListener("change",()=>{
+    stopPlayback();year=Number(select.value);scrub.value=String(year);
+    drill=null;render();
+  });
   const explanation=make("details","il-tm-method");
   const summary=make("summary","","Método y comparación con otras fuentes");
   const method=make("div","il-tm-method-content");
@@ -142,6 +180,7 @@ export function createCofogTreemap({rows,history=null,initialYear=2024}={}){
   function render(){
     const data=assertRows(datasets.get(year),year);
     activeData=data;yearLabel.textContent=String(year);
+    scrub.value=String(year);
     const percent=(data.top.find(x=>x.code==="10")?.value/data.total||0)*100;
     title.textContent=drill
       ?(FNS[drill]||drill)+" · desglose del gasto"
