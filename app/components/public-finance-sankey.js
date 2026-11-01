@@ -291,7 +291,8 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     .pf-income-link {fill:rgba(44,95,138,.29);}
     .pf-spend-link {fill:rgba(185,149,77,.30);}
     .pf-detail-link {fill:rgba(89,123,75,.33);}
-    .pf-deficit-link {fill:rgba(212,138,73,.40);}
+    .pf-deficit-link{fill:rgba(212,138,73,.13);stroke:#d48a49;
+      stroke-width:1.4;stroke-dasharray:7 7}
     .pf-adjust-link {fill:rgba(170,148,104,.20);}
     @media (max-width: 900px) {
       .pf-chart {overflow:visible; padding-bottom:.6rem;}
@@ -1455,9 +1456,9 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     });
 
     const titles = [
-      [leftX, "DE DÓNDE SALE"],
-      [centerX, "FONDO COMÚN"],
-      [rightX, "EN QUÉ SE GASTA"]
+      [leftX, "INGRESOS Y BRECHA"],
+      [centerX, "SALDO S.13"],
+      [rightX, "GASTO POR FINALIDAD"]
     ];
     for (const [x, label] of titles) {
       const t = svgEl("text", {x, y: 24, class: "pf-col-title"});
@@ -1465,7 +1466,9 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       svg.append(t);
     }
 
-    const leftItems = [...incomeRows, deficit];
+    // Saldo residual contable; no es un ingreso recibido por tesorería.
+    const deficitDisplay={...deficit,indicator_name:"Brecha no financiera (no es ingreso)"};
+    const leftItems = [...incomeRows, deficitDisplay];
     const leftY0 = 48;
     const leftGap = 15;
     const leftPos = new Map(
@@ -1538,7 +1541,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       const nodeClass = row.is_vintage_adjustment ? "pf-adjust" : "pf-income";
       addNode(svg, row, leftX, leftPos.get(row.code), leftW, boxH, nodeClass, recursos.value, "ingresos");
     }
-    addNode(svg, deficit, leftX, leftPos.get(deficit.code), leftW, boxH, "pf-deficit", gasto.value, "gasto");
+    addNode(svg, deficitDisplay, leftX, leftPos.get(deficit.code), leftW, boxH, "pf-deficit", gasto.value, "gasto");
 
     // Center.
     const centerGroup = svgEl("g", {class: "pf-node-group"});
@@ -1565,7 +1568,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     const centerSub1 = svgEl("text", {x: centerX + 18, y: centerY + 138, class: "pf-center-sub"});
     centerSub1.textContent = `Recursos: ${formatCompactMillions(recursos.value)}`;
     const centerSub2 = svgEl("text", {x: centerX + 18, y: centerY + 160, class: "pf-center-sub"});
-    centerSub2.textContent = `Déficit: ${formatCompactMillions(deficit.value)}`;
+    centerSub2.textContent = `Saldo B.9: ${formatCompactMillions(deficit.value)}`;
     const centerSub3 = svgEl("text", {x: centerX + 18, y: centerY + 182, class: "pf-center-sub"});
     centerSub3.textContent = `Gasto: ${formatCompactMillions(gasto.value)}`;
     const centerSub4 = svgEl("text", {x: centerX + 18, y: centerY + 212, class: "pf-center-sub"});
@@ -1615,7 +1618,8 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
   renderChart();
   // Deep-link reproducible para QA y para compartir una subfunción concreta.
   // Nunca se abre si el código no figura en los datos del ejercicio vigente.
-  const deepCode = new URLSearchParams(window.location.search).get("detalle-cofog");
+  const deepCode = currentView==="cofog"?
+    new URLSearchParams(window.location.search).get("detalle-cofog"):null;
   if (deepCode && /^\d{2}(?:\.\d+){0,2}$/.test(deepCode)) {
     const selected = rowMapForYear().get(deepCode);
     if (selected?.side === "gasto") openDetail(selected);
