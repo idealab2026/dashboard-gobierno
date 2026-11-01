@@ -64,4 +64,23 @@ test("editorial composition reconciles exactly to 10 COFOG divisions for every v
   assert.ok(Math.abs(percent(["10.1","10.2","10.3"])-26.6)<0.08);
   assert.ok(Math.abs(percent(["10.5"])-6.8)<0.08);
   assert.ok(Math.abs(percent(["01.7"])-6.7)<0.08);
+  const editorial=editorialCofogGroups([
+    ...y12.functions.map(x=>({...x,level:1})),
+    ...y12.groups.map(x=>({...x,level:2}))
+  ]);
+  const map=new Map(editorial.map(x=>[x.title,100*x.value/y12.total]));
+  const screenshot=new Map([
+    ["Pensiones e incapacidad",26.6],["Salud",12.1],
+    ["Educación",8.4],["Asuntos económicos",13.5],
+    ["Transporte",3.5],["Investigación y desarrollo",2.8],
+    ["Intereses de deuda",6.7],["Servicios públicos generales",5.7],
+    ["Desempleo",6.8],["Familia e hijos",1.5],
+    ["Otros servicios sociales",1.2],["Orden público",4.1],
+    ["Defensa",1.8],["Cultura y ocio",2.4],
+    ["Medio ambiente",1.8],["Vivienda y urbanismo",1.1]
+  ]);
+  for(const [name,expected] of screenshot){
+    assert.ok(Math.abs(map.get(name)-expected)<0.09,
+      "2012 graphic source deviation in "+name+": "+map.get(name));
+  }
 });
