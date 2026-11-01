@@ -216,6 +216,15 @@ font:.69rem/1.4 system-ui,sans-serif;color:#708097}
 .il-audit strong{color:#0c354f}
 .il-audit-links{margin:8px 0 30px;font:.77rem/1.65 system-ui,sans-serif;color:#647589}
 .il-audit-links a{color:#1f527c}
+
+.il-tm-timeline{display:flex;align-items:center;gap:13px;flex:1 1 390px;min-width:160px}
+.il-tm-timeline[hidden]{display:none}
+.il-tm-play{border:0;border-radius:5px;background:#0b2447;color:white;
+font:750 .76rem/1.3 system-ui,sans-serif;padding:9px 12px;cursor:pointer;white-space:nowrap}
+.il-tm-play:hover{background:#284363}
+.il-tm-range{width:100%;min-width:80px;accent-color:#c99d2d;cursor:pointer}
+.il-tm-period{flex:0 1 300px}
+@media(max-width:760px){.il-tm-timeline{order:-1;flex:1 1 100%}}
 @media(max-width:760px){
  .il-visual-intro{padding-top:15px}
  .il-tm-top{gap:7px}
@@ -318,7 +327,13 @@ const rows=dsvFormat(";").parse(csv.replace(/^\uFEFF/,""))
    year:Number(r.año),value:Number(r.valor),
    level:Number(r.nivel)
  }));
-const treemap=createCofogTreemap({rows,initialYear:2024});
+const verifiedHistory = await FileAttachment("./data/cofog-history.json").json();
+const currentYear = Number(new URLSearchParams(window.location.search).get("anio"))||2024;
+const treemap=createCofogTreemap({
+  rows,
+  history:verifiedHistory.status==="verified"?verifiedHistory.years:null,
+  initialYear:currentYear
+});
 document.getElementById("cofog-treemap-root").replaceChildren(treemap);
 ```
 
@@ -333,7 +348,7 @@ document.getElementById("cofog-treemap-root").replaceChildren(treemap);
   </article>
   <article>
     <h3>03 · Serie 1995–2024</h3>
-    <p><strong>Disponible oficialmente, aún no integrada.</strong> El selector temporal se habilitará cuando cada año se haya descargado, revisado y conciliado contra la serie histórica de IGAE. No se interpolan cifras.</p>
+    <p><strong>Serie sometida a conciliación.</strong> El selector histórico se habilita únicamente cuando el Excel oficial de IGAE supera la verificación anual de funciones y grupos. Si la fuente cambia o falla, permanece 2024 sin interpolaciones.</p>
   </article>
 </div>
 
