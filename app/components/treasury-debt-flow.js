@@ -162,7 +162,7 @@ export function createIntegratedTreasuryRibbon(onExplore,data=TREASURY_DEBT_2024
   const svg=svgEl("svg",{
     viewBox:"0 0 1320 244",
     role:"img",
-    "aria-label":"Tesoro del Estado 2024: entrada por emisiones brutas 259.365 millones, salida por amortización del principal 204.332 millones, emisión neta saldo 55.034 millones. Diferencia de redondeo de un millón en la suma de líneas."
+    "aria-label":"Tesoro del Estado 2024: emisiones brutas según suma de instrumentos 259.366 millones, amortización 204.332 millones, emisión neta 55.034 millones. Total bruto publicado 259.365 millones; redondeo de un millón."
   });
   const tag=(x,y,value,klass)=>{
     addText(svg,x,y,value,"pf-integrated-svg-text "+klass);
@@ -192,7 +192,7 @@ export function createIntegratedTreasuryRibbon(onExplore,data=TREASURY_DEBT_2024
     class:"pf-integrated-svg-link pf-integrated-amort"}));
   svg.append(svgEl("path",{d:curve(793,142,900,182,width*b.net/b.gross),
     class:"pf-integrated-svg-link pf-integrated-difference"}));
-  pill(32,76,328,96,"Nueva deuda emitida",b.officialGross,"pf-integrated-in");
+  pill(32,76,328,96,"Nueva deuda emitida",b.gross,"pf-integrated-in");
   pill(470,76,323,96,"Tesoro · emisiones brutas",b.gross,"pf-integrated-central");
   pill(900,48,390,91,"Capital devuelto (amortización)",b.repayments,"pf-integrated-out");
   pill(900,150,390,91,"Emisión neta · saldo, no pago",b.net,"pf-integrated-balance");
@@ -201,7 +201,7 @@ export function createIntegratedTreasuryRibbon(onExplore,data=TREASURY_DEBT_2024
   main.append(dom("p","pf-integrated-disclaimer",
     "Las entradas y salidas mostradas son del Tesoro, no de todas las Administraciones Públicas. "+
     "El saldo neto es la diferencia emisión − amortización, no un destino del dinero; "+
-    "las líneas oficiales difieren en 1 M€ por redondeo. "+
+    "total bruto publicado: "+fmt(b.officialGross)+" (diferencia 1 M€ por redondeo). "+
     "No debe sumarse a COFOG ni interpretarse como una conciliación de caja del S.13."));
   return main;
 }
