@@ -90,7 +90,7 @@ def main() -> None:
                 # the Observable async bundle is ready on a cold CI worker.
                 # Retry with a fresh profile, but still require every signal.
                 retry=subprocess.run([
-                    *args[:-2],
+                    *args[:-3],
                     "--virtual-time-budget=28000","--dump-dom",url
                 ],text=True,capture_output=True,timeout=85)
                 if retry.returncode:
