@@ -36,6 +36,9 @@ test("principal money map renders treasury band by default without replacing COF
  assert.match(file,/\.pf-integrated-canvas>svg/);
  assert.match(ribbon,/data\.scope/);
  assert.match(ribbon,/pf-integrated-boundary/);
+ assert.match(ribbon,/pf-integrated-interest/);
+ assert.match(file,/byCode\.get\("01\.7"\)/);
+ assert.match(ribbon,/ya incluidos en el gasto S\.13/);
  assert.match(ribbon,/pf-integrated-disclaimer/);
  assert.match(ribbon,/el saldo neto/i);
  assert.match(ribbon,/no de todas las Administraciones Públicas/);
