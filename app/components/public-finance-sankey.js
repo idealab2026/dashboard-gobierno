@@ -1,6 +1,6 @@
 import {OFFICIAL_DRILL_ROUTES, relatedBudgetPrograms} from "./official-drill-routes.js";
 import {canonicalFinanceCode} from "./finance-code.js";
-import {createTreasuryDebtView,TREASURY_DEBT_2024} from "./treasury-debt-flow.js";
+import {createTreasuryDebtView,createIntegratedTreasuryRibbon,TREASURY_DEBT_2024} from "./treasury-debt-flow.js";
 import {COFOG_STRUCTURE,cofogsBelow,cofogsFind} from "./cofog-structure.js";
 import {matchingBudgetPrograms} from "./official-budget-catalog.js";
 import {compareFinanceCodes,sortedFinanceChildren,financeExpansionPath,financeExpansionColumns} from "./finance-hierarchy.js";
@@ -478,6 +478,62 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       .pf-tesoro-cards{grid-template-columns:1fr}
       .pf-tesoro-scroll svg{min-width:780px}
     }
+
+    /* Treasury finances remain visible INSIDE the principal diagram, even
+       when a COFOG branch expands horizontally. This is NOT the same S.13 ledger. */
+    .pf-chart .pf-integrated-financing{
+      margin:0;padding:12px 15px 10px;border-top:3px solid #c3a56b;
+      border-bottom:1px solid #d8e1eb;border-left:1px solid #d8e1eb;
+      border-right:1px solid #d8e1eb;background:#fafbfd;
+      border-radius:0 0 10px 10px;
+      box-sizing:border-box;min-width:0;width:100%;
+    }
+    .pf-integrated-heading{display:flex;align-items:center;justify-content:space-between;
+      gap:10px;flex-wrap:wrap;margin:0 0 9px}
+    .pf-integrated-headline{display:flex;align-items:baseline;gap:6px 15px;
+      flex-wrap:wrap}
+    .pf-integrated-headline strong{
+      font:850 .8rem/1.3 system-ui,sans-serif;letter-spacing:.055em;color:#8b6629}
+    .pf-integrated-headline span{
+      font:550 .72rem/1.4 system-ui,sans-serif;color:#687b91}
+    .pf-integrated-explore{
+      font:750 .72rem/1.3 system-ui,sans-serif;cursor:pointer;
+      background:#fff;color:#275579;border:1px solid #c8d5e2;
+      padding:7px 11px;border-radius:6px}
+    .pf-integrated-explore:hover{border-color:#9ab0c6;background:#f1f5f8}
+    .pf-integrated-explore:focus-visible{outline:2px solid #b58d47;outline-offset:2px}
+    .pf-integrated-canvas{width:100%;overflow-x:auto;overflow-y:hidden}
+    .pf-chart .pf-integrated-canvas>svg{width:100%;height:auto;
+      min-width:780px;max-width:none;display:block}
+    .pf-integrated-boundary{fill:none;stroke:#b79a65;stroke-dasharray:5 7;
+      stroke-width:1.4}
+    .pf-integrated-svg-text{font:800 12px system-ui,sans-serif;
+      letter-spacing:1.1px;fill:#88704a}
+    .pf-integrated-svg-link{opacity:.67;stroke:none}
+    .pf-integrated-gross{fill:#8aabc6}
+    .pf-integrated-amort{fill:#c5a06a}
+    .pf-integrated-difference{fill:#92a4b8;opacity:.4;
+      stroke:#6f889f;stroke-width:1.4;stroke-dasharray:4 7}
+    .pf-integrated-svg-box rect{stroke-width:1.3;fill:#f6f9fb;stroke:#c3d1dd}
+    .pf-integrated-in rect{fill:#eaf3fa}
+    .pf-integrated-central rect{fill:#0b2447;stroke:#0b2447}
+    .pf-integrated-out rect{fill:#fcf2e4;stroke:#d0a979}
+    .pf-integrated-balance rect{fill:#f1f4f8;stroke:#b8c6d7;stroke-dasharray:5 3}
+    .pf-integrated-svg-title{font:750 16px system-ui,sans-serif;fill:#132f4c}
+    .pf-integrated-svg-number{font:850 28px system-ui,sans-serif;fill:#0b2447}
+    .pf-integrated-central .pf-integrated-svg-title,
+    .pf-integrated-central .pf-integrated-svg-number{fill:white}
+    .pf-integrated-disclaimer{
+      margin:8px 0 0!important;font:550 .68rem/1.55 system-ui,sans-serif;
+      color:#718199;text-align:justify;max-width:none}
+    .pf-chart.is-expanded .pf-integrated-financing{min-width:780px}
+    @media(max-width:760px){
+      .pf-chart .pf-integrated-financing{padding:10px 9px}
+      .pf-integrated-headline strong{font-size:.72rem}
+      .pf-integrated-headline span{font-size:.68rem}
+      .pf-integrated-disclaimer{font-size:.67rem}
+      .pf-integrated-heading{gap:6px}
+    }
     @media print {
       .pf-toolbar {display:none;}
       .pf-chart {overflow:visible; min-height:0;}
@@ -492,9 +548,9 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
   modeSwitch.setAttribute("role","group");
   modeSwitch.setAttribute("aria-label","Tipo de flujo de dinero público");
   const spendingButton=htmlEl("button");
-  spendingButton.type="button";spendingButton.textContent="Gasto público · S.13";
+  spendingButton.type="button";spendingButton.textContent="Mapa completo";
   const financingButton=htmlEl("button");
-  financingButton.type="button";financingButton.textContent="Deuda · Tesoro";
+  financingButton.type="button";financingButton.textContent="Ampliar deuda · Tesoro";
   modeSwitch.append(spendingButton,financingButton);
   const modeCaption=htmlEl("p","pf-mode-caption");
   function setMode(mode){
@@ -502,7 +558,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     spendingButton.setAttribute("aria-pressed",String(mode==="cofog"));
     financingButton.setAttribute("aria-pressed",String(mode==="treasury"));
     modeCaption.textContent=mode==="cofog"
-      ?"Contabilidad nacional por finalidad (S.13). El déficit es un saldo, no un ingreso de caja. Las amortizaciones de deuda se consultan en «Deuda · Tesoro»."
+      ?"Gasto consolidado S.13 y, en el mismo mapa, emisiones y amortizaciones del Tesoro en una franja de perímetro diferente. No son sumables."
       :"Mercado de deuda del Tesoro del Estado: emisiones, devoluciones y emisión neta. Son otros flujos y otro perímetro; no se suman al gasto COFOG del S.13.";
     root.classList.remove("is-detail-open");
     if(chart?.classList?.contains("is-expanded"))resetInlineSankey();
@@ -515,7 +571,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
   spendingButton.setAttribute("aria-pressed",String(currentView==="cofog"));
   financingButton.setAttribute("aria-pressed",String(currentView==="treasury"));
   modeCaption.textContent=currentView==="cofog"
-    ?"Contabilidad nacional del S.13, no flujo de caja. Déficit = saldo contable, no entrada."
+    ?"Mapa principal: gasto S.13 y movimientos de deuda del Tesoro, identificados por separado. El déficit no es una entrada de caja."
     :"Tesoro del Estado, no S.13. Emisiones brutas, amortización y financiación neta (saldo, no gasto).";
 
   const toolbar = htmlEl("div", "pf-toolbar");
@@ -1582,11 +1638,14 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     }
 
 
-    chart.append(svg);
+    // Same main visual surface: the Treasury strip is always visible below
+    // the primary COFOG Sankey, irrespective of an open functional branch.
+    // It is not a component on another page, another tab or a hidden drawer.
+    chart.append(svg,createIntegratedTreasuryRibbon(()=>setMode("treasury")));
 
-    badge.textContent = `${currentYear} · ${expenseRows.length} funciones COFOG`;
+    badge.textContent = `${currentYear} · ${expenseRows.length} funciones COFOG · deuda Tesoro visible`;
     const hasAdjustment = incomeRows.some(d => d.is_vintage_adjustment);
-    footnote.innerHTML = `<b>No es un flujo de tesorería.</b> El déficit es la diferencia entre recursos y gastos no financieros, no una entrada efectiva de dinero; la devolución del principal se muestra en «Deuda · Tesoro». <b>Interacción.</b> Pulsa una rama y desplázate horizontalmente. COFOG: 69 grupos y 109 clases en el catálogo ONU; la IGAE de esta serie solo cuantifica el segundo nivel. Los programas PGE pertenecen a otra clasificación y no se suman como si fueran flujos de este Sankey.${hasAdjustment ? " La rama de ajuste estadístico es técnica, no un ingreso económico." : ""}`;
+    footnote.innerHTML = `<b>No es un flujo de tesorería.</b> El déficit es la diferencia entre recursos y gastos no financieros, no una entrada efectiva de dinero; la devolución del principal está visible debajo del Sankey, dentro del mismo mapa, con otro perímetro. <b>Interacción.</b> Pulsa una rama y desplázate horizontalmente. COFOG: 69 grupos y 109 clases en el catálogo ONU; la IGAE de esta serie solo cuantifica el segundo nivel. Los programas PGE pertenecen a otra clasificación y no se suman como si fueran flujos de este Sankey.${hasAdjustment ? " La rama de ajuste estadístico es técnica, no un ingreso económico." : ""}`;
   }
 
   const closeDrawer = () => {
