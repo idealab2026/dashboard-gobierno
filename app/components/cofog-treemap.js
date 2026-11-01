@@ -65,6 +65,47 @@ export function treemapLayout(items,w,h){
     throw Error("Treemap no reconciliado");
   return rects;
 }
+/* Editorial split derived only from published COFOG groups, never "PGE".
+ * Each group is reallocated exactly once; the resulting sixteen rectangles
+ * exhaust the original ten official functions. Labels are editorial.
+ */
+const R_AND_D=["01.5","02.4","03.5","04.8","05.5","06.5","07.5","08.3","09.7","10.8"];
+export function editorialCofogGroups(rows){
+  const funcs=new Map(rows.filter(r=>r.level===1).map(r=>[r.code,r.value]));
+  const groups=new Map(rows.filter(r=>r.level===2).map(r=>[r.code,r.value]));
+  if(funcs.size!==10||!groups.has("10.1")||!groups.has("01.7")||!groups.has("04.5"))
+    return null;
+  const f=x=>funcs.get(x)||0,g=x=>groups.get(x)||0;
+  const pension=g("10.1")+g("10.2")+g("10.3");
+  const rd=R_AND_D.reduce((s,k)=>s+g(k),0);
+  const pieces=[
+    ["Pensiones e incapacidad",pension,"10","#f1c533",false],
+    ["Salud",f("07")-g("07.5"),"07","#19212c",true],
+    ["Educación",f("09")-g("09.7"),"09","#343a43",true],
+    ["Asuntos económicos",f("04")-g("04.5")-g("04.8"),"04","#666a6e",true],
+    ["Transporte",g("04.5"),"04.5","#84878b",true],
+    ["Investigación y desarrollo",rd,"04.8","#a0a5ad",false],
+    ["Intereses de deuda",g("01.7"),"01.7","#ce2636",true],
+    ["Servicios públicos generales",f("01")-g("01.7")-g("01.5"),"01","#aab1b7",false],
+    ["Desempleo",g("10.5"),"10.5","#f2ce61",false],
+    ["Familia e hijos",g("10.4"),"10.4","#e7cf8f",false],
+    ["Otros servicios sociales",f("10")-pension-g("10.4")-g("10.5")-g("10.8"),"10","#dacda8",false],
+    ["Orden público",f("03")-g("03.5"),"03","#b7bfc5",false],
+    ["Defensa",f("02")-g("02.4"),"02","#c0c7ce",false],
+    ["Cultura y ocio",f("08")-g("08.3"),"08","#b8c2c9",false],
+    ["Medio ambiente",f("05")-g("05.5"),"05","#b6c9b9",false],
+    ["Vivienda y urbanismo",f("06")-g("06.5"),"06","#a9b5be",false]
+  ].map(([title,value,cofogHref,color,dark],i)=>({
+    code:"editorial-"+i,title,value,cofogHref,color,dark
+  }));
+  if(pieces.some(x=>!Number.isFinite(x.value)||x.value<0))
+    throw Error("Reclasificación editorial COFOG inválida");
+  const expected=[...funcs.values()].reduce((s,v)=>s+v,0);
+  const actual=pieces.reduce((s,r)=>s+r.value,0);
+  if(Math.abs(actual-expected)>1e-6)
+    throw Error("La distribución editorial no reconcilia con COFOG: "+actual);
+  return pieces.filter(x=>x.value>0).sort((a,b)=>b.value-a.value);
+}
 export function createCofogTreemap({rows,history=null,initialYear=2024}={}){
   const validRows=(rows||[]).map(r=>({
     ...r,year:Number(r.year),value:Number(r.value),
@@ -100,6 +141,7 @@ export function createCofogTreemap({rows,history=null,initialYear=2024}={}){
   if(!validated.length)throw Error("No existe un año COFOG conciliado");
   let year=validated.includes(initialYear)?initialYear:validated.at(-1);
   let drill=null;
+  let editorialMode=Boolean(editorialCofogGroups(datasets.get(year)));
   const el=make("section","il-treemap");
   el.setAttribute("aria-label","Treemap del gasto de las Administraciones Públicas");
   const top=make("div","il-tm-top");
@@ -113,6 +155,17 @@ export function createCofogTreemap({rows,history=null,initialYear=2024}={}){
   yearBox.append(yearLabel,badge);
   top.append(heading,yearBox);
   const kicker=make("p","il-tm-lead");
+  const modes=make("div","il-tm-modes");
+  const toggleMode=(editorial,label)=>{
+    const b=make("button","",label);
+    b.type="button";b.dataset.editorial=String(editorial);
+    b.addEventListener("click",()=>{
+      stopPlayback();editorialMode=editorial;drill=null;panel.hidden=true;render();
+    });
+    modes.append(b);
+  };
+  toggleMode(true,"Áreas de gasto");
+  toggleMode(false,"10 funciones COFOG");
   const region=make("div","il-tm-canvas");
   const panel=make("div","il-tm-selection");panel.hidden=true;
   const control=make("div","il-tm-controls");
@@ -174,7 +227,7 @@ export function createCofogTreemap({rows,history=null,initialYear=2024}={}){
     "<p>La gráfica de Las Hespérides divide protección social y servicios generales en grupos editoriales (pensiones, desempleo, intereses) que <strong>no equivalen</strong> a las diez funciones de primer nivel. Solo se pueden contrastar después de reconstruir idénticas subfunciones, año, revisión y denominador.</p>"+
     "<p>El gráfico de 2012 facilitado por el lector muestra 26,6 % para pensiones e incapacidad temporal y 6,7 % para intereses de deuda. Esas cifras no deben trasladarse al Observatorio como valores auditados sin consultar el dataset de origen y la serie IGAE de 2012.</p>";
   explanation.append(summary,method);
-  el.append(top,kicker,back,region,panel,control,note,explanation);
+  el.append(top,kicker,modes,back,region,panel,control,note,explanation);
   const resize=()=>draw();
   let activeData=null;
   function render(){
@@ -182,13 +235,22 @@ export function createCofogTreemap({rows,history=null,initialYear=2024}={}){
     activeData=data;yearLabel.textContent=String(year);
     scrub.value=String(year);
     const percent=(data.top.find(x=>x.code==="10")?.value/data.total||0)*100;
+    const isEditorial=editorialMode&&Boolean(editorialCofogGroups(datasets.get(year)));
+    for(const button of modes.children){
+      button.setAttribute("aria-pressed",
+        String(button.dataset.editorial===String(isEditorial)));
+    }
+    modes.querySelector('[data-editorial="true"]').disabled=
+      !editorialCofogGroups(datasets.get(year));
     title.textContent=drill
       ?(FNS[drill]||drill)+" · desglose del gasto"
-      :"Dónde se concentra el gasto público";
+      :isEditorial?"¿Dónde se concentra el gasto público?"
+        :"El gasto público en diez funciones";
     kicker.textContent=drill
       ?"El tamaño representa la proporción dentro de esta función, cuando hay desglose verificable."
-      :"Cada rectángulo ocupa exactamente su porcentaje del gasto consolidado. "+
-      "Protección social representa "+PCT.format(percent)+" % en "+year+".";
+      :isEditorial?"Agrupaciones editoriales reconciliadas con IGAE. Pulsa un rectángulo para consultar las cifras."
+      :"Cada rectángulo representa una función oficial. Protección social: "+
+        PCT.format(percent)+" % en "+year+".";
     note.replaceChildren();
     note.append(make("span","","Fuente: IGAE · Clasificación funcional COFOG · "+
       year+" · "+NUM.format(data.total)+" millones de euros · ejercicio "+
@@ -206,10 +268,11 @@ export function createCofogTreemap({rows,history=null,initialYear=2024}={}){
     const height=Math.max(390,Math.min(650,Math.round(width*.59)));
     region.style.height=height+"px";
     const source=activeData.top;
+    const editorial=editorialMode?editorialCofogGroups(datasets.get(year)):null;
     const items=drill
       ?datasets.get(year).filter(r=>r.code.startsWith(drill+".") &&
           r.level===2 && Number.isFinite(r.value) && r.value>0)
-      :source;
+      :editorial||source;
     let list=items.length?items:source;
     if(drill&&!items.length){drill=null;back.hidden=true;list=source;}
     const layout=treemapLayout(list,width,height);
@@ -223,10 +286,12 @@ export function createCofogTreemap({rows,history=null,initialYear=2024}={}){
       button.style.top=(100*cell.y/height)+"%";
       button.style.width=(100*cell.w/width)+"%";
       button.style.height=(100*cell.h/height)+"%";
-      button.style.background=PALETTE[key]||"#536b78";
-      button.classList.toggle("il-tm-dark",!["10","02","03","06","08"].includes(key));
+      button.style.background=cell.color||PALETTE[key]||"#536b78";
+      button.classList.toggle("il-tm-dark",cell.color?cell.dark:
+        !["10","02","03","06","08"].includes(key));
       const pct=100*cell.value/denom;
-      const label=drill?String(cell.title||cell.code):FNS[cell.code]||cell.title||cell.code;
+      const label=drill||cell.color?
+        String(cell.title||cell.code):FNS[cell.code]||cell.title||cell.code;
       const tooSmall=cell.w<115||cell.h<62;
       const titleNode=make("span","il-tm-cell-label",label);
       const valueNode=make("strong","il-tm-cell-percent",PCT.format(pct)+" %");
@@ -246,9 +311,9 @@ export function createCofogTreemap({rows,history=null,initialYear=2024}={}){
           (drill?"la función":"todo el gasto")));
         row.append(text);
         const href=make("a","","Ver en el Sankey ↗");
-        href.href="/?detalle-cofog="+encodeURIComponent(cell.code)+"#mapa-dinero";
+        href.href="/?detalle-cofog="+encodeURIComponent(cell.cofogHref||cell.code)+"#mapa-dinero";
         row.append(href);panel.append(row);
-        if(!drill && datasets.get(year).some(x=>x.level===2&&x.code.startsWith(cell.code+"."))){
+        if(!drill && !editorial && datasets.get(year).some(x=>x.level===2&&x.code.startsWith(cell.code+"."))){
           const expand=make("button","il-tm-expand","Desglosar función →");
           expand.type="button";expand.addEventListener("click",()=>{
             drill=cell.code;panel.hidden=true;render();
