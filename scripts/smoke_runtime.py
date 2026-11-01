@@ -125,11 +125,11 @@ def main() -> None:
                 "204.332 M€",
                 "55.034 M€",
                 "No debe sumarse a COFOG",
-                "Mapa completo"
+                "Mapa principal · gasto y deuda"
             ):
                 if fragment not in dom:
                     raise AssertionError("El mapa principal no muestra deuda: "+fragment)
-            if "Gasto público · S.13" not in dom and "Mapa completo" not in dom:
+            if "Gasto público · S.13" not in dom and "Mapa principal · gasto y deuda" not in dom:
                 raise AssertionError("Se perdió la representación S.13")
             if dom.index('class="pf-integrated-financing"') < dom.index('class="pf-center-box"'):
                 raise AssertionError("Deuda figura por encima de la clasificación COFOG")
