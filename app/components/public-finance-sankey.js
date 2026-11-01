@@ -1,6 +1,6 @@
 import {OFFICIAL_DRILL_ROUTES, relatedBudgetPrograms} from "./official-drill-routes.js";
 import {canonicalFinanceCode} from "./finance-code.js";
-import {createTreasuryDebtView,createIntegratedTreasuryRibbon,TREASURY_DEBT_2024} from "./treasury-debt-flow.js";
+import {createTreasuryDebtView,createIntegratedTreasuryRibbon,TREASURY_DEBT_2024,validateTreasuryDebt} from "./treasury-debt-flow.js";
 import {COFOG_STRUCTURE,cofogsBelow,cofogsFind} from "./cofog-structure.js";
 import {matchingBudgetPrograms} from "./official-budget-catalog.js";
 import {compareFinanceCodes,sortedFinanceChildren,financeExpansionPath,financeExpansionColumns} from "./finance-hierarchy.js";
@@ -479,6 +479,50 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       .pf-tesoro-scroll svg{min-width:780px}
     }
 
+
+    /* Two identities: no false conservation across separate accounting perimeters. */
+    .pf-bridge-overview{display:grid;grid-template-columns:minmax(0,1fr);
+      gap:7px;padding:11px 12px;margin:8px 0 10px;border:1px solid #dce3ec;
+      border-radius:9px;background:#f9fbfd;box-sizing:border-box;min-width:0}
+    .pf-bridge-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+      justify-content:space-between;min-width:0}
+    .pf-bridge-row strong{font:800 .73rem/1.25 system-ui,sans-serif;
+      color:#274967;min-width:155px}
+    .pf-bridge-row[data-perimeter="s13"] strong{color:#0b2447}
+    .pf-bridge-row[data-perimeter="treasury"] strong{color:#8b6328}
+    .pf-bridge-formula{display:flex;align-items:stretch;flex-wrap:wrap;
+      gap:6px;justify-content:flex-end;max-width:100%}
+    .pf-bridge-value{display:flex;flex-direction:column;justify-content:center;gap:3px;
+      padding:6px 9px;min-width:0;border:1px solid #cbd8e5;
+      border-radius:6px;background:#fff}
+    .pf-bridge-value b{font:800 .92rem/1.1 system-ui,sans-serif;
+      color:#0b2447;font-variant-numeric:tabular-nums}
+    .pf-bridge-value small{font:600 .61rem/1.18 system-ui,sans-serif;color:#6b7f93}
+    .pf-bridge-value[data-kind="gap"]{background:#fff1e7;border-color:#e9b18a}
+    .pf-bridge-value[data-kind="repay"]{background:#fff3df;border-color:#d4b17c}
+    .pf-bridge-value[data-kind="net"]{background:#eaf1f9;border-color:#abc0d4}
+    .pf-bridge-value[data-kind="total"]{background:#0b2447;border-color:#0b2447}
+    .pf-bridge-value[data-kind="total"] b,.pf-bridge-value[data-kind="total"] small{color:white}
+    .pf-bridge-operator{align-self:center;color:#6f8396;
+      font:800 1.18rem/1 system-ui,sans-serif}
+    .pf-bridge-compare{display:flex;align-items:center;justify-content:center;gap:9px;
+      color:#987849;font:700 .7rem/1.35 system-ui,sans-serif}
+    .pf-bridge-compare::before,.pf-bridge-compare::after{
+      content:"";height:0;border-top:1px dashed #c4ac83;flex:1}
+    .pf-bridge-compare span{max-width:470px;text-align:center}
+    .pf-bridge-legend{display:flex;gap:8px;align-items:center;justify-content:flex-end;
+      font:550 .65rem/1.3 system-ui,sans-serif;color:#728299}
+    @media(max-width:760px){
+      .pf-bridge-overview{padding:8px 7px;margin:6px 0}
+      .pf-bridge-row{gap:5px}
+      .pf-bridge-row strong{font-size:.68rem;min-width:0;width:100%}
+      .pf-bridge-formula{width:100%;justify-content:flex-start;gap:3px;flex-wrap:nowrap}
+      .pf-bridge-value{flex:1 1 0;min-width:0;padding:6px 4px}
+      .pf-bridge-value b{font-size:.78rem;white-space:nowrap}
+      .pf-bridge-value small{font-size:.55rem}
+      .pf-bridge-operator{font-size:1rem}
+      .pf-bridge-compare{font-size:.64rem}
+    }
     /* Treasury finances remain visible INSIDE the principal diagram, even
        when a COFOG branch expands horizontally. This is NOT the same S.13 ledger. */
     .pf-chart .pf-integrated-financing{
@@ -1648,15 +1692,64 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     }
 
 
-    // Same main visual surface: the Treasury strip is always visible below
-    // the primary COFOG Sankey, irrespective of an open functional branch.
-    // It is not a component on another page, another tab or a hidden drawer.
-    chart.append(svg,createIntegratedTreasuryRibbon(
-      ()=>setMode("treasury"),
-      TREASURY_DEBT_2024,
-      {interest:currentYear===2024?byCode.get("01.7"):null,
-       onInterest:()=>{const item=byCode.get("01.7");if(item)openDetail(item);}}
-    ));
+    // Fast comparison of TWO different identities, not an invented link
+    // between the Treasury net balance and the deficit of all AAPP.
+    const overview=htmlEl("section","pf-bridge-overview");
+    overview.setAttribute("aria-label","Resumen visual de dos cuentas contables diferentes");
+    const summaryRow=(name,perimeter,parts)=>{
+      const row=htmlEl("div","pf-bridge-row");
+      row.dataset.perimeter=perimeter;
+      const title=htmlEl("strong");
+      title.textContent=name;
+      const formula=htmlEl("div","pf-bridge-formula");
+      for(const part of parts){
+        if(part.op){
+          const symbol=htmlEl("span","pf-bridge-operator");
+          symbol.textContent=part.op;formula.append(symbol);
+        }else{
+          const cell=htmlEl("span","pf-bridge-value");
+          if(part.kind)cell.dataset.kind=part.kind;
+          const value=htmlEl("b");
+          value.textContent=formatCompactMillions(part.value);
+          const label=htmlEl("small");
+          label.textContent=part.label;cell.append(value,label);
+          formula.append(cell);
+        }
+      }
+      row.append(title,formula);
+      return row;
+    };
+    overview.append(summaryRow("01 · Cuenta no financiera · S.13","s13",[
+      {value:recursos.value,label:"Recursos"},{op:"+"},
+      {value:deficit.value,label:"Brecha B.9",kind:"gap"},{op:"="},
+      {value:gasto.value,label:"Gasto",kind:"total"}
+    ]));
+    if(currentYear===TREASURY_DEBT_2024.year){
+      const bridge=htmlEl("div","pf-bridge-compare");
+      const hint=htmlEl("span");
+      hint.textContent="Brecha S.13 ↕ financiación neta del Tesoro: relación conceptual, no igualdad";
+      bridge.append(hint);overview.append(bridge);
+      const debt=validateTreasuryDebt(TREASURY_DEBT_2024);
+      overview.append(summaryRow("02 · Emisión y amortización · Tesoro","treasury",[
+        {value:debt.gross,label:"Emisión bruta"},{op:"="},
+        {value:debt.repayments,label:"Capital devuelto",kind:"repay"},{op:"+"},
+        {value:debt.net,label:"Emisión neta",kind:"net"}
+      ]));
+    }
+    const overviewNote=htmlEl("div","pf-bridge-legend");
+    overviewNote.textContent="Millones de euros · diferentes perímetros; no sumar ambas cuentas";
+    overview.append(overviewNote);
+    // The summary appears before the original COFOG graphic; financing still
+    // appears below it in the very same chart.
+    chart.append(overview,svg);
+    if(currentYear===TREASURY_DEBT_2024.year){
+      chart.append(createIntegratedTreasuryRibbon(
+        ()=>setMode("treasury"),
+        TREASURY_DEBT_2024,
+        {interest:byCode.get("01.7"),
+         onInterest:()=>{const item=byCode.get("01.7");if(item)openDetail(item);}}
+      ));
+    }
 
     badge.textContent = `${currentYear} · ${expenseRows.length} funciones COFOG · deuda Tesoro visible`;
     const hasAdjustment = incomeRows.some(d => d.is_vintage_adjustment);
