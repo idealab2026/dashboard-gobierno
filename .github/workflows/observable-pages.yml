@@ -63,6 +63,8 @@ jobs:
         run: python -m unittest discover -s scripts/tests -p "test_*.py" -v
       - name: Search semantics · COFOG health and project anti-false-positives
         run: node --test scripts/tests/test_spending_query.mjs
+      - name: Official Treasury debt 2024 · gross issuance / principal redemption / net
+        run: node --test scripts/tests/test_treasury_debt.mjs
       - name: Visual treemap · quantitative area and classification reconciliation
         run: node --test scripts/tests/test_cofog_treemap.mjs
       - name: Update only validated annual population figures (official INE ECP320)
