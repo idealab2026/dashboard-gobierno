@@ -598,6 +598,34 @@ if(atlasMenu){
     if(event.key==="Escape")atlasMenu.open=false;
   });
 }
+// Diagnóstico visual automatizado en Chrome (solo con ?nav-qa=1).
+if(new URLSearchParams(window.location.search).has("nav-qa")){
+  const head=document.querySelector(".il-atlas-nav");
+  const menu=document.querySelector(".il-atlas-menu");
+  menu?.querySelector("summary")?.click();
+  requestAnimationFrame(()=>{
+    const panel=menu?.querySelector(".il-atlas-menu-panel");
+    const name=head?.querySelector(".idealab-brand");
+    const trigger=menu?.querySelector("summary");
+    const a=name?.getBoundingClientRect();
+    const b=trigger?.getBoundingClientRect();
+    const p=panel?.getBoundingClientRect();
+    const issues=[];
+    if(!menu?.open)issues.push("cerrado");
+    if(getComputedStyle(panel).display!=="grid")issues.push("panel-no-visible");
+    if(!a||!b||a.right>b.left-4)issues.push("logo-solapado");
+    if(!p||p.left<0||p.right>window.innerWidth+1)issues.push("panel-desbordado");
+    if(!p||p.top<b.bottom-3)issues.push("panel-encima");
+    if(head?.querySelector(".idealab-nav-links"))issues.push("navegacion-duplicada");
+    const result=document.createElement("div");
+    result.id="il-atlas-nav-qa";
+    result.dataset.status=issues.length?"fail":"ok";
+    result.dataset.errors=issues.join(",");
+    result.dataset.viewport=String(window.innerWidth);
+    result.textContent=issues.length?"NAV_QA_FAIL "+issues.join(","):"NAV_QA_OK";
+    document.body.append(result);
+  });
+}
 ```
 
 
