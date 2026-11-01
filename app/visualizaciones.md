@@ -202,6 +202,9 @@ html{scroll-behavior:smooth;font-size:16px}
 .il-social-objective strong{font:850 clamp(1.05rem,1.6vw,1.4rem)/1.23 system-ui,sans-serif;
  color:#0b2447;overflow-wrap:anywhere}
 .il-social-objective small{font-size:.68rem;color:#78889a}
+.il-social-objective-change{display:flex;align-items:baseline;flex-wrap:wrap;gap:5px 9px;margin-top:3px}
+.il-social-objective-change b{font:850 .82rem/1.3 system-ui,sans-serif;color:#7d5c27}
+.il-social-objective-change small{font:550 .64rem/1.35 system-ui,sans-serif;color:#6e8297}
 .il-social-objective p{font:550 .69rem/1.48 system-ui,sans-serif;color:#586b81;
  margin:4px 0;text-align:justify}
 .il-social-objective a{font:750 .69rem/1.35 system-ui,sans-serif;color:#225c8b!important;text-decoration:none!important}
