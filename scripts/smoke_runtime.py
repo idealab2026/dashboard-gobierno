@@ -366,46 +366,69 @@ def main() -> None:
                 raise AssertionError("Error Observable al abrir categoría prefiltrada")
             print("Cobertura interactiva validada: 591 registros, barras y filtro PGE 4")
 
-            # Separate editorial data-visualisation section: all ten 2024
-            # functions render, and no unvalidated historical years appear.
+            # Landing: only compact gallery and six static data previews.
+            # Full charts load on demand through the same openChart handler.
             atlas_url=f"http://127.0.0.1:{server.server_port}/{BASE}/visualizaciones.html"
             atlas=subprocess.run(
-                [*args[:-1],"--virtual-time-budget=10000",atlas_url],
+                [*args[:-1],"--virtual-time-budget=11000",atlas_url],
                 text=True,capture_output=True,timeout=85
             )
             if atlas.returncode:
-                raise AssertionError("Chrome no abre el atlas de treemaps")
+                raise AssertionError("Chrome no abre el atlas")
             atlas_dom=atlas.stdout
-            for fragment in ('class="il-treemap"',
-                             'class="il-tm-canvas"',
-                             'class="il-tm-cell',
-                             "2024",
-                             "Pensiones e incapacidad",
-                             "2024 · 725.001 millones",
-                             'class="il-tm-year-select"',
-                             'class="il-tm-timeline"'):
-                if fragment not in atlas_dom:
-                    raise AssertionError("Fallo visualizaciones: falta "+fragment)
-            if any(s in atlas_dom for s in ("RuntimeError:","Uncaught SyntaxError")):
-                raise AssertionError("RuntimeError en visualizaciones COFOG")
             for fragment in (
-                'class="il-social-root"',
-                'id="il-pensions-chart"',
-                'id="il-salaries-chart"',
-                'id="il-housing-chart"',
-                'id="il-concerns-chart"',
-                'class="il-social-objectives"',
-                "Pensiones: porcentaje del gasto público",
-                "Salarios brutos por edad",
-                "Vivienda: valor tasado por m²",
-                "¿Qué preocupa a los españoles?",
-                "28,4 %",
-                "55,7"
+                'class="il-gallery"',
+                'id="il-gallery-query"',
+                'class="il-gallery-grid"',
+                'class="il-gallery-preview"',
+                'data-chart="gasto"',
+                'data-chart="pensiones"',
+                'data-chart="salarios"',
+                'data-chart="vivienda"',
+                'data-chart="preocupaciones"',
+                'data-chart="indicadores"',
+                "6 de 6 gráficas",
+                'class="il-gallery-dialog"',
+                "28,4 %"
             ):
                 if fragment not in atlas_dom:
-                    raise AssertionError("Gráfica social no visible en Chrome: "+fragment)
-            print("Cuatro gráficas sociales y panel CIS visibles en Chrome")
-            print("Treemap 2024 verificado en Chrome, 10 funciones y 725001 M€")
+                    raise AssertionError("Galería compacta no renderizada: "+fragment)
+            if any(s in atlas_dom for s in ("RuntimeError:","Uncaught SyntaxError")):
+                raise AssertionError("RuntimeError en galería")
+            if 'class="il-treemap"' in atlas_dom:
+                raise AssertionError("El treemap gigante sigue visible en la portada")
+            print("Galería compacta: seis tarjetas, vista previa, buscador sin treemap gigante")
+
+            # Deep-link and click use the same gallery openChart() handler.
+            # The deep links let CI test dialogs without synthetic mouse clicks.
+            for chart_name,visible in (
+                ("gasto",('class="il-treemap"', 'class="il-tm-canvas"',
+                          "Pensiones e incapacidad","2024 · 725.001 millones")),
+                ("pensiones",('id="il-pensions-chart"', "Pensiones: porcentaje del gasto público",
+                             "206.130","2020–2024")),
+                ("vivienda",('id="il-housing-chart"', "Vivienda: valor tasado por m²",
+                            'class="il-social-chart-wrap"')),
+                ("preocupaciones",('id="il-concerns-chart"',
+                                  "¿Qué preocupa a los españoles?")),
+                ("indicadores",('id="il-indicators-chart"',
+                               'class="il-social-objectives"'))
+            ):
+                chart_url=atlas_url+"?grafica="+chart_name
+                page=subprocess.run(
+                    [*args[:-1],"--virtual-time-budget=15000",chart_url],
+                    text=True,capture_output=True,timeout=85
+                )
+                if page.returncode:
+                    raise AssertionError("Chrome no abre gráfica ampliada "+chart_name)
+                html=page.stdout
+                for fragment in visible:
+                    if fragment not in html:
+                        raise AssertionError("Modal de "+chart_name+" sin "+fragment)
+                if '<dialog class="il-gallery-dialog" open' not in html:
+                    raise AssertionError("Modal de "+chart_name+" no se abrió")
+                if "RuntimeError:" in html or "Uncaught SyntaxError" in html:
+                    raise AssertionError("RuntimeError en el detalle "+chart_name)
+            print("Modales gráficos abiertos en Chrome: gasto, pensiones, vivienda, CIS, indicadores")
             print(f"Buscador de partidas OK en Chrome: {checks_search}")
 
             # Verify a query submitted from the homepage is applied at the destination.
