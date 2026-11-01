@@ -398,6 +398,17 @@ def main() -> None:
             if 'class="il-treemap"' in atlas_dom:
                 raise AssertionError("El treemap gigante sigue visible en la portada")
             print("Galería compacta: seis tarjetas, vista previa, buscador sin treemap gigante")
+            for width, height in ((1440, 900), (390, 844)):
+                nav_page = subprocess.run(
+                    [*args[:-1], f"--window-size={width},{height}",
+                     "--virtual-time-budget=16000", atlas_url+"?nav-qa=1"],
+                    text=True, capture_output=True, timeout=85
+                )
+                if nav_page.returncode:
+                    raise AssertionError("Chrome no verificó menú "+str(width))
+                if "NAV_QA_OK" not in nav_page.stdout or "NAV_QA_FAIL" in nav_page.stdout:
+                    raise AssertionError("El menú solapa elementos en ancho "+str(width))
+            print("Menú atlas validado en escritorio y móvil")
 
             # Deep-link and click use the same gallery openChart() handler.
             # The deep links let CI test dialogs without synthetic mouse clicks.
