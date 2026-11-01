@@ -388,6 +388,23 @@ def main() -> None:
                     raise AssertionError("Fallo visualizaciones: falta "+fragment)
             if any(s in atlas_dom for s in ("RuntimeError:","Uncaught SyntaxError")):
                 raise AssertionError("RuntimeError en visualizaciones COFOG")
+            for fragment in (
+                'class="il-social-root"',
+                'id="il-pensions-chart"',
+                'id="il-salaries-chart"',
+                'id="il-housing-chart"',
+                'id="il-concerns-chart"',
+                'class="il-social-objectives"',
+                "Pensiones: porcentaje del gasto público",
+                "Salarios brutos por edad",
+                "Vivienda: valor tasado por m²",
+                "¿Qué preocupa a los españoles?",
+                "28,43",
+                "55,7"
+            ):
+                if fragment not in atlas_dom:
+                    raise AssertionError("Gráfica social no visible en Chrome: "+fragment)
+            print("Cuatro gráficas sociales y panel CIS visibles en Chrome")
             print("Treemap 2024 verificado en Chrome, 10 funciones y 725001 M€")
             print(f"Buscador de partidas OK en Chrome: {checks_search}")
 
