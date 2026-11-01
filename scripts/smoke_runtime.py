@@ -86,7 +86,31 @@ def main() -> None:
                 "Total nacional disponible": "España · conjunto" in dom and 'class="pf-explorer' in dom,
             }
             if not all(checks.values()):
-                raise AssertionError(f"Runtime incompleto: {checks}; HTML chars={len(dom)}")
+                # Heavy multi-module SPA can finish its first Chrome paint before
+                # the Observable async bundle is ready on a cold CI worker.
+                # Retry with a fresh profile, but still require every signal.
+                retry=subprocess.run([
+                    *args[:-2],
+                    "--virtual-time-budget=28000","--dump-dom",url
+                ],text=True,capture_output=True,timeout=85)
+                if retry.returncode:
+                    raise AssertionError("Segundo intento Chrome fallido: "+retry.stderr[-800:])
+                dom=retry.stdout
+                checks={
+                    "Sankey interactivo": 'class="pf-explorer' in dom,
+                    "España en un minuto": "<h2>España en un minuto</h2>" in dom,
+                    "Tarjetas de indicadores": 'class="kpi-card' in dom,
+                    "Detalle de gasto COFOG": "TOTAL COFOG" in dom,
+                    "Buscador visible en portada": 'id="il-quick-spending-query"' in dom,
+                    "Formulario que envía búsqueda": 'class="il-quick-spending-form"' in dom,
+                    "Selector de ministerios en portada": 'id="il-ministry-sankey"' in dom,
+                    "Selector de CCAA en portada": 'id="il-region-sankey"' in dom,
+                    "Total nacional disponible": "España · conjunto" in dom and 'class="pf-explorer' in dom,
+                }
+                if any(x in dom for x in ("RuntimeError:","Uncaught SyntaxError")):
+                    raise AssertionError("Error runtime en reintento de portada")
+            if not all(checks.values()):
+                raise AssertionError(f"Runtime incompleto tras reintento: {checks}; HTML chars={len(dom)}")
             print(f"Observatorio OK en Chrome: {checks}")
 
             # Los filtros de portada cambian el mismo mapa. El modo ministerial
@@ -263,7 +287,7 @@ def main() -> None:
                              "Protección social",
                              "2024 · 725.001 millones",
                              'class="il-tm-year-select"',
-                             "La evolución histórica se activará"):
+                             'class="il-tm-timeline"'):
                 if fragment not in atlas_dom:
                     raise AssertionError("Fallo visualizaciones: falta "+fragment)
             if any(s in atlas_dom for s in ("RuntimeError:","Uncaught SyntaxError")):
