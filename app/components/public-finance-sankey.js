@@ -219,6 +219,22 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     .pf-drawer-inner {padding:1.1rem; max-height:100vh; overflow:auto;}
     .pf-close {float:right; border:0 !important; background:transparent !important; padding:.1rem .3rem !important; font-size:1.25rem !important;}
     .pf-detail-title {font-size:1.05rem; line-height:1.25; margin:0 2rem .25rem 0; color:var(--pf-navy);}
+    .pf-center-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:12px 0}
+    .pf-center-fact{display:flex;flex-direction:column;gap:5px;border:1px solid #dce5ed;
+      border-radius:7px;padding:10px;background:#f8fafc;min-width:0}
+    .pf-center-fact small{font:700 .67rem/1.3 system-ui,sans-serif;color:#60758a}
+    .pf-center-fact strong{font:850 1.05rem/1.2 system-ui,sans-serif;color:#112e4e}
+    .pf-cash-logic{display:flex;flex-direction:column;align-items:stretch;margin:9px 0}
+    .pf-cash-logic-item{display:flex;flex-direction:column;gap:5px;border:1px solid #ccd9e6;
+      border-radius:7px;background:#f3f7fb;padding:11px;color:#4f667d}
+    .pf-cash-logic-item strong{font:750 .85rem/1.2 system-ui,sans-serif;color:#112e4e}
+    .pf-cash-logic-item span{font:600 .75rem/1.4 system-ui,sans-serif}
+    .pf-cash-logic-arrow{text-align:center;font:850 1.3rem/1.3 system-ui,sans-serif;color:#a9844d}
+    .pf-detail-jump{padding:9px 11px!important;background:#0b2447!important;color:white!important;
+      border:1px solid #0b2447!important;border-radius:5px!important;cursor:pointer;
+      font:700 .75rem/1.3 system-ui,sans-serif!important}
+    .pf-detail-jump:focus-visible{outline:2px solid #c49d5a;outline-offset:3px}
+
     .pf-detail-meta, .pf-source, .pf-note {font-size:.76rem; color:var(--pf-muted); line-height:1.5; margin:.5rem 0;}
     .pf-note {background:#f7f8fa; border:1px solid var(--pf-border); border-radius:8px; padding:.6rem .7rem;}
     .pf-note.caution {background:#fff8e6; border-color:#e6cc8a; color:#715513;}
@@ -1263,14 +1279,83 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       detail: {name: "sankey_desglose_" + dimension}
     }));
     currentRow = row;
-    root.classList.add("is-detail-open");
-    detail.replaceChildren();
+    // COFOG branches expand IN the Sankey. Never open an empty modal for them.
     if(row.side==="gasto" && row.code!=="S13.GASTO"){
+      root.classList.remove("is-detail-open");
+      detail.replaceChildren();
       expandInlineSankey(row);
       return;
     }
     resetInlineSankey();
-    if(row.code==="S13.GASTO")return;
+    detail.replaceChildren();
+    // Previously S13.GASTO returned here, leaving a white empty drawer.
+    // This central node must explain income, expenditure, financial debt and
+    // the accounting-perimeter limitations without fabricating transfers.
+    if(row.code==="S13.GASTO"){
+      const yearMap=rowMapForYear();
+      const rec=yearMap.get("S13.RECURSOS");
+      const gap=yearMap.get("S13.DEFICIT");
+      const interest=yearMap.get("01.7");
+      const h=htmlEl("h2","pf-detail-title");
+      h.textContent="¿De dónde sale y adónde va el dinero?";
+      detail.append(h);
+      const intro=htmlEl("p","pf-note");
+      intro.textContent="Los impuestos y demás recursos ingresan en las tesorerías públicas. También pueden financiar pagos de deuda; el Sankey COFOG solo muestra ingresos y gasto no financiero, no todos los cobros y pagos de caja.";
+      detail.append(intro);
+      const facts=htmlEl("div","pf-center-facts");
+      for(const [name,value] of [
+        ["Recursos S.13",rec?.value],["Gasto COFOG S.13",row.value],
+        ["Brecha B.9",gap?.value]
+      ]){
+        if(!Number.isFinite(value))continue;
+        const item=htmlEl("div","pf-center-fact");
+        const k=htmlEl("small");k.textContent=name;
+        const v=htmlEl("strong");v.textContent=formatCompactMillions(value);
+        item.append(k,v);facts.append(item);
+      }
+      detail.append(facts);
+      const subheading=htmlEl("h3","pf-detail-subtitle");
+      subheading.textContent="Cómo se paga la deuda";
+      detail.append(subheading);
+      const paths=htmlEl("div","pf-cash-logic");
+      const inputs=htmlEl("div","pf-cash-logic-item");
+      inputs.append(htmlEl("strong","","Dinero disponible"),
+        htmlEl("span","","Impuestos + otros cobros + deuda emitida + caja inicial"));
+      const arrow=htmlEl("div","pf-cash-logic-arrow");
+      arrow.textContent="↓";
+      const outputs=htmlEl("div","pf-cash-logic-item");
+      outputs.append(htmlEl("strong","","Pagos y caja final"),
+        htmlEl("span","","Servicios + intereses + amortizaciones + otras operaciones + caja final"));
+      paths.append(inputs,arrow,outputs);
+      detail.append(paths);
+      const note=htmlEl("p","pf-note caution");
+      note.textContent="Es un esquema conceptual: no suma importes S.13 con el Tesoro del Estado. Para reconciliar la caja real faltan movimientos financieros y saldos iniciales/finales del mismo perímetro.";
+      detail.append(note);
+      if(interest?.value){
+        const item=htmlEl("p","pf-note");
+        item.textContent="Intereses COFOG 01.7: "+formatMillions(interest.value)+
+          ". Ya incluidos en el gasto anterior, no se suman dos veces.";
+        detail.append(item);
+      }
+      const actions=htmlEl("div","pf-detail-actions");
+      const viewDebt=htmlEl("button","pf-detail-jump");
+      viewDebt.type="button";
+      viewDebt.textContent="Ver amortizaciones en el mismo mapa ↓";
+      viewDebt.addEventListener("click",()=>{
+        root.classList.remove("is-detail-open");
+        chart.querySelector(".pf-integrated-financing")?.scrollIntoView({
+          behavior:"smooth",block:"center"
+        });
+      });
+      const docs=htmlEl("button","pf-detail-jump");
+      docs.type="button";docs.textContent="Fuentes y conciliación";
+      docs.addEventListener("click",openMethodology);
+      actions.append(viewDebt,docs);
+      detail.append(actions);
+      root.classList.add("is-detail-open");
+      return;
+    }
+    root.classList.add("is-detail-open");
 
     const yearMap = rowMapForYear();
     const parent = row.parent_code ? yearMap.get(row.parent_code) : null;
