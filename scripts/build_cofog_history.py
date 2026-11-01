@@ -123,8 +123,8 @@ def main():
                ensure_ascii=False))
         # Cross-check the editorial labels of the 2012 reference image.
         f={x["code"]:x["value"] for x in y12["functions"]}
-        research_codes=("01.5","02.4","03.5","04.8","05.5",
-                        "06.5","07.5","08.3","09.7","10.8")
+        research_codes=("01.4","01.5","02.4","03.5","04.8","05.5",
+                        "06.5","07.5","08.5","09.7","10.8")
         research=sum(g.get(k,0) for k in research_codes)
         editorial={
           "pensions":s,
@@ -134,13 +134,13 @@ def main():
           "transport":g.get("04.5",0),
           "research":research,
           "interest":g.get("01.7",0),
-          "general":f["01"]-g.get("01.7",0)-g.get("01.5",0),
+          "general":f["01"]-g.get("01.7",0)-g.get("01.4",0)-g.get("01.5",0),
           "unemployment":g.get("10.5",0),
           "family":g.get("10.4",0),
           "social_other":f["10"]-s-g.get("10.4",0)-g.get("10.5",0)-g.get("10.8",0),
           "public_order":f["03"]-g.get("03.5",0),
           "defence":f["02"]-g.get("02.4",0),
-          "culture":f["08"]-g.get("08.3",0),
+          "culture":f["08"]-g.get("08.5",0),
           "environment":f["05"]-g.get("05.5",0),
           "housing":f["06"]-g.get("06.5",0)
         }
