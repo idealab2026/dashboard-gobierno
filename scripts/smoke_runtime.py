@@ -406,10 +406,18 @@ def main() -> None:
                 )
                 if nav_page.returncode:
                     raise AssertionError("Chrome no verificó menú "+str(width))
-                if "NAV_QA_OK" not in nav_page.stdout or "NAV_QA_FAIL" in nav_page.stdout:
-                    index=nav_page.stdout.find('id="il-atlas-nav-qa"')
-                    context=nav_page.stdout[max(0,index-40):index+300] if index>=0 else "NO HAY MARCADOR"
-                    raise AssertionError("El menú solapa elementos en ancho "+str(width)+": "+context)
+                import re as _nav_re
+                match=_nav_re.search(
+                    r'<div id="il-atlas-nav-qa"[^>]*data-status="([^"]+)"[^>]*>(.*?)</div>',
+                    nav_page.stdout, _nav_re.DOTALL
+                )
+                if not match:
+                    raise AssertionError("No se ejecutó la prueba geométrica del menú a "+str(width))
+                if match.group(1)!="ok" or match.group(2).strip()!="NAV_QA_OK":
+                    raise AssertionError(
+                        "Geometría incorrecta "+str(width)+": "+
+                        match.group(0)[:450]
+                    )
             print("Menú atlas validado en escritorio y móvil")
 
             # Deep-link and click use the same gallery openChart() handler.
