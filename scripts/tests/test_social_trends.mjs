@@ -53,9 +53,26 @@ test("CIS survey proportions must not be treated as exhaustive or additive",()=>
   assert.ok(data.objective[k]?.url?.startsWith("https://"));
 });
 
-test("All social charts are present in the published visualisations page",()=>{
+test("compact atlas renders all six interactive previews with search and modal",()=>{
  const page=readFileSync(new URL("../../app/visualizaciones.md",import.meta.url),"utf8");
- for(const s of ["social-indicators-root","createSocialTrends","housing-history.json",
-                   "social-trends.json",".il-social-objectives"])
-  assert.ok(page.includes(s),"missing "+s);
+ const gallery=readFileSync(new URL("../../app/components/visualization-gallery.js",import.meta.url),"utf8");
+ for(const s of ["visual-gallery-root","createVisualizationGallery","housing-history.json",
+                 "social-trends.json",".il-gallery-grid",".il-gallery-modal-content",
+                 ".il-gallery-card",".il-gallery-search"]){
+  assert.ok(page.includes(s),"Missing gallery integration "+s);
+ }
+ for(const id of ["gasto","pensiones","salarios","vivienda","preocupaciones","indicadores"])
+  assert.match(gallery,new RegExp('id:"'+id+'"'));
+ assert.match(gallery,/input\.type="search"/);
+ assert.match(gallery,/input\.addEventListener\("input",filter\)/);
+ assert.match(gallery,/button\.addEventListener\("click",\(\)=>openChart\(spec\.id,button\)\)/);
+ assert.match(gallery,/dialog\.showModal\(\)/);
+ assert.match(gallery,/close\.addEventListener\("click",closeChart\)/);
+ assert.match(gallery,/dialog\.addEventListener\("close"/);
+ assert.match(gallery,/dialog\.addEventListener\("click"/);
+ assert.match(gallery,/lastTrigger\.focus/);
+ assert.match(gallery,/queryMicrotask\(\(\)=>openChart\(initial\)\)/);
+ assert.match(gallery,/objective\.append\(sub,objectiveGrid\)/);
+ assert.doesNotMatch(page,/<div id="cofog-treemap-root"><\/div>/);
+ assert.doesNotMatch(page,/<div class="il-audit"/);
 });
