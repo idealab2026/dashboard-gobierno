@@ -228,6 +228,18 @@ export function createSocialTrends(data,housing){
   item.append(dom("span","il-social-objective-topic",c.label),
    dom("strong","",format(fact.value,fact.value>100?0:2)+" "+fact.unit),
    dom("small","",fact.period));
+  const change=fact.change_pct!==undefined
+    ?(fact.change_pct>=0?"+":"")+format(fact.change_pct,1)+" %"
+    :fact.change_pp!==undefined
+      ?(fact.change_pp>=0?"+":"")+format(fact.change_pp,2)+" p. p."
+      :fact.change_absolute!==undefined
+        ?(fact.change_absolute>=0?"+":"")+format(fact.change_absolute)+" "+fact.unit
+        :"";
+  if(change){
+    const variation=dom("div","il-social-objective-change");
+    variation.append(dom("b","",change),dom("small","",fact.change_caption));
+    item.append(variation);
+  }
   const info=dom("p","",fact.description);item.append(info);
   const link=dom("a","","Fuente ↗");link.href=fact.url;
   link.target="_blank";link.rel="noopener noreferrer";item.append(link);
