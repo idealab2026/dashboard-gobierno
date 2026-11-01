@@ -112,6 +112,35 @@ def main() -> None:
             if not all(checks.values()):
                 raise AssertionError(f"Runtime incompleto tras reintento: {checks}; HTML chars={len(dom)}")
             print(f"Observatorio OK en Chrome: {checks}")
+            # Debt is a separate STATE Treasury flow within the same
+            # public Sankey component, not mixed with government S.13 COFOG.
+            finance_url=url+"?vista=deuda#mapa-dinero"
+            debt=subprocess.run([*args[:-1],"--virtual-time-budget=18000",
+                                 finance_url],
+                text=True,capture_output=True,timeout=85)
+            if debt.returncode:
+                raise AssertionError("Chrome no abre el modo deuda")
+            finance_dom=debt.stdout
+            for fragment in (
+                'class="pf-tesoro"',
+                'class="pf-tesoro-scroll"',
+                "Emisión y amortización de deuda",
+                "204.332 M€",
+                "55.034 M€",
+                "259.366 M€",
+                "259.365 M€",
+                'aria-pressed="true"',
+                "Financiación neta ≠ gasto público",
+                "no es una salida de caja"
+            ):
+                if fragment not in finance_dom:
+                    raise AssertionError("Modo deuda no renderizado: "+fragment)
+            if 'class="pf-center-box"' in finance_dom:
+                raise AssertionError("Se solapan el Sankey S13 y la vista Tesoro")
+            if "RuntimeError:" in finance_dom:
+                raise AssertionError("RuntimeError en vista de deuda del Tesoro")
+            print("Vista Tesoro 2024: emisiones y amortizaciones verificadas en Chrome")
+
 
             # Los filtros de portada cambian el mismo mapa. El modo ministerial
             # conserva las 22 ramas y amplía columnas horizontalmente.
