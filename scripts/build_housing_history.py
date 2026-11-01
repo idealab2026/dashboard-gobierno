@@ -41,6 +41,61 @@ BASE={
    "https://bdsice.mineco.gob.es/indeco/reports/verSerieGraf_limpio.aspx/?codigo=449990&frec=-1",
    "https://bdsice.mineco.gob.es/indeco/reports/verSerieGraf_limpio.aspx/?codigo=449990m&frec=-1"
  ]}
+
+def clean(s):
+    return " ".join((s or "").replace("\u00a0"," ").split()).strip()
+def parse_value(s):
+    s=clean(s)
+    if not s or s.lower() in ("null","..","-","nan"):return None
+    # EU value format from MIVAU CSV: 2355.0, 2355,0 or 2.355,0
+    if "," in s:s=s.replace(".","").replace(",",".")
+    v=float(s)
+    return v if 100<v<20000 else None
+
+def extract(body):
+    text=body.decode("utf-8-sig")
+    rd=csv.DictReader(io.StringIO(text),delimiter=";")
+    required={"Año","Trimestre","Valor","Régimen","CPRO","Provincia","Comunidad_Autónoma","CODAUTO"}
+    if not required.issubset(set(rd.fieldnames or [])):
+        raise ValueError("MIVAU schema changed: "+str(rd.fieldnames))
+    filtered=[]
+    sample=[]
+    seen=set()
+    for row in rd:
+        year=int(row["Año"])
+        quarter=int(row["Trimestre"])
+        if not 1995<=year<=2026 or quarter not in (1,2,3,4):continue
+        if clean(row["Régimen"]).lower()!="libre":continue
+        v=parse_value(row["Valor"])
+        if v is None:continue
+        prov=clean(row["Provincia"])
+        community=clean(row["Comunidad_Autónoma"])
+        code=clean(row["CODAUTO"])
+        cpro=clean(row["CPRO"])
+        if year==2026 and quarter==2 and len(sample)<60:
+            sample.append({"cpro":cpro,"province":prov,
+                  "region":community,"code":code,"value":v})
+        # Source includes provincial figures, which MUST NOT be averaged to
+        # synthesize an autonomous community estimate.
+        if cpro not in ("","null","None","NA","-"):continue
+        territory=community
+        # Provincial aggregate lacking CPRO is only a territorial total when
+        # explicitly labelled as the same community or "Total".
+        norm=lambda s:unicodedata.normalize("NFKD",s).encode("ascii","ignore").decode().lower().strip()
+        if norm(prov) not in ("","total","total nacional","nacional",norm(community)):
+            continue
+        if not territory:continue
+        if territory.lower() in ("total nacional","total","nacional"):territory="España"
+        if norm(territory) in ("comunidad de madrid","madrid"):territory="Madrid"
+        key=(territory,year,quarter)
+        if key in seen:raise ValueError("Duplicated regional aggregate "+str(key))
+        seen.add(key)
+        filtered.append({"territory":territory,"year":year,"quarter":quarter,"value":v})
+    print("HOUSING_AGGREGATE_DIAG",json.dumps(sample[:40],ensure_ascii=False))
+    print("HOUSING_PARSED_COUNTS",len(filtered),
+          sorted(set(d["territory"] for d in filtered)))
+    return filtered
+
 def main():
     report=dict(BASE)
     try:
@@ -48,16 +103,21 @@ def main():
         with urllib.request.urlopen(req,timeout=30) as f:
             body=f.read(28_000_001)
         if len(body)>28_000_000:raise ValueError("CSV too large")
-        raw=body.decode("utf-8-sig")
-        print("HOUSING_CSV_HEAD_BYTES",len(body))
-        print("HOUSING_CSV_FIRST_8",repr(raw[:2800]))
-        # Do not publish unvalidated data until headers and level, category,
-        # territory and quarter have been parsed and cross-checked.
-        report["status"]="partial-verified"
-        report["note"]="Dataset oficial accesible; extracción completa por CCAA pendiente de homologar columnas."
+        rows=extract(body)
+        latest={(x["territory"],x["year"],x["quarter"]):x["value"] for x in rows}
+        # Validate publication against the nationally verified benchmarks.
+        if len(set(x["territory"] for x in rows))<18 or len(rows)<1500:
+            raise ValueError("Incomplete MIVAU regional aggregate extraction")
+        for k,v in [(("España",2026,2),2355.0),(("Madrid",2026,2),4089.6)]:
+            if abs(latest.get(k,-100)-v)>1:
+                raise ValueError("MIVAU benchmark mismatch "+str(k)+": "+str(latest.get(k)))
+        report.update(status="verified",records=sorted(rows,
+            key=lambda x:(x["territory"],x["year"],x["quarter"])),
+            note="Datos oficiales MIVAU: solo registros agregados nacional y CCAA, régimen libre. Sin promediar provincias.")
+        print("HOUSING_OFFICIAL_VERIFIED",len(rows),len(set(x["territory"] for x in rows)))
     except Exception as exc:
-        print("::warning::HOUSING_SOURCE_UNAVAILABLE",type(exc).__name__,str(exc)[:150])
-        report["note"]="CSV oficial temporalmente inaccesible: se conserva serie parcial publicada con fuente."
+        print("::warning::HOUSING_SOURCE_UNAVAILABLE",type(exc).__name__,str(exc)[:170])
+        report["note"]="CSV oficial inaccesible o esquema no validado: se conserva serie parcial publicada con fuente."
     OUT.write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf8")
     print("HOUSING_RECORDS",len(report["records"]),report["status"])
 if __name__=="__main__":main()
