@@ -158,45 +158,37 @@ export function createIntegratedTreasuryRibbon(onExplore,data=TREASURY_DEBT_2024
   if(typeof onExplore==="function")more.addEventListener("click",onExplore);
   heading.append(intro,more);
   main.append(heading);
+  // One proportional horizontal bar is easier to read than a miniature
+  // second Sankey. Parts sum EXACTLY to issue volume by instrument.
   const container=dom("div","pf-integrated-canvas");
-  const svg=svgEl("svg",{
-    viewBox:"0 0 1320 244",
-    role:"img",
-    "aria-label":"Tesoro del Estado 2024: emisiones brutas según suma de instrumentos 259.366 millones, amortización 204.332 millones, emisión neta 55.034 millones. Total bruto publicado 259.365 millones; redondeo de un millón."
-  });
-  const tag=(x,y,value,klass)=>{
-    addText(svg,x,y,value,"pf-integrated-svg-text "+klass);
-  };
-  const pill=(x,y,w,h,top,major,cls)=>{
-    const g=svgEl("g",{class:"pf-integrated-svg-box "+cls});
-    g.append(svgEl("rect",{x,y,width:w,height:h,rx:8}));
-    const lab=svgEl("text",{x:x+15,y:y+27,class:"pf-integrated-svg-title"});
-    lab.textContent=top;g.append(lab);
-    const value=svgEl("text",{x:x+15,y:y+66,class:"pf-integrated-svg-number"});
-    value.textContent=fmt(major);g.append(value);svg.append(g);
-  };
-  // Dashed boundary: a visual sibling, NEVER an S.13 monetary connection.
-  svg.append(svgEl("path",{
-    d:"M 8 7 L 1312 7",
-    class:"pf-integrated-boundary"
-  }));
-  tag(32,37,"ENTRADAS DEL TESORO","pf-integrated-overline");
-  tag(503,37,"OPERACIONES FINANCIERAS","pf-integrated-overline");
-  tag(903,37,"SALIDAS Y SALDO NETO","pf-integrated-overline");
-  // The visual widths are proportional only WITHIN this perimeter.
-  // The net difference is dotted and expressly NOT an expense.
-  const width=39;
-  svg.append(svgEl("path",{d:curve(360,125,470,125,width),
-    class:"pf-integrated-svg-link pf-integrated-gross"}));
-  svg.append(svgEl("path",{d:curve(793,110,900,99,width*b.repayments/b.gross),
-    class:"pf-integrated-svg-link pf-integrated-amort"}));
-  svg.append(svgEl("path",{d:curve(793,142,900,182,width*b.net/b.gross),
-    class:"pf-integrated-svg-link pf-integrated-difference"}));
-  pill(32,76,328,96,"Nueva deuda emitida",b.gross,"pf-integrated-in");
-  pill(470,76,323,96,"Tesoro · emisiones brutas",b.gross,"pf-integrated-central");
-  pill(900,48,390,91,"Capital devuelto (amortización)",b.repayments,"pf-integrated-out");
-  pill(900,150,390,91,"Emisión neta · saldo, no pago",b.net,"pf-integrated-balance");
-  container.append(svg);
+  const ratio=b.repayments/b.gross;
+  const bar=dom("div","pf-integrated-bar");
+  bar.setAttribute("role","img");
+  bar.setAttribute("aria-label",
+    "Deuda bruta emitida "+fmt(b.gross)+": "+fmt(b.repayments)+
+    " amortización ("+(100*ratio).toFixed(1)+" %) y "+
+    fmt(b.net)+" emisión neta ("+(100*(1-ratio)).toFixed(1)+" %). "+
+    "Emisión neta es un saldo, no un pago.");
+  const repay=dom("div","pf-integrated-bar-repay");
+  const net=dom("div","pf-integrated-bar-net");
+  repay.style.width=(ratio*100).toFixed(3)+"%";
+  net.style.width=((1-ratio)*100).toFixed(3)+"%";
+  bar.append(repay,net);
+  const legend=dom("div","pf-integrated-bar-legend");
+  const a=dom("div","pf-integrated-bar-key");
+  a.append(dom("span","pf-integrated-dot pf-integrated-dot-repay"),
+    dom("span","","Capital devuelto · "+(100*ratio).toFixed(1).replace(".",",")+" %"),
+    dom("strong","",fmt(b.repayments)));
+  const n=dom("div","pf-integrated-bar-key");
+  n.append(dom("span","pf-integrated-dot pf-integrated-dot-net"),
+    dom("span","","Emisión neta · "+(100*(1-ratio)).toFixed(1).replace(".",",")+" %"),
+    dom("strong","",fmt(b.net)));
+  legend.append(a,n);
+  const total=dom("div","pf-integrated-issued");
+  total.append(dom("span","","Nueva deuda emitida"),
+    dom("strong","",fmt(b.gross)),
+    dom("small","","≈ 79 % refinancia deuda anterior"));
+  container.append(total,bar,legend);
   main.append(container);
   if(interest&&Number.isFinite(Number(interest.value))&&Number(interest.value)>0){
     const existing=dom("div","pf-integrated-interest");
@@ -209,9 +201,9 @@ export function createIntegratedTreasuryRibbon(onExplore,data=TREASURY_DEBT_2024
     main.append(existing);
   }
   main.append(dom("p","pf-integrated-disclaimer",
-    "Las entradas y salidas mostradas son del Tesoro, no de todas las Administraciones Públicas. "+
-    "El saldo neto es la diferencia emisión − amortización, no un destino del dinero; "+
-    "total bruto publicado: "+fmt(b.officialGross)+" (diferencia 1 M€ por redondeo). "+
-    "No debe sumarse a COFOG ni interpretarse como una conciliación de caja del S.13."));
+    "Tesoro del Estado, no todas las AAPP. Emisión neta = deuda nueva − capital devuelto: "+
+    "es un saldo de financiación, no gasto ni caja disponible. Total bruto oficial: "+
+    fmt(b.officialGross)+" (1 M€ de redondeo). "+
+    "No debe sumarse a COFOG ni confundirse con el déficit S.13."));
   return main;
 }
