@@ -407,7 +407,9 @@ def main() -> None:
                 if nav_page.returncode:
                     raise AssertionError("Chrome no verificó menú "+str(width))
                 if "NAV_QA_OK" not in nav_page.stdout or "NAV_QA_FAIL" in nav_page.stdout:
-                    raise AssertionError("El menú solapa elementos en ancho "+str(width))
+                    index=nav_page.stdout.find('id="il-atlas-nav-qa"')
+                    context=nav_page.stdout[max(0,index-40):index+300] if index>=0 else "NO HAY MARCADOR"
+                    raise AssertionError("El menú solapa elementos en ancho "+str(width)+": "+context)
             print("Menú atlas validado en escritorio y móvil")
 
             # Deep-link and click use the same gallery openChart() handler.
