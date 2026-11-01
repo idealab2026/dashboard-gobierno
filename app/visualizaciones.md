@@ -318,6 +318,116 @@ font:750 .76rem/1.3 system-ui,sans-serif;padding:9px 12px;cursor:pointer;white-s
  .il-audit>article{padding:12px}
 }
 @media(prefers-reduced-motion:reduce){.il-tm-cell{transition:none}}
+
+/* ATLAS gallery-first: compact entry, six graphics immediately browsable. */
+.il-gallery-intro{margin:18px 0 9px;padding:13px 0 0;border-top:2px solid #baa16d}
+.il-gallery-intro span{display:block;color:#96753d;font:800 .68rem/1.3 system-ui,sans-serif;letter-spacing:.13em}
+.il-gallery-intro h1{font:750 clamp(1.5rem,2.8vw,2.35rem)/1.1 Georgia,serif;color:#0b2447;
+ margin:4px 0 12px}
+.il-gallery{font-family:system-ui,-apple-system,sans-serif;max-width:none;width:100%}
+.il-gallery-toolbar{display:flex;align-items:center;gap:12px;margin:3px 0 15px}
+.il-gallery-search{display:flex;align-items:center;gap:8px;border:1px solid #cfdbe7;
+ background:#fff;border-radius:9px;padding:0 12px;flex:1;max-width:720px;min-width:0;
+ box-shadow:0 1px 3px rgba(11,36,71,.03)}
+.il-gallery-search:focus-within{outline:2px solid #bd9a55;outline-offset:2px}
+.il-gallery-search-icon{color:#8092a4;font-size:1.3rem}
+.il-gallery-search input{height:44px;min-width:0;flex:1;border:0!important;outline:0!important;
+ background:transparent;color:#0b2447;font:600 .81rem/1.3 system-ui,sans-serif;
+ box-shadow:none!important}
+.il-gallery-clear{background:none;border:0;color:#59728d;cursor:pointer;
+ padding:6px;font:600 1.3rem/1 system-ui,sans-serif}
+.il-gallery-clear[hidden]{display:none}
+.il-gallery-count{white-space:nowrap;color:#70839a;font:650 .72rem/1.3 system-ui,sans-serif}
+.il-gallery-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 20px}
+.il-gallery-card{display:flex;flex-direction:column;text-align:left;min-width:0;width:100%;height:260px;
+ padding:14px;border:1px solid #dbe3eb;border-radius:10px;background:white;
+ cursor:pointer;color:#0b2447!important;transition:border-color .12s,box-shadow .12s,transform .12s;
+ font-family:system-ui,-apple-system,sans-serif}
+.il-gallery-card:hover{border-color:#b49a68;box-shadow:0 7px 21px rgba(11,36,71,.09);transform:translateY(-2px)}
+.il-gallery-card:focus-visible{outline:3px solid #c4a15e;outline-offset:2px}
+.il-gallery-card[hidden]{display:none}
+.il-gallery-card-top{display:flex;align-items:center;justify-content:space-between;gap:7px;margin:0 0 5px}
+.il-gallery-card-tag{font:800 .60rem/1.3 system-ui,sans-serif;letter-spacing:.055em;
+ text-transform:uppercase;color:#937037}
+.il-gallery-open-glyph{font:800 1rem/1 system-ui,sans-serif;color:#7189a1}
+.il-gallery-card h3{font:780 .95rem/1.25 system-ui,sans-serif;color:#112d4b;margin:0 0 4px}
+.il-gallery-card-value{font:850 clamp(1.2rem,2.1vw,1.8rem)/1.17 system-ui,sans-serif;
+ letter-spacing:-.025em;color:#0b2447;font-variant-numeric:tabular-nums}
+.il-gallery-card-period{font:600 .69rem/1.35 system-ui,sans-serif;color:#7a8a9c;margin-top:auto}
+.il-gallery-preview{height:115px;width:100%;margin-top:8px;overflow:hidden;min-width:0;
+ border-radius:5px;position:relative;flex:none}
+.il-gallery-preview svg{width:100%;height:100%;object-fit:fill;display:block}
+.il-gallery-tree{position:relative;width:100%;height:100%;background:#eee}
+.il-gallery-tree-cell{position:absolute;border:1.5px solid white;box-sizing:border-box}
+.il-gallery-bars{display:flex;flex-direction:column;gap:8px;width:100%;padding:2px 3px}
+.il-gallery-bar-row{display:grid;grid-template-columns:minmax(66px,120px) 1fr;gap:7px;align-items:center}
+.il-gallery-bar-row>span{font:650 .60rem/1.2 system-ui,sans-serif;color:#627891;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.il-gallery-bar-track{height:9px;border-radius:2px;overflow:hidden;background:#edf1f5}
+.il-gallery-bar-fill{height:100%;border-radius:2px}
+.il-gallery-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;height:100%}
+.il-gallery-stat{display:flex;flex-direction:column;gap:5px;padding:7px;
+ border:1px solid #e0e6ec;background:#f8fafc;border-radius:6px;overflow:hidden}
+.il-gallery-stat small{font:600 .62rem/1.1 system-ui,sans-serif;color:#7c8ba0}
+.il-gallery-stat strong{font:850 .96rem/1.12 system-ui,sans-serif;color:#103456;white-space:nowrap}
+.il-gallery-empty{font:650 .84rem/1.5 system-ui,sans-serif;color:#71849a;padding:30px 4px}
+.il-gallery-empty[hidden]{display:none}
+.il-gallery-dialog{width:min(1110px,calc(100vw - 28px));max-width:1110px;
+ height:min(91dvh,980px);max-height:91dvh;margin:auto;border:1px solid #dbe3ec;
+ border-radius:12px;box-shadow:0 20px 70px rgba(5,23,48,.24);
+ padding:0;background:white;color:#0b2447;box-sizing:border-box;overflow:hidden}
+.il-gallery-dialog::backdrop{background:rgba(8,25,47,.65);backdrop-filter:blur(2px)}
+.il-gallery-dialog-frame{display:flex;flex-direction:column;width:100%;height:100%;min-height:0}
+.il-gallery-modal-header{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;
+ align-items:center;gap:12px;padding:13px 18px;background:white;border-bottom:1px solid #e3e8ef;
+ flex:none}
+.il-gallery-modal-heading h2{font:780 clamp(1.12rem,2vw,1.55rem)/1.25 Georgia,serif;
+ color:#0b2447;margin:0}
+.il-gallery-modal-heading p{font:600 .72rem/1.4 system-ui,sans-serif;
+ color:#76889d;margin:4px 0 0}
+.il-gallery-close{background:#f1f4f8;color:#173452;border:1px solid #d6e0e9;
+ cursor:pointer;width:38px;height:38px;border-radius:7px;font:700 1.6rem/1 system-ui,sans-serif}
+.il-gallery-close:hover{background:#e7edf4}
+.il-gallery-close:focus-visible{outline:2px solid #bf9e5f;outline-offset:2px}
+.il-gallery-modal-content{overflow:auto;overscroll-behavior:contain;flex:1;min-height:0;
+ padding:clamp(10px,2vw,22px)}
+.il-gallery-modal-content>.il-social-card{border:0;margin:0;padding:0}
+.il-gallery-modal-content>.il-treemap{margin:0}
+.il-gallery-modal-content .il-tm-title{font-size:clamp(1.25rem,2vw,2.2rem)!important}
+.il-gallery-modal-content .il-tm-year strong{font-size:clamp(1.8rem,3vw,3rem)!important}
+.il-gallery-modal-content .il-tm-canvas{max-height:520px}
+.il-gallery-indicator-source{display:flex;gap:7px;flex-wrap:wrap;
+ font:650 .72rem/1.4 system-ui,sans-serif;color:#61778c}
+.il-gallery-indicator-source a{color:#245b8b;text-decoration:none}
+@media(max-width:1000px){
+ .il-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:540px){
+ .il-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .il-gallery-card{height:216px;padding:9px}
+ .il-gallery-card h3{font-size:.79rem}
+ .il-gallery-card-value{font-size:1.22rem}
+ .il-gallery-card-period{font-size:.58rem}
+ .il-gallery-preview{height:96px;margin-top:6px}
+ .il-gallery-card-tag{font-size:.54rem}
+ .il-gallery-stat{padding:5px}
+ .il-gallery-stat small{font-size:.53rem}
+ .il-gallery-stat strong{font-size:.72rem}
+ .il-gallery-bar-row{grid-template-columns:minmax(36px,73px) 1fr;gap:3px}
+ .il-gallery-bar-row>span{font-size:.51rem}
+ .il-gallery-bar-track{height:7px}
+ .il-gallery-toolbar{gap:7px}
+ .il-gallery-count{font-size:.60rem}
+ .il-gallery-search{padding:0 7px}
+ .il-gallery-search input{font-size:.74rem}
+ .il-gallery-modal-header{padding:9px 12px}
+ .il-gallery-dialog{width:calc(100vw - 10px);height:96dvh;max-height:96dvh;
+  border-radius:8px}
+ .il-gallery-modal-content{padding:10px}
+}
+@media(max-width:330px){.il-gallery-grid{grid-template-columns:1fr}
+ .il-gallery-card{height:220px}.il-gallery-preview{height:110px}}
+
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación de España en Datos">
@@ -383,64 +493,36 @@ font:750 .76rem/1.3 system-ui,sans-serif;padding:9px 12px;cursor:pointer;white-s
   </details>
 </nav>
 
-<div class="il-visual-intro">
-  <div class="il-visual-kicker">OBSERVATORIO · ATLAS VISUAL</div>
+<div class="il-gallery-intro">
+  <span>OBSERVATORIO · ATLAS VISUAL</span>
   <h1>Visualizaciones</h1>
-  <p>Los datos de España, en proporción. Explora cada superficie y abre su recorrido presupuestario en el mapa del dinero.</p>
 </div>
 
-<div id="cofog-treemap-root"></div>
+<div id="visual-gallery-root"></div>
 
 ```js
 import {dsvFormat} from "npm:d3-dsv";
 import {createCofogTreemap} from "./components/cofog-treemap.js";
-const csv = await FileAttachment("./data/seed/fact_finanzas_publicas_2024.csv").text();
-const rows=dsvFormat(";").parse(csv.replace(/^\uFEFF/,""))
- .filter(r=>Number(r.año)===2024 &&
-    ((r.clasificacion==="COFOG"&&r.lado==="gasto")||r.codigo==="S13.GASTO"))
- .map(r=>({
-   code:r.codigo,title:r.indicador,
-   year:Number(r.año),value:Number(r.valor),
-   level:Number(r.nivel)
- }));
-const verifiedHistory = await FileAttachment("./data/cofog-history.json").json();
-const currentYear = Number(new URLSearchParams(window.location.search).get("anio"))||2024;
-const treemap=createCofogTreemap({
-  rows,
-  history:verifiedHistory.status==="verified"?verifiedHistory.years:null,
-  initialYear:currentYear
-});
-document.getElementById("cofog-treemap-root").replaceChildren(treemap);
-```
-
-<div class="il-audit" id="contraste-hesperides">
-  <article>
-    <h3>01 · Cifras de 2024</h3>
-    <p><strong>Contrastadas con IGAE.</strong> El tamaño de cada rectángulo se calcula a partir de las diez funciones oficiales COFOG del gasto consolidado S.13, con conciliación de importes y porcentajes.</p>
-  </article>
-  <article>
-    <h3>02 · Las Hespérides · 2012</h3>
-    <p><strong>Contraste numérico verificado.</strong> IGAE 2012: pensiones e incapacidad (COFOG 10.1–10.3), 26,59 %; desempleo (10.5), 6,78 %; operaciones de deuda (01.7), 6,70 %. Coinciden con 26,6 %, 6,8 % y 6,7 % de la imagen, tras redondear. No son toda la protección social.</p>
-  </article>
-  <article>
-    <h3>03 · Serie 1995–2024</h3>
-    <p><strong>30 ejercicios conciliados (1995–2024).</strong> El gráfico reproduce el peso anual de cada función y permite recorrer los años. La actualización se bloquea si falla la fuente, el formato o la conciliación. Nunca interpolamos.</p>
-  </article>
-</div>
-
-<div class="il-audit-links">
-  Fuentes: <a href="https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Paginas/iacogofseries.aspx" target="_blank" rel="noopener noreferrer">IGAE · serie anual COFOG desde 1995</a> · <a href="https://www.hacienda.gob.es/es-ES/CDI/Paginas/ContabilidadNacional/COFOG/Clasificacion-funcional-del-gasto-de-las-Administraciones-Publicas.aspx" target="_blank" rel="noopener noreferrer">Hacienda · metodología COFOG</a> · <a href="https://hesperides.edu.es/centro-ruth-richardson/monitor-pensiones/" target="_blank" rel="noopener noreferrer">Centro Ruth Richardson · gráficos interactivos</a>.
-  La referencia externa sirve para contrastar decisiones de visualización; los datos del Observatorio se obtienen de fuentes oficiales.
-</div>
-
-
-<div id="social-indicators-root"></div>
-
-```js
 import {createSocialTrends} from "./components/social-trends.js";
-const socialData = await FileAttachment("./data/social-trends.json").json();
-const housingData = await FileAttachment("./data/housing-history.json").json();
-document.getElementById("social-indicators-root").replaceChildren(
-  createSocialTrends(socialData,housingData)
+import {createVisualizationGallery} from "./components/visualization-gallery.js";
+const csv = await FileAttachment("./data/seed/fact_finanzas_publicas_2024.csv").text();
+const rows = dsvFormat(";").parse(csv.replace(/^\uFEFF/,""))
+ .filter(r=>Number(r.año)===2024 &&
+   ((r.clasificacion==="COFOG"&&r.lado==="gasto")||r.codigo==="S13.GASTO"))
+ .map(r=>({code:r.codigo,title:r.indicador,year:Number(r.año),
+   value:Number(r.valor),level:Number(r.nivel)}));
+const verifiedHistory=await FileAttachment("./data/cofog-history.json").json();
+const socialData=await FileAttachment("./data/social-trends.json").json();
+const housingData=await FileAttachment("./data/housing-history.json").json();
+const currentYear=Number(new URLSearchParams(window.location.search).get("anio"))||2024;
+const treemap=createCofogTreemap({
+ rows,history:verifiedHistory.status==="verified"?verifiedHistory.years:null,
+ initialYear:currentYear
+});
+document.getElementById("visual-gallery-root").replaceChildren(
+ createVisualizationGallery({
+  treemap,socialRoot:createSocialTrends(socialData,housingData),
+  rows,history:verifiedHistory,socialData,housingData
+ })
 );
 ```
