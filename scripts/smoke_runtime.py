@@ -424,7 +424,7 @@ def main() -> None:
                 for fragment in visible:
                     if fragment not in html:
                         raise AssertionError("Modal de "+chart_name+" sin "+fragment)
-                if not re.search(r'<dialog[^>]*\\bopen(?:\\s|=|>)',html):
+                if not re.search(r'<dialog[^>]*\bopen(?:\s|=|>)',html):
                     raise AssertionError("Modal de "+chart_name+" no se abrió")
                 if "RuntimeError:" in html or "Uncaught SyntaxError" in html:
                     raise AssertionError("RuntimeError en el detalle "+chart_name)
