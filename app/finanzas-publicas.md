@@ -682,7 +682,7 @@ const fmtM = value => Number.isFinite(value)
 </div>
 
 <div class="pf-section-heading" id="mapa">
-  <h2>Ingresos → Administraciones Públicas → gasto</h2>
+  <h2>Entradas, gasto público y deuda</h2>
   <p>${displayYear} · sector consolidado S.13 · clasificación funcional COFOG</p>
 </div>
 
@@ -700,7 +700,7 @@ const explorer = PublicFinanceExplorer(
 <div class="pf-after-map">
   <details>
     <summary>Cómo leer el diagrama</summary>
-    <p>Los ingresos confluyen en un fondo común. IDEA LAB no atribuye un impuesto concreto a un gasto concreto. En ingresos, el porcentaje se calcula sobre los recursos públicos; en gasto, sobre el gasto total. El déficit se representa como financiación adicional para cerrar el flujo, pero no como ingreso económico.</p>
+    <p>El diagrama superior representa recursos y gasto por finalidad de las Administraciones Públicas S.13; el déficit figura como brecha contable, nunca como dinero cobrado. La franja inferior muestra emisiones brutas, amortización de principal y emisión neta del Tesoro del Estado. Es un perímetro diferente y no constituye una conciliación global de caja. No atribuimos pagos concretos a impuestos individuales.</p>
   </details>
   <details>
     <summary>Criterio de publicación y trazabilidad</summary>
