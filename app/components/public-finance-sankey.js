@@ -1568,7 +1568,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     const centerSub1 = svgEl("text", {x: centerX + 18, y: centerY + 138, class: "pf-center-sub"});
     centerSub1.textContent = `Recursos: ${formatCompactMillions(recursos.value)}`;
     const centerSub2 = svgEl("text", {x: centerX + 18, y: centerY + 160, class: "pf-center-sub"});
-    centerSub2.textContent = `Saldo B.9: ${formatCompactMillions(deficit.value)}`;
+    centerSub2.textContent = `Saldo B.9: −${formatCompactMillions(deficit.value)}`;
     const centerSub3 = svgEl("text", {x: centerX + 18, y: centerY + 182, class: "pf-center-sub"});
     centerSub3.textContent = `Gasto: ${formatCompactMillions(gasto.value)}`;
     const centerSub4 = svgEl("text", {x: centerX + 18, y: centerY + 212, class: "pf-center-sub"});
