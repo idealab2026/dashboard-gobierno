@@ -1,0 +1,8 @@
+{
+  "schema": "idea-lab-cofog-history-v1",
+  "source": "IGAE S.13, SEC2010 revisión estadística 2024",
+  "source_url": "https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Documents/AAPP_A/COFOG_A_AAPP.xlsx",
+  "years": [],
+  "status": "pending-official-verification",
+  "note": "La versión de producción obtiene y reconcilia el fichero oficial al compilar; si no está disponible, solo se muestra 2024 verificado localmente."
+}
