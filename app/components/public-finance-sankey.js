@@ -1885,7 +1885,15 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     helpTitle.textContent="¿Los impuestos también sirven para devolver deuda?";
     const helpText=htmlEl("p");
     helpText.textContent="Sí. Los impuestos y otros ingresos pueden pagar deuda que vence. También se puede devolver pidiendo nuevos préstamos (refinanciación). Los intereses ya están incluidos en el gasto de arriba; devolver el capital, no. Las dos cifras de déficit y financiación neta son de administraciones diferentes y no tienen que coincidir.";
-    help.append(helpTitle,helpText);
+    // Technical names stay available on demand while the primary explanation
+    // remains readable without prior accounting knowledge.
+    const terms=htmlEl("details","pf-bridge-help-technical");
+    const termsTitle=htmlEl("summary");
+    termsTitle.textContent="Términos técnicos y circuito de caja";
+    const termsText=htmlEl("p");
+    termsText.textContent="Cuenta no financiera · S.13 y Emisión y amortización · Tesoro: relación conceptual, no igualdad. Impuestos y otros cobros + nueva financiación + caja inicial → Tesorería del Estado → Servicios, intereses, capital devuelto y saldo final. Esquema conceptual del Estado: no son transferencias medibles entre ambas cuentas.";
+    terms.append(termsTitle,termsText);
+    help.append(helpTitle,helpText,terms);
     overview.append(help);
     // The summary appears before the original COFOG graphic; financing still
     // appears below it in the very same chart.
