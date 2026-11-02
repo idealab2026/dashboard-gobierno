@@ -546,13 +546,17 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     .pf-bridge-value[data-kind="total"] b,.pf-bridge-value[data-kind="total"] small{color:white}
     .pf-bridge-operator{align-self:center;color:#6f8396;
       font:800 1.18rem/1 system-ui,sans-serif}
-    .pf-bridge-compare{display:flex;align-items:center;justify-content:center;gap:9px;
-      color:#987849;font:700 .7rem/1.35 system-ui,sans-serif}
-    .pf-bridge-compare::before,.pf-bridge-compare::after{
-      content:"";height:0;border-top:1px dashed #c4ac83;flex:1}
-    .pf-bridge-compare span{max-width:470px;text-align:center}
+    .pf-bridge-compare{display:flex;align-items:center;justify-content:center;
+      padding:5px 9px;border-radius:5px;background:#fff5e8;
+      color:#664719;font:650 .73rem/1.4 system-ui,sans-serif}
+    .pf-bridge-compare span{text-align:center}
     .pf-bridge-legend{display:flex;gap:8px;align-items:center;justify-content:flex-end;
       font:550 .65rem/1.3 system-ui,sans-serif;color:#728299}
+    .pf-bridge-help{border-top:1px solid #e2e8ef;padding-top:5px;
+      color:#435f7d;font:550 .7rem/1.42 system-ui,sans-serif}
+    .pf-bridge-help summary{cursor:pointer;font-weight:750;width:max-content;max-width:100%}
+    .pf-bridge-help p{margin:6px 0 2px;max-width:900px}
+    .pf-bridge-help summary:focus-visible{outline:2px solid #b58d47;outline-offset:2px}
     @media(max-width:760px){
       .pf-bridge-overview{padding:8px 7px;margin:6px 0}
       .pf-bridge-row{gap:5px}
@@ -1832,7 +1836,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     // Fast comparison of TWO different identities, not an invented link
     // between the Treasury net balance and the deficit of all AAPP.
     const overview=htmlEl("section","pf-bridge-overview");
-    overview.setAttribute("aria-label","Resumen visual de dos cuentas contables diferentes");
+    overview.setAttribute("aria-label","Cómo se financia el gasto público y cómo se renueva la deuda");
     const summaryRow=(name,perimeter,parts)=>{
       const row=htmlEl("div","pf-bridge-row");
       row.dataset.perimeter=perimeter;
@@ -1856,26 +1860,33 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       row.append(title,formula);
       return row;
     };
-    overview.append(summaryRow("01 · Cuenta no financiera · S.13","s13",[
-      {value:recursos.value,label:"Recursos"},{op:"+"},
-      {value:deficit.value,label:"Brecha B.9",kind:"gap"},{op:"="},
-      {value:gasto.value,label:"Gasto",kind:"total"}
+    overview.append(summaryRow("1 · ¿Cómo se paga el gasto público?","s13",[
+      {value:recursos.value,label:"Ingresos públicos"},{op:"+"},
+      {value:deficit.value,label:"Déficit: lo que falta",kind:"gap"},{op:"="},
+      {value:gasto.value,label:"Gasto (con intereses)",kind:"total"}
     ]));
     if(currentYear===TREASURY_DEBT_2024.year){
       const bridge=htmlEl("div","pf-bridge-compare");
       const hint=htmlEl("span");
-      hint.textContent="Brecha S.13 ↕ financiación neta del Tesoro: relación conceptual, no igualdad";
+      hint.textContent="¿De dónde sale lo que falta? Se puede pedir prestado a inversores. El Tesoro no es una hucha.";
       bridge.append(hint);overview.append(bridge);
       const debt=validateTreasuryDebt(TREASURY_DEBT_2024);
-      overview.append(summaryRow("02 · Emisión y amortización · Tesoro","treasury",[
-        {value:debt.gross,label:"Emisión bruta"},{op:"="},
-        {value:debt.repayments,label:"Capital devuelto",kind:"repay"},{op:"+"},
-        {value:debt.net,label:"Emisión neta",kind:"net"}
+      overview.append(summaryRow("2 · ¿Cómo se renueva la deuda?","treasury",[
+        {value:debt.gross,label:"Deuda nueva emitida"},{op:"="},
+        {value:debt.repayments,label:"Deuda antigua devuelta",kind:"repay"},{op:"+"},
+        {value:debt.net,label:"Financiación neta",kind:"net"}
       ]));
     }
     const overviewNote=htmlEl("div","pf-bridge-legend");
-    overviewNote.textContent="Millones de euros · diferentes perímetros; no sumar ambas cuentas";
+    overviewNote.textContent="Millones de euros · arriba: todas las administraciones; abajo: solo Tesoro. No sumar.";
     overview.append(overviewNote);
+    const help=htmlEl("details","pf-bridge-help");
+    const helpTitle=htmlEl("summary");
+    helpTitle.textContent="¿Los impuestos también sirven para devolver deuda?";
+    const helpText=htmlEl("p");
+    helpText.textContent="Sí. Los impuestos y otros ingresos pueden pagar deuda que vence. También se puede devolver pidiendo nuevos préstamos (refinanciación). Los intereses ya están incluidos en el gasto de arriba; devolver el capital, no. Las dos cifras de déficit y financiación neta son de administraciones diferentes y no tienen que coincidir.";
+    help.append(helpTitle,helpText);
+    overview.append(help);
     // The summary appears before the original COFOG graphic; financing still
     // appears below it in the very same chart.
     chart.append(overview,svg);
@@ -1884,14 +1895,14 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       // This schematic describes Treasury unit-of-cash, NOT measurable
       // origin-to-destination flows across the distinct S.13 / State scopes.
       const bridge=htmlEl("section","pf-cash-concept");
-      bridge.setAttribute("aria-label","Cómo pueden los impuestos financiar la amortización de deuda");
+      bridge.setAttribute("aria-label","De dónde sale el dinero para devolver la deuda");
       const bridgeHeading=htmlEl("div","pf-cash-concept-heading");
       bridgeHeading.textContent="¿De dónde sale el dinero para devolver deuda?";
       const bridgeFlow=htmlEl("div","pf-cash-concept-flow");
       for(const [i,title,description] of [
-        [0,"Entradas en caja","Impuestos y otros cobros + nueva financiación + caja inicial"],
-        [1,"Tesorería del Estado","Unidad de caja: el dinero es fungible"],
-        [2,"Salidas y caja final","Servicios, intereses, capital devuelto y saldo final"]
+        [0,"Dinero que entra","Impuestos, otros ingresos, préstamos nuevos y dinero que ya había"],
+        [1,"Tesoro Público","Gestiona los cobros y pagos del Estado"],
+        [2,"Dinero que sale","Servicios, intereses, devolución de deuda y dinero que queda"]
       ]){
         if(i){
           const arrow=htmlEl("span","pf-cash-concept-arrow");
@@ -1903,7 +1914,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
         bridgeFlow.append(block);
       }
       const bridgeNote=htmlEl("span","pf-cash-concept-note");
-      bridgeNote.textContent="Esquema conceptual del Estado · sin importes cruzados con S.13";
+      bridgeNote.textContent="Esquema orientativo del Estado; no se mezclan cifras con el conjunto público";
       bridge.append(bridgeHeading,bridgeFlow,bridgeNote);
       chart.append(bridge);
       chart.append(createIntegratedTreasuryRibbon(
