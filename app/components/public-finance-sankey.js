@@ -622,6 +622,20 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       background:#e8f0f8}
     .pf-debt-history-table .pf-debt-history-gdp .pf-debt-history-partial{
       background:#faf3e7;color:#81643e}
+    .pf-debt-history-table .pf-debt-history-aapp th,
+    .pf-debt-history-table .pf-debt-history-aapp td{
+      background:#dce9f5;color:#0b2447;font-weight:900;
+      border-top:2px solid #98bad8}
+    .pf-debt-history-table .pf-debt-history-aapp .pf-debt-history-first{
+      background:#cee1f1}
+    .pf-debt-history-table .pf-debt-history-aapp-pct th,
+    .pf-debt-history-table .pf-debt-history-aapp-pct td{
+      background:#e8f2f9;color:#0b3d66;font-weight:900}
+    .pf-debt-history-table .pf-debt-history-aapp-pct .pf-debt-history-first{
+      background:#d9eaf7}
+    .pf-debt-history-table .pf-debt-history-aapp .pf-debt-history-partial,
+    .pf-debt-history-table .pf-debt-history-aapp-pct .pf-debt-history-partial{
+      background:#f6ecde;color:#72562e}
     .pf-debt-history-explainer{margin-top:9px;padding:8px 10px;border:1px solid #dbe3ed;
       border-radius:6px;background:#fff}
     .pf-debt-history-explainer summary{cursor:pointer;color:#244e72;font-weight:750}
