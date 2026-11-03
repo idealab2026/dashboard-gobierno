@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {TREASURY_DEBT_2024,validateTreasuryDebt} from "../../app/components/treasury-debt-flow.js";
 import {PUBLIC_CASH_2024,validatePublicCashFlow,cents} from "../../app/components/public-cash-sankey.js";
+import {TREASURY_HISTORY,validateTreasuryHistory} from "../../app/components/treasury-history.js";
 
 test("debt issuance reconciles by instrument: principal repayments and NET issuance",()=>{
  const rows=TREASURY_DEBT_2024.lines;
@@ -109,4 +110,52 @@ test("cash flow is attached to main Sankey without replacing COFOG and provides 
   assert.match(file,/Ver Sankey de caja completo/);
   assert.match(file,/querySelector\("#pf-real-cash"\)/);
   assert.match(file,/\.pf-real-cash-scroll/);
+});
+
+
+test("treasury annual debt history includes all years 2012-2025 plus partial 2026",()=>{
+  const data=validateTreasuryHistory();
+  assert.equal(data.length,15);
+  assert.deepEqual(data.map(x=>x.year),Array.from({length:15},(_,i)=>2012+i));
+  const exact=year=>data.find(x=>x.year===year);
+  assert.deepEqual([exact(2024).paid,exact(2024).issued,exact(2024).net],
+    [204332,259365,55034]);
+  assert.deepEqual([exact(2025).paid,exact(2025).issued,exact(2025).net],
+    [219241,274017,54775]);
+  assert.deepEqual([exact(2026).paid,exact(2026).issued,exact(2026).net],
+    [171489,234364,62875]);
+  assert.equal(exact(2026).period,"enero-septiembre");
+  assert.ok(data.filter(x=>x.year<=2023).every(x=>x.precision==="rounded"));
+  assert.ok(data.every(x=>Math.abs(x.issued-x.paid-x.net)<=1));
+});
+
+test("annual debt history fails closed on false precision and nonsensical balances",()=>{
+  assert.throws(()=>validateTreasuryHistory([
+    ...TREASURY_HISTORY.slice(0,1),
+    {...TREASURY_HISTORY[1],paid:TREASURY_HISTORY[1].paid+200}
+  ]),/balance/);
+  assert.throws(()=>validateTreasuryHistory([
+    {...TREASURY_HISTORY[0],issued:249601},
+    ...TREASURY_HISTORY.slice(1)
+  ]),/precisión/);
+  assert.throws(()=>validateTreasuryHistory([
+    ...TREASURY_HISTORY.slice(0,-1),
+    {...TREASURY_HISTORY.at(-1),period:"año completo"}
+  ]),/2026 no es un año completo/);
+  assert.throws(()=>validateTreasuryHistory([
+    TREASURY_HISTORY[0],TREASURY_HISTORY[0]
+  ]),/repetido/);
+});
+
+test("annual table is directly below treasury debt ribbon, with year columns",()=>{
+  const file=readFileSync(new URL("../../app/components/public-finance-sankey.js",import.meta.url),"utf8");
+  const table=readFileSync(new URL("../../app/components/treasury-history.js",import.meta.url),"utf8");
+  assert.match(file,/import \{createTreasuryHistoryTable\}/);
+  assert.match(file,/chart\.append\(createTreasuryHistoryTable\(\)\)/);
+  assert.match(file,/\.pf-debt-history-scroll/);
+  assert.match(table,/Balance \(emitida − pagada\)/);
+  assert.match(table,/Deuda pagada/);
+  assert.match(table,/Deuda emitida/);
+  assert.match(table,/enero-septiembre/);
+  assert.match(table,/aria-label","Tabla desplazable horizontalmente por años"/);
 });
