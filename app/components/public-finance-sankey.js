@@ -615,6 +615,13 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       background:#dceaf6}
     .pf-debt-history-table .pf-debt-history-stock .pf-debt-history-partial{
       background:#f4eadc;color:#684e29}
+    .pf-debt-history-table .pf-debt-history-gdp th,
+    .pf-debt-history-table .pf-debt-history-gdp td{
+      background:#f2f6fa;color:#204668;font-weight:850}
+    .pf-debt-history-table .pf-debt-history-gdp .pf-debt-history-first{
+      background:#e8f0f8}
+    .pf-debt-history-table .pf-debt-history-gdp .pf-debt-history-partial{
+      background:#faf3e7;color:#81643e}
     .pf-debt-history-explainer{margin-top:9px;padding:8px 10px;border:1px solid #dbe3ed;
       border-radius:6px;background:#fff}
     .pf-debt-history-explainer summary{cursor:pointer;color:#244e72;font-weight:750}
