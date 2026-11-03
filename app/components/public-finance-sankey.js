@@ -2,6 +2,7 @@ import {OFFICIAL_DRILL_ROUTES, relatedBudgetPrograms} from "./official-drill-rou
 import {canonicalFinanceCode} from "./finance-code.js";
 import {createTreasuryDebtView,createIntegratedTreasuryRibbon,TREASURY_DEBT_2024,validateTreasuryDebt} from "./treasury-debt-flow.js";
 import {createPublicCashSankey} from "./public-cash-sankey.js";
+import {createTreasuryHistoryTable} from "./treasury-history.js";
 import {COFOG_STRUCTURE,cofogsBelow,cofogsFind} from "./cofog-structure.js";
 import {matchingBudgetPrograms} from "./official-budget-catalog.js";
 import {compareFinanceCodes,sortedFinanceChildren,financeExpansionPath,financeExpansionColumns} from "./finance-hierarchy.js";
@@ -564,6 +565,56 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
       .pf-real-cash-details{grid-template-columns:1fr;gap:7px}
       .pf-real-cash-entry{font-size:.67rem;padding:5px 7px}
       .pf-real-cash-foot{font-size:.63rem}
+    }
+    /* Deuda pagada / emitida / neta por año; filas fijas y scroll horizontal. */
+    .pf-debt-history{width:100%;min-width:0;box-sizing:border-box;
+      margin:12px 0;border:1px solid #d5dfe9;border-radius:9px;
+      background:#fbfcfe;padding:11px 12px}
+    .pf-debt-history-head{display:flex;justify-content:space-between;
+      align-items:baseline;flex-wrap:wrap;gap:4px 12px;margin-bottom:9px}
+    .pf-debt-history-head h3{font:800 .93rem/1.3 system-ui,sans-serif;
+      color:#0b2447;margin:0}
+    .pf-debt-history-head span{font:600 .69rem/1.3 system-ui,sans-serif;
+      color:#61768e}
+    .pf-debt-history-scroll{width:100%;overflow-x:auto;overscroll-behavior-x:contain;
+      border-radius:5px;border:1px solid #dee7f0;background:white;
+      scrollbar-width:thin}
+    .pf-debt-history-scroll:focus-visible{outline:2px solid #b48d4a;outline-offset:2px}
+    .pf-debt-history-table{border-collapse:separate;border-spacing:0;
+      width:max-content;min-width:100%;font:650 .72rem/1.3 system-ui,sans-serif;
+      font-variant-numeric:tabular-nums}
+    .pf-debt-history-table caption{position:absolute;width:1px;height:1px;
+      overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+    .pf-debt-history-table th,.pf-debt-history-table td{padding:10px 11px;
+      text-align:right;white-space:nowrap;border-bottom:1px solid #e2e9f1;
+      border-right:1px solid #edf1f6}
+    .pf-debt-history-table thead th{position:sticky;top:0;
+      background:#edf3f9;color:#193a60;font-weight:850}
+    .pf-debt-history-table thead th small{display:block;font-size:.56rem;color:#647e97}
+    .pf-debt-history-table .pf-debt-history-first{position:sticky;left:0;
+      z-index:2;text-align:left;min-width:181px;max-width:200px;
+      background:#f5f8fb;color:#0b2447;box-shadow:2px 0 4px #0b24470a}
+    .pf-debt-history-table thead .pf-debt-history-first{z-index:3;
+      background:#e8f0f8}
+    .pf-debt-history-table tbody tr:last-child th,
+    .pf-debt-history-table tbody tr:last-child td{border-bottom:0}
+    .pf-debt-history-table .pf-debt-history-net th,
+    .pf-debt-history-table .pf-debt-history-net td{color:#1d557b;font-weight:850;
+      background:#f0f6fb}
+    .pf-debt-history-table .pf-debt-history-net .pf-debt-history-first{
+      background:#e9f2fa}
+    .pf-debt-history-table .pf-debt-history-partial{background:#fff4e7;
+      color:#8e612b}
+    .pf-debt-history-table .pf-debt-history-net .pf-debt-history-partial{
+      background:#fff1dd;color:#855827}
+    .pf-debt-history-notes{font:550 .67rem/1.4 system-ui,sans-serif;color:#61758b}
+    .pf-debt-history-notes p{margin:7px 0 0;text-align:justify}
+    .pf-debt-history-notes a{font-weight:750;color:#245e8b}
+    @media(max-width:760px){
+      .pf-debt-history{padding:8px;margin:8px 0}
+      .pf-debt-history-table th,.pf-debt-history-table td{padding:8px 9px}
+      .pf-debt-history-table .pf-debt-history-first{min-width:148px;max-width:168px;
+        white-space:normal}
     }
     .pf-cash-concept{border:1px solid #d8e2ed;border-top:3px solid #af9470;
       background:#fffdfa;padding:11px 14px;border-radius:8px;margin:8px 0;
@@ -1719,6 +1770,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     chart.replaceChildren();
     if(currentView==="treasury"){
       chart.append(createTreasuryDebtView());
+      chart.append(createTreasuryHistoryTable());
       badge.textContent="2024 · Tesoro del Estado · emisiones y amortizaciones";
       footnote.textContent="Otra clasificación y otro perímetro: este gráfico no permite atribuir los pagos de deuda a impuestos concretos, ni demuestra un balance de caja del S.13. La emisión neta es saldo, no gasto.";
       trail.hidden=true;
@@ -2012,6 +2064,7 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
         {interest:byCode.get("01.7"),
          onInterest:()=>{const item=byCode.get("01.7");if(item)openDetail(item);}}
       ));
+      chart.append(createTreasuryHistoryTable());
     }
 
     badge.textContent = `${currentYear} · ${expenseRows.length} funciones COFOG · deuda Tesoro visible`;
