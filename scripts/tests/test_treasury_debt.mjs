@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {TREASURY_DEBT_2024,validateTreasuryDebt} from "../../app/components/treasury-debt-flow.js";
 import {PUBLIC_CASH_2024,validatePublicCashFlow,cents} from "../../app/components/public-cash-sankey.js";
-import {TREASURY_HISTORY,validateTreasuryHistory,reconcileTreasuryStock,TREASURY_HISTORY_SOURCES,PIB_NOMINAL_INE,treasuryDebtToGdpPercent} from "../../app/components/treasury-history.js";
+import {TREASURY_HISTORY,validateTreasuryHistory,reconcileTreasuryStock,TREASURY_HISTORY_SOURCES,PIB_NOMINAL_INE,treasuryDebtToGdpPercent,DEUDA_AAPP_PDE_BDE,aappDebtToGdpPercent} from "../../app/components/treasury-history.js";
 
 test("debt issuance reconciles by instrument: principal repayments and NET issuance",()=>{
  const rows=TREASURY_DEBT_2024.lines;
@@ -180,10 +180,10 @@ test("debt stock reconciliation does not falsely equal net issuance to nominal s
   assert.equal(reconcileTreasuryStock(2012),null);
 });
 
-test("historical debt table has five rows and uses a sourced nominal stock, not a fabricated cumulative sum",()=>{
+test("historical debt table has seven rows and uses a sourced nominal stock, not a fabricated cumulative sum",()=>{
   const source=readFileSync(new URL("../../app/components/treasury-history.js",import.meta.url),"utf8");
   const css=readFileSync(new URL("../../app/components/public-finance-sankey.js",import.meta.url),"utf8");
-  assert.match(source,/Deuda total pendiente/);
+  assert.match(source,/Deuda del Tesoro pendiente/);
   assert.match(source,/key:"stock"/);
   assert.match(source,/TREASURY_HISTORY_SOURCES\.stock/);
   assert.match(source,/reconcileTreasuryStock\(2024,rows\)/);
@@ -228,14 +228,45 @@ test("debt-to-GDP ratio uses State Treasury outstanding, not all-administration 
   }),/ausente/);
 });
 
-test("fifth historic row explains comparable annual GDP and omits incomplete 2026",()=>{
+test("seventh historic row explains comparable annual GDP and omits incomplete 2026",()=>{
   const source=readFileSync(new URL("../../app/components/treasury-history.js",import.meta.url),"utf8");
   const component=readFileSync(new URL("../../app/components/public-finance-sankey.js",import.meta.url),"utf8");
-  assert.match(source,/Deuda pendiente \/ PIB \(%\)/);
+  assert.match(source,/Deuda del Tesoro \/ PIB \(%\)/);
   assert.match(source,/key:"gdpPct"/);
   assert.match(source,/treasuryDebtToGdpPercent\(entry\)/);
   assert.match(source,/pct===null\?"—"/);
   assert.match(source,/PIB_NOMINAL_INE\.source/);
   assert.match(source,/No es la ratio oficial de deuda pública PDE/);
   assert.match(component,/\.pf-debt-history-gdp/);
+});
+
+
+test("deuda PDE AAPP consolidada: 2024 y 2025 coinciden con la referencia pública",()=>{
+  assert.equal(DEUDA_AAPP_PDE_BDE.annual[2024],1620578);
+  assert.equal(DEUDA_AAPP_PDE_BDE.annual[2025],1698355);
+  assert.equal(DEUDA_AAPP_PDE_BDE.annual[2012],927813);
+  assert.equal(DEUDA_AAPP_PDE_BDE.unit,"M€");
+  const row=year=>TREASURY_HISTORY.find(x=>x.year===year);
+  assert.equal(Number(aappDebtToGdpPercent(row(2024)).toFixed(1)),101.4);
+  assert.equal(Number(aappDebtToGdpPercent(row(2025)).toFixed(1)),100.5);
+  assert.equal(aappDebtToGdpPercent(row(2026)),null);
+  assert.ok(DEUDA_AAPP_PDE_BDE.annual[2025]>row(2025).stock);
+  assert.throws(()=>aappDebtToGdpPercent(row(2025),PIB_NOMINAL_INE,{
+    ...DEUDA_AAPP_PDE_BDE,
+    scope:"Tesoro Público"
+  }),/perímetro/);
+});
+
+test("debt table distinguishes State Treasury issuance and total AAPP stock and ratios",()=>{
+  const source=readFileSync(new URL("../../app/components/treasury-history.js",import.meta.url),"utf8");
+  const css=readFileSync(new URL("../../app/components/public-finance-sankey.js",import.meta.url),"utf8");
+  assert.match(source,/Deuda del Tesoro pendiente/);
+  assert.match(source,/Deuda del Tesoro \/ PIB \(%\)/);
+  assert.match(source,/Deuda total AAPP \(PDE\)/);
+  assert.match(source,/Deuda total AAPP \/ PIB \(%\)/);
+  assert.match(source,/key:"aappStock"/);
+  assert.match(source,/key:"aappPct"/);
+  assert.match(source,/DEUDA_AAPP_PDE_BDE\.officialSource/);
+  assert.match(source,/algunas se prestan dinero entre sí/);
+  assert.match(css,/\.pf-debt-history-aapp-pct/);
 });
