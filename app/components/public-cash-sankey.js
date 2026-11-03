@@ -209,13 +209,19 @@ export function createPublicCashSankey(data=PUBLIC_CASH_2024){
   big.textContent="CAJA";drawing.append(big);
   const big2=svg("text",{x:660,y:382,"text-anchor":"middle",
     class:"pf-real-cash-center-sub"});
-  big2.textContent="del sector público";drawing.append(big2);
+  big2.textContent="sector público";drawing.append(big2);
   const big3=svg("text",{x:660,y:407,"text-anchor":"middle",
     class:"pf-real-cash-center-sub"});
   big3.textContent="estatal";drawing.append(big3);
   const big4=svg("text",{x:660,y:448,"text-anchor":"middle",
     class:"pf-real-cash-center-value"});
   big4.textContent=fmt(mm(verified.incomingCents));drawing.append(big4);
+  const info=svg("text",{x:660,y:473,"text-anchor":"middle",
+    class:"pf-real-cash-center-sub"});
+  info.textContent="total del circuito";drawing.append(info);
+  const info2=svg("text",{x:660,y:497,"text-anchor":"middle",
+    class:"pf-real-cash-center-sub"});
+  info2.textContent="no es recaudación";drawing.append(info2);
   scroll.append(drawing);
   root.append(scroll);
   const columnsText=dom("div","pf-real-cash-details");
