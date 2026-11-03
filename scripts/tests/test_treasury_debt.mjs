@@ -267,6 +267,6 @@ test("debt table distinguishes State Treasury issuance and total AAPP stock and 
   assert.match(source,/key:"aappStock"/);
   assert.match(source,/key:"aappPct"/);
   assert.match(source,/DEUDA_AAPP_PDE_BDE\.officialSource/);
-  assert.match(source,/algunas se prestan dinero entre sí/);
+  assert.match(source,/se prestan dinero entre sí/);
   assert.match(css,/\.pf-debt-history-aapp-pct/);
 });
