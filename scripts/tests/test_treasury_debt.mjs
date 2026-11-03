@@ -236,7 +236,7 @@ test("seventh historic row explains comparable annual GDP and omits incomplete 2
   assert.match(source,/treasuryDebtToGdpPercent\(entry\)/);
   assert.match(source,/pct===null\?"—"/);
   assert.match(source,/PIB_NOMINAL_INE\.source/);
-  assert.match(source,/No es la ratio oficial de deuda pública PDE/);
+  assert.match(source,/No es la deuda total de España/);
   assert.match(component,/\.pf-debt-history-gdp/);
 });
 
