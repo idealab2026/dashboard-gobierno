@@ -9,6 +9,14 @@
  * 2024 and 2025 Treasury publications differ by 1 M€ in arithmetic
  * because some aggregate/item series are rounded independently.
  * 2026 is a partial period, through September 2026 only.
+ *
+ * STOCK (stock property, M€): official Tesoro chart 01,
+ * "Deuda del Estado en circulación" (end-of-year nominal outstanding).
+ * For 2026 the stock is the September 2026 balance, not year end.
+ * These stock values are NOT S.13 general government debt (PDE).
+ * Issuance/redemptions are financing flows in effective terms,
+ * whereas stock is nominal and may include adjustments/other items;
+ * therefore year-end stock change need not equal issued - paid.
  */
 export const TREASURY_HISTORY=Object.freeze([
   {
@@ -17,7 +25,8 @@ export const TREASURY_HISTORY=Object.freeze([
     "paid": 153000,
     "net": 96600,
     "precision": "rounded",
-    "period": "año completo"
+    "period": "año completo",
+    "stock": 688231
   },
   {
     "year": 2013,
@@ -25,7 +34,8 @@ export const TREASURY_HISTORY=Object.freeze([
     "paid": 164900,
     "net": 73700,
     "precision": "rounded",
-    "period": "año completo"
+    "period": "año completo",
+    "stock": 760256
   },
   {
     "year": 2014,
@@ -33,7 +43,8 @@ export const TREASURY_HISTORY=Object.freeze([
     "paid": 185700,
     "net": 55600,
     "precision": "rounded",
-    "period": "año completo"
+    "period": "año completo",
+    "stock": 841041
   },
   {
     "year": 2015,
@@ -41,7 +52,8 @@ export const TREASURY_HISTORY=Object.freeze([
     "paid": 189100,
     "net": 47700,
     "precision": "rounded",
-    "period": "año completo"
+    "period": "año completo",
+    "stock": 889019
   },
   {
     "year": 2016,
@@ -49,7 +61,8 @@ export const TREASURY_HISTORY=Object.freeze([
     "paid": 186400,
     "net": 35000,
     "precision": "rounded",
-    "period": "año completo"
+    "period": "año completo",
+    "stock": 923003
   },
   {
     "year": 2017,
@@ -57,7 +70,8 @@ export const TREASURY_HISTORY=Object.freeze([
     "paid": 188900,
     "net": 45000,
     "precision": "rounded",
-    "period": "año completo"
+    "period": "año completo",
+    "stock": 968460
   },
   {
     "year": 2018,
@@ -65,7 +79,8 @@ export const TREASURY_HISTORY=Object.freeze([
     "paid": 178700,
     "net": 34300,
     "precision": "rounded",
-    "period": "año completo"
+    "period": "año completo",
+    "stock": 1003829
   },
   {
     "year": 2019,
@@ -73,7 +88,8 @@ export const TREASURY_HISTORY=Object.freeze([
     "paid": 172800,
     "net": 20000,
     "precision": "rounded",
-    "period": "año completo"
+    "period": "año completo",
+    "stock": 1023760
   },
   {
     "year": 2020,
@@ -81,7 +97,8 @@ export const TREASURY_HISTORY=Object.freeze([
     "paid": 167200,
     "net": 109900,
     "precision": "rounded",
-    "period": "año completo"
+    "period": "año completo",
+    "stock": 1134248
   },
   {
     "year": 2021,
@@ -89,7 +106,8 @@ export const TREASURY_HISTORY=Object.freeze([
     "paid": 189200,
     "net": 75100,
     "precision": "rounded",
-    "period": "año completo"
+    "period": "año completo",
+    "stock": 1212897
   },
   {
     "year": 2022,
@@ -97,7 +115,8 @@ export const TREASURY_HISTORY=Object.freeze([
     "paid": 162500,
     "net": 70100,
     "precision": "rounded",
-    "period": "año completo"
+    "period": "año completo",
+    "stock": 1299193
   },
   {
     "year": 2023,
@@ -105,7 +124,8 @@ export const TREASURY_HISTORY=Object.freeze([
     "paid": 186900,
     "net": 65100,
     "precision": "rounded",
-    "period": "año completo"
+    "period": "año completo",
+    "stock": 1382012
   },
   {
     "year": 2024,
@@ -113,7 +133,8 @@ export const TREASURY_HISTORY=Object.freeze([
     "paid": 204332,
     "net": 55034,
     "precision": "official",
-    "period": "año completo"
+    "period": "año completo",
+    "stock": 1440970
   },
   {
     "year": 2025,
@@ -121,7 +142,8 @@ export const TREASURY_HISTORY=Object.freeze([
     "paid": 219241,
     "net": 54775,
     "precision": "official",
-    "period": "año completo"
+    "period": "año completo",
+    "stock": 1516859
   },
   {
     "year": 2026,
@@ -129,13 +151,15 @@ export const TREASURY_HISTORY=Object.freeze([
     "paid": 171489,
     "net": 62875,
     "precision": "official",
-    "period": "enero-septiembre"
+    "period": "enero-septiembre",
+    "stock": 1585361
   }
 ]);
 export const TREASURY_HISTORY_SOURCES=Object.freeze({
   annual:"https://www.tesoro.es/sites/default/files/estrategia/Estrategia_Tesoro_Publico_2026_Espan%CC%83ol.pdf",
   debt2024:"https://www.tesoro.es/sites/default/files/estrategia/Estrategia_Tesoro_Publico_2025_Espan%CC%83ol.pdf",
-  monthly:"https://www.tesoro.es/documents/d/tesoro/13-pdf"
+  monthly:"https://www.tesoro.es/documents/d/tesoro/13-pdf",
+  stock:"https://www.tesoro.es/documents/d/tesoro/01-pdf"
 });
 export function validateTreasuryHistory(rows=TREASURY_HISTORY){
   if(!Array.isArray(rows)||rows.length<2)throw Error("Tesoro: falta serie histórica");
@@ -143,7 +167,7 @@ export function validateTreasuryHistory(rows=TREASURY_HISTORY){
   for(const d of rows){
     if(!Number.isInteger(d.year)||years.has(d.year))throw Error("Tesoro: año repetido o incorrecto");
     years.add(d.year);
-    if(![d.issued,d.paid,d.net].every(v=>Number.isInteger(v)&&v>=0))
+    if(![d.issued,d.paid,d.net,d.stock].every(v=>Number.isInteger(v)&&v>=0))
       throw Error("Tesoro: importes negativos o no enteros");
     if(Math.abs(d.issued-d.paid-d.net)>1)throw Error("Tesoro: balance sin conciliar");
     if(d.precision!=="rounded"&&d.precision!=="official")throw Error("Tesoro: precisión no informada");
@@ -152,6 +176,15 @@ export function validateTreasuryHistory(rows=TREASURY_HISTORY){
     if(d.year===2026&&d.period!=="enero-septiembre")throw Error("Tesoro: 2026 no es un año completo");
   }
   return rows;
+}
+export function reconcileTreasuryStock(year,rows=TREASURY_HISTORY){
+  const current=rows.find(d=>d.year===year);
+  const previous=rows.find(d=>d.year===year-1);
+  if(!current||!previous)return null;
+  const change=current.stock-previous.stock;
+  const netByFlows=current.issued-current.paid;
+  return {year,previousStock:previous.stock,stock:current.stock,change,
+    netByFlows,difference:change-netByFlows};
 }
 const dom=(tag,className,content)=>{
   const el=document.createElement(tag);
@@ -165,9 +198,9 @@ export function createTreasuryHistoryTable(rows=TREASURY_HISTORY){
   const ordered=[...rows].sort((a,b)=>b.year-a.year);
   const root=dom("section","pf-debt-history");
   root.id="pf-debt-history";
-  root.setAttribute("aria-label","Histórico por año de deuda emitida, pagada y saldo del Tesoro");
+  root.setAttribute("aria-label","Histórico por año de deuda emitida, pagada, balance y deuda total pendiente del Tesoro");
   const header=dom("div","pf-debt-history-head");
-  const title=dom("h3","","Deuda del Estado: emisión y devolución por año");
+  const title=dom("h3","","Deuda del Estado: emisión, devolución y deuda pendiente");
   const period=dom("span","","2012–2026 · millones de euros");
   header.append(title,period);
   root.append(header);
@@ -176,7 +209,7 @@ export function createTreasuryHistoryTable(rows=TREASURY_HISTORY){
   scroller.setAttribute("role","region");
   scroller.setAttribute("aria-label","Tabla desplazable horizontalmente por años");
   const table=dom("table","pf-debt-history-table");
-  const caption=dom("caption","","Evolución de emisiones brutas, amortizaciones y financiación neta del Tesoro Público; 2026 hasta septiembre.");
+  const caption=dom("caption","","Evolución de emisiones brutas, amortizaciones, financiación neta y deuda nominal total pendiente del Tesoro Público; 2026 hasta septiembre.");
   table.append(caption);
   const thead=dom("thead");
   const heading=dom("tr");
@@ -193,15 +226,18 @@ export function createTreasuryHistoryTable(rows=TREASURY_HISTORY){
   for(const {label,key} of [
     {label:"Deuda pagada",key:"paid"},
     {label:"Deuda emitida",key:"issued"},
-    {label:"Balance (emitida − pagada)",key:"net"}
+    {label:"Balance (emitida − pagada)",key:"net"},
+    {label:"Deuda total pendiente",key:"stock"}
   ]){
-    const tr=dom("tr",key==="net"?"pf-debt-history-net":"");
+    const tr=dom("tr",key==="net"?"pf-debt-history-net":key==="stock"?"pf-debt-history-stock":"");
     const rowName=dom("th","pf-debt-history-first",label);
     rowName.scope="row";tr.append(rowName);
     for(const entry of ordered){
       const value=entry[key],cell=dom("td",entry.year===2026?"pf-debt-history-partial":"");
-      cell.textContent=(key==="net"&&value>0?"+":"")+(entry.precision==="rounded"?"≈ ":"")+fmt(value);
-      cell.title=`${label} · ${entry.year} (${entry.period}); ${entry.precision==="rounded"?"importe aproximado, fuente redondeada a 100 millones":"dato oficial en millones de euros"}`;
+      cell.textContent=(key==="net"&&value>0?"+":"")+(key!=="stock"&&entry.precision==="rounded"?"≈ ":"")+fmt(value);
+      cell.title=key==="stock"
+        ?`Deuda nominal oficial pendiente al ${entry.year===2026?"30/09":"31/12"}/${entry.year}. Tesoro Público, cuadro 01, millones de euros.`
+        :`${label} · ${entry.year} (${entry.period}); ${entry.precision==="rounded"?"importe aproximado, fuente redondeada a 100 millones":"dato oficial en millones de euros"}`;
       tr.append(cell);
     }
     tbody.append(tr);
@@ -210,9 +246,22 @@ export function createTreasuryHistoryTable(rows=TREASURY_HISTORY){
   scroller.append(table);
   root.append(scroller);
   const notes=dom("div","pf-debt-history-notes");
+  const bridge=dom("details","pf-debt-history-explainer");
+  bridge.append(dom("summary","","¿Por qué la deuda pendiente no coincide exactamente con la suma del año anterior y el balance?"));
+  const example24=reconcileTreasuryStock(2024,rows);
+  const example25=reconcileTreasuryStock(2025,rows);
+  const sign=n=>n>0?"+":"";
+  bridge.append(dom("p","",
+    "Deuda final = deuda anterior + deuda emitida − deuda devuelta + otros cambios de valoración o cobertura. " +
+    "El Tesoro publica las emisiones en términos efectivos y el saldo pendiente en términos nominales; no son magnitudes idénticas. " +
+    "La diferencia se muestra como residuo de conciliación, no se atribuye sin prueba a un movimiento concreto."));
+  if(example24&&example25)bridge.append(dom("p","",
+    `Ejemplos: 2024, variación de deuda nominal ${sign(example24.change)}${fmt(example24.change)} frente a balance emitido − pagado ${sign(example24.netByFlows)}${fmt(example24.netByFlows)}; residuo ${sign(example24.difference)}${fmt(example24.difference)}. `+
+    `2025, variación ${sign(example25.change)}${fmt(example25.change)} frente a balance ${sign(example25.netByFlows)}${fmt(example25.netByFlows)}; residuo ${sign(example25.difference)}${fmt(example25.difference)}.`));
+  notes.append(bridge);
   notes.append(
     dom("p","","Un balance positivo significa que se emitió más deuda de la que se devolvió; no demuestra que cada devolución se pagara íntegramente con deuda nueva."),
-    dom("p","","2012–2023: cifras aproximadas, fuente redondeada a 100 M€. 2024–2025: importes publicados (puede haber diferencias de 1 M€ por redondeo). 2026: enero–septiembre, no comparable con años completos. Se muestran emisiones del Tesoro, no toda la deuda de las administraciones ni el gasto en intereses.")
+    dom("p","","Emisión, amortización y balance 2012–2023: cifras aproximadas (redondeadas a 100 M€). Deuda total pendiente: importe oficial nominal al cierre de cada año, sin redondeo adicional. 2026: datos hasta septiembre; no son un cierre anual. Ámbito: Tesoro del Estado, no todas las administraciones; los intereses se contabilizan aparte.")
   );
   const sources=dom("p","");
   sources.append("Fuentes: ");
@@ -220,7 +269,9 @@ export function createTreasuryHistoryTable(rows=TREASURY_HISTORY){
   a.href=TREASURY_HISTORY_SOURCES.annual;a.target="_blank";a.rel="noopener noreferrer";
   const b=dom("a","","Tesoro · financiación mensual");
   b.href=TREASURY_HISTORY_SOURCES.monthly;b.target="_blank";b.rel="noopener noreferrer";
-  sources.append(a," · ",b);
+  const c=dom("a","","Tesoro · deuda nominal en circulación (cuadro 01)");
+  c.href=TREASURY_HISTORY_SOURCES.stock;c.target="_blank";c.rel="noopener noreferrer";
+  sources.append(a," · ",b," · ",c);
   notes.append(sources);
   root.append(notes);
   return root;
