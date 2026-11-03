@@ -1,6 +1,7 @@
 import {OFFICIAL_DRILL_ROUTES, relatedBudgetPrograms} from "./official-drill-routes.js";
 import {canonicalFinanceCode} from "./finance-code.js";
 import {createTreasuryDebtView,createIntegratedTreasuryRibbon,TREASURY_DEBT_2024,validateTreasuryDebt} from "./treasury-debt-flow.js";
+import {createPublicCashSankey} from "./public-cash-sankey.js";
 import {COFOG_STRUCTURE,cofogsBelow,cofogsFind} from "./cofog-structure.js";
 import {matchingBudgetPrograms} from "./official-budget-catalog.js";
 import {compareFinanceCodes,sortedFinanceChildren,financeExpansionPath,financeExpansionColumns} from "./finance-hierarchy.js";
@@ -498,6 +499,72 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
 
 
 
+    /* Flujo real de caja consolidado: deuda principal incluida en el mapa. */
+    .pf-real-cash{margin:16px 0 12px;padding:14px;border:1px solid #c6d5e5;
+      border-radius:10px;background:#fbfcfe;min-width:0;box-sizing:border-box}
+    .pf-real-cash-heading{display:flex;align-items:baseline;justify-content:space-between;
+      flex-wrap:wrap;gap:5px 18px;margin-bottom:11px}
+    .pf-real-cash-heading h3{font:850 clamp(.9rem,1.6vw,1.12rem)/1.3 system-ui,sans-serif;
+      margin:0;color:#0b2447}
+    .pf-real-cash-heading p{font:600 .72rem/1.3 system-ui,sans-serif;margin:0;
+      color:#60758c}
+    .pf-real-cash-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:8px}
+    .pf-real-cash-kpi{display:flex;flex-direction:column;gap:3px;
+      padding:9px 11px;border:1px solid #d9e3ee;border-radius:7px;background:white}
+    .pf-real-cash-kpi:nth-child(2){background:#fff7eb;border-color:#d8b88b}
+    .pf-real-cash-kpi small{font:550 .67rem/1.3 system-ui,sans-serif;color:#62768d}
+    .pf-real-cash-kpi strong{font:850 clamp(.8rem,1.5vw,1.03rem)/1.15 system-ui,sans-serif;
+      color:#0b2447;font-variant-numeric:tabular-nums}
+    .pf-real-cash-message{font:600 .75rem/1.45 system-ui,sans-serif;
+      color:#40566c;margin:9px 0 6px;text-align:justify}
+    .pf-real-cash-scroll{min-width:0;width:100%;overflow-x:auto;overscroll-behavior-x:contain;
+      scrollbar-width:thin;background:white;border:1px solid #e1e8f0;border-radius:7px}
+    .pf-real-cash-scroll svg{display:block;width:100%;min-width:850px;height:auto}
+    .pf-real-cash-axis{font:800 16px/1.2 system-ui,sans-serif;fill:#506681;letter-spacing:.8px}
+    .pf-real-cash-center{fill:#0b2447;stroke:#0b2447;stroke-width:2}
+    .pf-real-cash-center-main{font:850 29px/1.2 system-ui,sans-serif;fill:white}
+    .pf-real-cash-center-sub{font:600 16px/1.2 system-ui,sans-serif;fill:#d3e1ef}
+    .pf-real-cash-center-value{font:800 19px/1.2 system-ui,sans-serif;fill:white}
+    .pf-real-cash-label{font:750 15px/1.3 system-ui,sans-serif;fill:#243b53}
+    .pf-real-cash-value{font:650 13px/1.3 system-ui,sans-serif;fill:#516883}
+    .pf-real-cash-ribbon{opacity:.7;transition:opacity .16s ease}
+    .pf-real-cash-ribbon:hover{opacity:1}
+    .pf-real-cash-details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:13px;margin-top:12px}
+    .pf-real-cash-list{display:flex;flex-direction:column;gap:3px;min-width:0}
+    .pf-real-cash-list-title{font:800 .77rem/1.25 system-ui,sans-serif;
+      color:#244464;margin-bottom:3px}
+    .pf-real-cash-entry{display:flex;align-items:center;justify-content:space-between;
+      gap:8px;padding:6px 9px;text-align:left;min-width:0;
+      background:white;border:1px solid #e2e8f0;border-radius:5px;
+      cursor:pointer;color:#34506c;font:600 .68rem/1.35 system-ui,sans-serif}
+    .pf-real-cash-entry:hover,.pf-real-cash-entry[aria-pressed="true"]{
+      background:#edf4fb;border-color:#aac5de}
+    .pf-real-cash-entry:focus-visible,.pf-cash-jump:focus-visible{
+      outline:2px solid #b58d47;outline-offset:2px}
+    .pf-real-cash-entry-label{display:flex;align-items:center;gap:7px;min-width:0}
+    .pf-real-cash-entry-label>span{min-width:0}
+    .pf-real-cash-dot{width:9px;height:9px;border-radius:2px;flex:none}
+    .pf-real-cash-entry b{color:#143455;white-space:nowrap;font-variant-numeric:tabular-nums}
+    .pf-real-cash-foot{font:550 .68rem/1.48 system-ui,sans-serif;color:#63778c}
+    .pf-real-cash-foot p{margin:7px 0;text-align:justify}
+    .pf-real-cash-foot a{color:#1b5689;font-weight:750}
+    .pf-cash-jump{cursor:pointer;align-self:flex-start;font:800 .72rem/1.35 system-ui,sans-serif;
+      border:1px solid #a4bbd2;color:#123b61;background:#eaf3fb;border-radius:5px;
+      padding:7px 10px;text-align:left}
+    @media(max-width:760px){
+      .pf-real-cash{padding:9px;margin:9px 0}
+      .pf-real-cash-heading{gap:2px}
+      .pf-real-cash-kpis{gap:4px}
+      .pf-real-cash-kpi{padding:6px 5px}
+      .pf-real-cash-kpi strong{font-size:.75rem}
+      .pf-real-cash-kpi small{font-size:.59rem}
+      .pf-real-cash-message{font-size:.69rem}
+      .pf-real-cash-details{grid-template-columns:1fr;gap:7px}
+      .pf-real-cash-entry{font-size:.67rem;padding:5px 7px}
+      .pf-real-cash-foot{font-size:.63rem}
+    }
     .pf-cash-concept{border:1px solid #d8e2ed;border-top:3px solid #af9470;
       background:#fffdfa;padding:11px 14px;border-radius:8px;margin:8px 0;
       width:100%;box-sizing:border-box;min-width:0}
@@ -1895,9 +1962,23 @@ export function PublicFinanceExplorer(data, sources = [], taxFigures = [], optio
     terms.append(termsTitle,termsText);
     help.append(helpTitle,helpText,terms);
     overview.append(help);
+    if(currentYear===TREASURY_DEBT_2024.year){
+      const jump=htmlEl("button","pf-cash-jump");
+      jump.type="button";
+      jump.textContent="Ver Sankey de caja completo (incluye devolución de deuda) ↓";
+      jump.addEventListener("click",()=>chart.querySelector("#pf-real-cash")?.scrollIntoView({
+        behavior:"smooth",block:"start"
+      }));
+      overview.append(jump);
+    }
     // The summary appears before the original COFOG graphic; financing still
     // appears below it in the very same chart.
     chart.append(overview,svg);
+    if(currentYear===TREASURY_DEBT_2024.year){
+      // This is a SECOND full account for the State public sector, not an
+      // invented continuation of the S.13 flows above.
+      chart.append(createPublicCashSankey());
+    }
     if(currentYear===TREASURY_DEBT_2024.year){
       // The same money from tax receipts can be used for principal repayments.
       // This schematic describes Treasury unit-of-cash, NOT measurable
