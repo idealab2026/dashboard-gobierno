@@ -175,6 +175,31 @@ export const PIB_NOMINAL_INE=Object.freeze({
     2024:1598588,2025:1690012
   })
 });
+/* Deuda PDE total de todas las administraciones: Banco de España.
+ * No sumar Estado, autonomías, ayuntamientos y Seguridad Social porque hay
+ * préstamos entre ellas eliminados en la consolidación.
+ * La ratio se recalcula con el PIB INE revisado en septiembre de 2026.
+ * Los saldos anuales están contrastados con la tabla histórica pública de
+ * deuda PDE 2012-2025 y con las notas oficiales del Banco de España.
+ */
+export const DEUDA_AAPP_PDE_BDE=Object.freeze({
+  scope:"Todas las Administraciones Públicas · deuda PDE consolidada",
+  unit:"M€",
+  officialSource:"https://www.bde.es/wbe/es/noticias-eventos/actualidad-banco-espana/notas-banco-espana/deuda-aapp-2025t4.html",
+  series:"https://www.bde.es/wbe/es/estadisticas/temas/administraciones-publicas/",
+  annual:Object.freeze({"2012":927813,"2013":1025805,"2014":1085165,"2015":1114129,"2016":1145655,"2017":1184148,"2018":1209742,"2019":1224364,"2020":1346916,"2021":1429404,"2022":1504105,"2023":1575377,"2024":1620578,"2025":1698355})
+});
+export function aappDebtToGdpPercent(entry,gdp=PIB_NOMINAL_INE,debt=DEUDA_AAPP_PDE_BDE){
+  if(entry?.period!=="año completo")return null;
+  if(gdp?.series!=="CNE16231"||gdp?.unit!=="M€"||
+     debt?.scope!=="Todas las Administraciones Públicas · deuda PDE consolidada"||
+     debt?.unit!=="M€")throw Error("Deuda AAPP/PIB: perímetro o unidad incompatible");
+  const stock=debt.annual?.[entry.year],denominator=gdp.annual?.[entry.year];
+  if(!Number.isSafeInteger(stock)||stock<=0||
+     !Number.isSafeInteger(denominator)||denominator<=0)
+    throw Error("Deuda AAPP/PIB: cierre nominal o PIB anual inexistente");
+  return stock/denominator*100;
+}
 export function treasuryDebtToGdpPercent(entry,gdp=PIB_NOMINAL_INE){
   // The stock/annual GDP ratio is defined here ONLY for closed calendar years.
   if(entry?.period!=="año completo")return null;
@@ -201,7 +226,10 @@ export function validateTreasuryHistory(rows=TREASURY_HISTORY){
       throw Error("Tesoro: la serie redondeada no conserva la precisión de su fuente");
     if(d.year===2026&&d.period!=="enero-septiembre")throw Error("Tesoro: 2026 no es un año completo");
     // Cierre anual 2012-2025: no dar porcentajes si falta el PIB comparable.
-    if(d.period==="año completo")treasuryDebtToGdpPercent(d);
+    if(d.period==="año completo"){
+      treasuryDebtToGdpPercent(d);
+      aappDebtToGdpPercent(d);
+    }
   }
   return rows;
 }
@@ -226,9 +254,9 @@ export function createTreasuryHistoryTable(rows=TREASURY_HISTORY){
   const ordered=[...rows].sort((a,b)=>b.year-a.year);
   const root=dom("section","pf-debt-history");
   root.id="pf-debt-history";
-  root.setAttribute("aria-label","Histórico por año de deuda emitida, pagada, balance, deuda pendiente y porcentaje del PIB del Tesoro");
+  root.setAttribute("aria-label","Histórico anual de deuda del Tesoro, deuda de todas las administraciones y porcentaje del PIB");
   const header=dom("div","pf-debt-history-head");
-  const title=dom("h3","","Deuda del Estado: emisión, devolución y deuda pendiente");
+  const title=dom("h3","","Deuda pública: Tesoro frente a todas las administraciones");
   const period=dom("span","","2012–2026 · M€ y porcentaje del PIB");
   header.append(title,period);
   root.append(header);
@@ -237,7 +265,7 @@ export function createTreasuryHistoryTable(rows=TREASURY_HISTORY){
   scroller.setAttribute("role","region");
   scroller.setAttribute("aria-label","Tabla desplazable horizontalmente por años");
   const table=dom("table","pf-debt-history-table");
-  const caption=dom("caption","","Evolución de emisiones, amortizaciones, financiación neta, deuda pendiente y ratio de deuda del Tesoro sobre el PIB nominal anual de España. Año 2026 parcial.");
+  const caption=dom("caption","","Evolución de emisiones, amortizaciones y saldo del Tesoro y comparación con la deuda PDE consolidada de todas las administraciones. Año 2026 parcial.");
   table.append(caption);
   const thead=dom("thead");
   const heading=dom("tr");
@@ -255,22 +283,37 @@ export function createTreasuryHistoryTable(rows=TREASURY_HISTORY){
     {label:"Deuda pagada",key:"paid"},
     {label:"Deuda emitida",key:"issued"},
     {label:"Balance (emitida − pagada)",key:"net"},
-    {label:"Deuda total pendiente",key:"stock"},
-    {label:"Deuda pendiente / PIB (%)",key:"gdpPct"}
+    {label:"Deuda del Tesoro pendiente",key:"stock"},
+    {label:"Deuda del Tesoro / PIB (%)",key:"gdpPct"},
+    {label:"Deuda total AAPP (PDE)",key:"aappStock"},
+    {label:"Deuda total AAPP / PIB (%)",key:"aappPct"}
   ]){
-    const tr=dom("tr",key==="net"?"pf-debt-history-net":key==="stock"?"pf-debt-history-stock":key==="gdpPct"?"pf-debt-history-gdp":"");
+    const tr=dom("tr",key==="net"?"pf-debt-history-net":
+      key==="stock"?"pf-debt-history-stock":
+      key==="gdpPct"?"pf-debt-history-gdp":
+      key==="aappStock"?"pf-debt-history-aapp":
+      key==="aappPct"?"pf-debt-history-aapp-pct":"");
     const rowName=dom("th","pf-debt-history-first",label);
     rowName.scope="row";tr.append(rowName);
     for(const entry of ordered){
       const cell=dom("td",entry.year===2026?"pf-debt-history-partial":"");
-      if(key==="gdpPct"){
-        const pct=treasuryDebtToGdpPercent(entry);
+      if(key==="gdpPct"||key==="aappPct"){
+        const pct=key==="gdpPct"?
+          treasuryDebtToGdpPercent(entry):aappDebtToGdpPercent(entry);
         cell.textContent=pct===null?"—":new Intl.NumberFormat("es-ES",{
           minimumFractionDigits:1,maximumFractionDigits:1
         }).format(pct)+" %";
         cell.title=pct===null
-          ?"2026 es parcial. Esta fila exige PIB nominal anual del mismo año; no se sustituye por el PIB de 2025 ni por una previsión."
-          :`Deuda nominal del Tesoro ${fmt(entry.stock)} M€ / PIB nominal INE ${fmt(PIB_NOMINAL_INE.annual[entry.year])} M€ × 100. No es la ratio oficial de deuda PDE del conjunto de administraciones.`;
+          ?"2026 es parcial. Solo se muestran ratios del cierre anual con un PIB nominal comparable."
+          :key==="gdpPct"
+            ?`Solo Tesoro: deuda nominal ${fmt(entry.stock)} M€ / PIB nominal INE ${fmt(PIB_NOMINAL_INE.annual[entry.year])} M€ × 100. No es la deuda total de España.`
+            :`Todas las AAPP, consolidado PDE (Banco de España): ${fmt(DEUDA_AAPP_PDE_BDE.annual[entry.year])} M€ / PIB nominal INE ${fmt(PIB_NOMINAL_INE.annual[entry.year])} M€ × 100.`;
+      }else if(key==="aappStock"){
+        const stock=entry.period==="año completo"?DEUDA_AAPP_PDE_BDE.annual[entry.year]:null;
+        cell.textContent=stock==null?"—":fmt(stock);
+        cell.title=stock==null
+          ?"2026 todavía no es un ejercicio cerrado; esta tabla no mezcla meses de distinta fecha."
+          :`Deuda PDE consolidada de todas las administraciones al 31/12/${entry.year}; Banco de España. No equivale a la deuda nominal del Tesoro.`;
       }else{
         const value=entry[key];
         cell.textContent=(key==="net"&&value>0?"+":"")+(key!=="stock"&&entry.precision==="rounded"?"≈ ":"")+fmt(value);
@@ -300,10 +343,10 @@ export function createTreasuryHistoryTable(rows=TREASURY_HISTORY){
     `2025, variación ${sign(example25.change)}${fmt(example25.change)} frente a balance ${sign(example25.netByFlows)}${fmt(example25.netByFlows)}; residuo ${sign(example25.difference)}${fmt(example25.difference)}.`));
   notes.append(bridge);
   notes.append(dom("p","",
-    "Deuda pendiente / PIB = deuda nominal del Tesoro al 31 de diciembre ÷ PIB nominal anual de España (INE, serie CNE16231) × 100. No es la ratio oficial de deuda pública PDE de todas las administraciones. En 2026 figura «—» porque todavía no hay PIB anual cerrado."));
+    "Dos perímetros diferentes: «Tesoro» es solo la deuda nominal del Estado gestionada por el Tesoro; «AAPP (PDE)» es la deuda pública consolidada de Estado, Seguridad Social, comunidades y entidades locales. No se suman los subsectores porque algunos se prestan dinero entre sí. Ambas ratios se calculan con el PIB nominal anual del INE (CNE16231). La de AAPP es la comparable con la referencia habitual de deuda pública de España. Se usan saldos oficiales y el PIB actualizado; una cifra publicada antes puede diferir unas décimas por revisión del PIB."));
   notes.append(
     dom("p","","Un balance positivo significa que se emitió más deuda de la que se devolvió; no demuestra que cada devolución se pagara íntegramente con deuda nueva."),
-    dom("p","","Emisión, amortización y balance 2012–2023: cifras aproximadas (redondeadas a 100 M€). Deuda total pendiente: importe oficial nominal al cierre de cada año, sin redondeo adicional. 2026: datos hasta septiembre; no son un cierre anual. Ámbito: Tesoro del Estado, no todas las administraciones; los intereses se contabilizan aparte.")
+    dom("p","","Emisión, amortización y balance 2012–2023: cifras aproximadas (redondeadas a 100 M€). Filas de Tesoro: saldo nominal oficial. Filas de AAPP: saldo PDE consolidado del Banco de España. 2026: movimientos del Tesoro hasta septiembre y sin ratio anual AAPP comparable. Los intereses se contabilizan aparte.")
   );
   const sources=dom("p","");
   sources.append("Fuentes: ");
@@ -315,7 +358,9 @@ export function createTreasuryHistoryTable(rows=TREASURY_HISTORY){
   c.href=TREASURY_HISTORY_SOURCES.stock;c.target="_blank";c.rel="noopener noreferrer";
   const d=dom("a","","INE · PIB nominal anual (CNE16231)");
   d.href=PIB_NOMINAL_INE.source;d.target="_blank";d.rel="noopener noreferrer";
-  sources.append(a," · ",b," · ",c," · ",d);
+  const e=dom("a","","Banco de España · deuda pública PDE (todas las AAPP)");
+  e.href=DEUDA_AAPP_PDE_BDE.officialSource;e.target="_blank";e.rel="noopener noreferrer";
+  sources.append(a," · ",b," · ",c," · ",d," · ",e);
   notes.append(sources);
   root.append(notes);
   return root;
