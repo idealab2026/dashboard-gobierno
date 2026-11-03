@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {TREASURY_DEBT_2024,validateTreasuryDebt} from "../../app/components/treasury-debt-flow.js";
 import {PUBLIC_CASH_2024,validatePublicCashFlow,cents} from "../../app/components/public-cash-sankey.js";
-import {TREASURY_HISTORY,validateTreasuryHistory} from "../../app/components/treasury-history.js";
+import {TREASURY_HISTORY,validateTreasuryHistory,reconcileTreasuryStock,TREASURY_HISTORY_SOURCES} from "../../app/components/treasury-history.js";
 
 test("debt issuance reconciles by instrument: principal repayments and NET issuance",()=>{
  const rows=TREASURY_DEBT_2024.lines;
@@ -158,4 +158,36 @@ test("annual table is directly below treasury debt ribbon, with year columns",()
   assert.match(table,/Deuda emitida/);
   assert.match(table,/enero-septiembre/);
   assert.match(table,/aria-label","Tabla desplazable horizontalmente por años"/);
+});
+
+
+test("official Tesoro nominal debt stock is published for each year 2012–2026",()=>{
+  const stock=[688231,760256,841041,889019,923003,968460,1003829,1023760,
+    1134248,1212897,1299193,1382012,1440970,1516859,1585361];
+  assert.deepEqual(TREASURY_HISTORY.map(x=>x.stock),stock);
+  assert.equal(TREASURY_HISTORY_SOURCES.stock,"https://www.tesoro.es/documents/d/tesoro/01-pdf");
+  assert.ok(TREASURY_HISTORY.every(x=>Number.isSafeInteger(x.stock)&&x.stock>0));
+  assert.equal(TREASURY_HISTORY.at(-1).period,"enero-septiembre");
+});
+
+test("debt stock reconciliation does not falsely equal net issuance to nominal stock change",()=>{
+  const bridge2024=reconcileTreasuryStock(2024);
+  assert.deepEqual(bridge2024,{year:2024,previousStock:1382012,stock:1440970,
+    change:58958,netByFlows:55033,difference:3925});
+  const bridge2025=reconcileTreasuryStock(2025);
+  assert.deepEqual(bridge2025,{year:2025,previousStock:1440970,stock:1516859,
+    change:75889,netByFlows:54776,difference:21113});
+  assert.equal(reconcileTreasuryStock(2012),null);
+});
+
+test("historical debt table has four rows and uses a sourced nominal stock, not a fabricated cumulative sum",()=>{
+  const source=readFileSync(new URL("../../app/components/treasury-history.js",import.meta.url),"utf8");
+  const css=readFileSync(new URL("../../app/components/public-finance-sankey.js",import.meta.url),"utf8");
+  assert.match(source,/Deuda total pendiente/);
+  assert.match(source,/key:"stock"/);
+  assert.match(source,/TREASURY_HISTORY_SOURCES\.stock/);
+  assert.match(source,/reconcileTreasuryStock\(2024,rows\)/);
+  assert.match(source,/Fuente|Fuentes/);
+  assert.match(source,/deuda nominal/);
+  assert.match(css,/\.pf-debt-history-stock/);
 });
