@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {TREASURY_DEBT_2024,validateTreasuryDebt} from "../../app/components/treasury-debt-flow.js";
 import {PUBLIC_CASH_2024,validatePublicCashFlow,cents} from "../../app/components/public-cash-sankey.js";
-import {TREASURY_HISTORY,validateTreasuryHistory,reconcileTreasuryStock,TREASURY_HISTORY_SOURCES} from "../../app/components/treasury-history.js";
+import {TREASURY_HISTORY,validateTreasuryHistory,reconcileTreasuryStock,TREASURY_HISTORY_SOURCES,PIB_NOMINAL_INE,treasuryDebtToGdpPercent} from "../../app/components/treasury-history.js";
 
 test("debt issuance reconciles by instrument: principal repayments and NET issuance",()=>{
  const rows=TREASURY_DEBT_2024.lines;
@@ -180,7 +180,7 @@ test("debt stock reconciliation does not falsely equal net issuance to nominal s
   assert.equal(reconcileTreasuryStock(2012),null);
 });
 
-test("historical debt table has four rows and uses a sourced nominal stock, not a fabricated cumulative sum",()=>{
+test("historical debt table has five rows and uses a sourced nominal stock, not a fabricated cumulative sum",()=>{
   const source=readFileSync(new URL("../../app/components/treasury-history.js",import.meta.url),"utf8");
   const css=readFileSync(new URL("../../app/components/public-finance-sankey.js",import.meta.url),"utf8");
   assert.match(source,/Deuda total pendiente/);
@@ -190,4 +190,52 @@ test("historical debt table has four rows and uses a sourced nominal stock, not 
   assert.match(source,/Fuente|Fuentes/);
   assert.match(source,/deuda nominal/);
   assert.match(css,/\.pf-debt-history-stock/);
+});
+
+
+test("official INE nominal annual GDP series covers each closed Treasury debt year",()=>{
+  const annual=PIB_NOMINAL_INE.annual;
+  assert.equal(PIB_NOMINAL_INE.series,"CNE16231");
+  assert.equal(PIB_NOMINAL_INE.unit,"M€");
+  assert.equal(Object.keys(annual).length,14);
+  assert.equal(annual[2012],1035964);
+  assert.equal(annual[2014],1038949);
+  assert.equal(annual[2023],1496277);
+  assert.equal(annual[2024],1598588);
+  assert.equal(annual[2025],1690012);
+  assert.equal(annual[2026],undefined);
+  assert.match(PIB_NOMINAL_INE.source,/ine\.es\/consul\/serie\.do/);
+  assert.ok(TREASURY_HISTORY.filter(x=>x.period==="año completo")
+    .every(x=>Number.isFinite(treasuryDebtToGdpPercent(x))));
+});
+
+test("debt-to-GDP ratio uses State Treasury outstanding, not all-administration PDE",()=>{
+  const row=year=>TREASURY_HISTORY.find(x=>x.year===year);
+  const p2024=treasuryDebtToGdpPercent(row(2024));
+  const p2025=treasuryDebtToGdpPercent(row(2025));
+  assert.ok(Math.abs(p2024-1440970/1598588*100)<1e-10);
+  assert.ok(Math.abs(p2025-1516859/1690012*100)<1e-10);
+  assert.equal(Number(p2024.toFixed(1)),90.1);
+  assert.equal(Number(p2025.toFixed(1)),89.8);
+  assert.equal(treasuryDebtToGdpPercent(row(2026)),null);
+  assert.throws(()=>treasuryDebtToGdpPercent(row(2024),{
+    ...PIB_NOMINAL_INE,
+    unit:"EUR"
+  }),/incompatible/);
+  assert.throws(()=>treasuryDebtToGdpPercent(row(2024),{
+    ...PIB_NOMINAL_INE,
+    annual:{...PIB_NOMINAL_INE.annual,2024:undefined}
+  }),/ausente/);
+});
+
+test("fifth historic row explains comparable annual GDP and omits incomplete 2026",()=>{
+  const source=readFileSync(new URL("../../app/components/treasury-history.js",import.meta.url),"utf8");
+  const component=readFileSync(new URL("../../app/components/public-finance-sankey.js",import.meta.url),"utf8");
+  assert.match(source,/Deuda pendiente \/ PIB \(%\)/);
+  assert.match(source,/key:"gdpPct"/);
+  assert.match(source,/treasuryDebtToGdpPercent\(entry\)/);
+  assert.match(source,/pct===null\?"—"/);
+  assert.match(source,/PIB_NOMINAL_INE\.source/);
+  assert.match(source,/No es la ratio oficial de deuda pública PDE/);
+  assert.match(component,/\.pf-debt-history-gdp/);
 });
