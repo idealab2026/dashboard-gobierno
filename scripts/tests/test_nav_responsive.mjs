@@ -50,7 +50,7 @@ for(const [file,page] of pages){
     assert.match(markup,/Visualizaciones/);
     assert.match(markup,/Administraciones/);
     assert.match(markup,/Buscar partidas/);
-    const current=markup.slice(markup.indexOf('<div class="il-atlas-menu-panel"'));
+    const current=markup.slice(markup.indexOf('class="idealab-nav-mobile-panel il-atlas-menu-panel"'));
     const active=String.raw`aria-current="page">${page}</a>`;
     assert.ok(current.includes(active),file+" no identifica su sección activa");
   });
