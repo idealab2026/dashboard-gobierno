@@ -1,70 +1,64 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
-
-/* All public sections use the SAME one-row sticky header, identical
- * responsive menu, and page-specific aria-current. The menu is hidden
- * until <details open>, never duplicated with the desktop navigation. */
 const pages=[
-  ["index","Mapa del dinero"],
-  ["finanzas-publicas","Finanzas públicas"],
-  ["administraciones","Administraciones"],
-  ["buscador-partidas","Buscar partidas"],
-  ["visualizaciones","Visualizaciones"],
-  ["metodologia","Metodología"],
-  ["actualizaciones","Actualizaciones"],
-  ["quienes-somos","Quiénes somos"]
+  ["index","Mapa del dinero"],["finanzas-publicas","Finanzas públicas"],
+  ["administraciones","Administraciones"],["buscador-partidas","Buscar partidas"],
+  ["visualizaciones","Visualizaciones"],["metodologia","Metodología"],
+  ["actualizaciones","Actualizaciones"],["quienes-somos","Quiénes somos"]
 ];
-const read=path=>readFileSync(new URL("../../app/"+path+".md",import.meta.url),"utf8");
-const cssBlock=s=>{
-  const a=s.indexOf("/* Atlas header:");
-  assert.ok(a>=0,"Falta el CSS de cabecera común");
-  const b=s.indexOf("</style>",a);
-  assert.ok(b>=0);
-  return s.slice(a,b).trim();
+const read=p=>readFileSync(new URL("../../app/"+p+".md",import.meta.url),"utf8");
+const canonicalCSS=s=>{
+  const start=s.indexOf("/* Cabecera V3");
+  assert.ok(start>=0,"Falta el tema compartido de navegación");
+  const end=s.indexOf("</style>",start);
+  assert.ok(end>start);
+  return s.slice(start,end).trim();
 };
-const referenceCSS=cssBlock(read("visualizaciones"));
-
-for(const [file,page] of pages){
+const base=canonicalCSS(read("index"));
+for(const [file,label] of pages){
   const source=read(file);
-  test(file+": cabecera idéntica y persistente en todo el Observatorio",()=>{
-    assert.equal(cssBlock(source),referenceCSS);
-    assert.match(source,/position:sticky!important;top:0!important;z-index:1150!important/);
-    assert.match(source,/\.il-atlas-nav \.il-atlas-menu\[open\] > \.il-atlas-menu-panel\{\s*display:grid!important;/);
-    assert.match(source,/\.il-atlas-nav \.il-atlas-menu \.il-atlas-menu-panel\{\s*display:none!important;/);
-    assert.match(source,/@media\(max-width:800px\)/);
-    assert.match(source,/@media\(max-width:390px\)/);
-    assert.match(source,/max-height:min\(74dvh,620px\)!important/);
+  test(file+": conserva la cabecera horizontal V3 original",()=>{
+    assert.equal(canonicalCSS(source),base);
+    const start=source.indexOf('<nav class="idealab-nav"'),end=source.indexOf("</nav>",start)+6;
+    assert.ok(start>=0&&end>start);
+    const nav=source.slice(start,end);
+    assert.equal((source.match(/<nav class="idealab-nav"/g)||[]).length,1);
+    assert.match(nav,/class="idealab-nav-links"/);
+    assert.match(nav,/class="idealab-nav-mobile"/);
+    assert.match(nav,/<summary>Áreas temáticas<\/summary>/);
+    assert.match(nav,/<summary>Más<\/summary>/);
+    for(const name of ["Mapa del dinero","Visualizaciones","Finanzas públicas",
+      "Buscar partidas","Administraciones"]){
+      assert.ok(nav.includes(name),file+" carece de "+name);
+    }
+    assert.match(nav,/UN PRODUCTO DE IDEA LAB/);
+    assert.match(nav,/src=".\/logo-idea-lab.svg"/);
   });
-  test(file+": una sola navegación sin enlaces solapados y con página activa",()=>{
-    const navStart=source.indexOf('<nav class="idealab-nav il-atlas-nav"');
-    const navEnd=source.indexOf("</nav>",navStart);
-    assert.ok(navStart>=0&&navEnd>navStart);
-    const markup=source.slice(navStart,navEnd+6);
-    assert.equal((source.match(/<nav class="idealab-nav il-atlas-nav"/g)||[]).length,1);
-    assert.doesNotMatch(markup,/class="idealab-nav-links"|class="il-site-menu"/);
-    assert.match(markup,/class="il-atlas-nav-actions"/);
-    assert.match(markup,/class="idealab-nav-mobile il-atlas-menu"/);
-    assert.match(markup,/class="idealab-nav-mobile-panel il-atlas-menu-panel"/);
-    assert.match(markup,/Mapa del dinero/);
-    assert.match(markup,/Visualizaciones/);
-    assert.match(markup,/Administraciones/);
-    assert.match(markup,/Buscar partidas/);
-    const current=markup.slice(markup.indexOf('class="idealab-nav-mobile-panel il-atlas-menu-panel"'));
-    const active=String.raw`aria-current="page">${page}</a>`;
-    assert.ok(current.includes(active),file+" no identifica su sección activa");
-  });
-  test(file+": menú accesible, cierre seguro y diagnóstico visual",()=>{
-    assert.match(source,/atlasMenu\.querySelectorAll\("\.il-atlas-menu-panel a"\)/);
-    assert.match(source,/if\(atlasMenu\.open&&!atlasMenu\.contains\(event\.target\)\)atlasMenu\.open=false/);
-    assert.match(source,/if\(event\.key==="Escape"\)atlasMenu\.open=false/);
+  test(file+": menú compacto exclusivamente en móvil y sin solapamiento",()=>{
+    assert.match(source,/@media\(max-width:1279px\)/);
+    assert.match(source,/\.idealab-nav \.idealab-nav-links\{display:none!important\}/);
+    assert.match(source,/\.idealab-nav \.idealab-nav-mobile\[open\]>\.idealab-nav-mobile-panel\{display:grid!important\}/);
+    assert.match(source,/\.idealab-nav \.idealab-nav-mobile,\s*\.idealab-nav \.idealab-nav-mobile>\.idealab-nav-mobile-panel\{display:none!important\}/);
+    assert.match(source,/max-width:calc\(100vw - 22px\)!important/);
+    assert.match(source,/max-height:min\(72dvh,620px\)!important/);
+    assert.match(source,/if\(event.key==="Escape"\)closeExcept\(null\)/);
     assert.match(source,/NAV_QA_OK/);
-    assert.doesNotMatch(source,/compactNav\.addEventListener\("pointerenter"/);
+  });
+  test(file+": marca la sección activa",()=>{
+    const start=source.indexOf('<nav class="idealab-nav"'),end=source.indexOf("</nav>",start)+6;
+    const nav=source.slice(start,end);
+    assert.ok(nav.includes("aria-current=\"page\">"+label+"</a>"),file+" sin selección activa");
+    assert.ok(nav.includes('href="/administraciones.html"'));
+    assert.ok(nav.includes('href="/quienes-somos.html"'));
   });
 }
-test("Visualizaciones: sin segunda raya dorada entre cabecera y galería",()=>{
-  const source=read("visualizaciones");
-  assert.match(source,/\.il-gallery-intro\{[^\n]*border-top:0\}/);
-  assert.match(source,/\.il-visual-intro\{[^\n]*border-top:0/);
-  assert.doesNotMatch(source,/\.il-gallery-intro\{[^\n]*border-top:2px/);
+test("Metodología elimina el índice lateral que se superponía a la cabecera",()=>{
+  assert.match(read("metodologia"),/toc: false/);
+  assert.doesNotMatch(read("metodologia"),/toc: true/);
+});
+test("Visualizaciones mantiene eliminado el segundo separador dorado",()=>{
+  const s=read("visualizaciones");
+  assert.match(s,/\.il-gallery-intro\{[^\n]*border-top:0\}/);
+  assert.doesNotMatch(s,/\.il-gallery-intro\{[^\n]*border-top:2px/);
 });
