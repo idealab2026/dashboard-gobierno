@@ -227,7 +227,7 @@ html{scroll-behavior:smooth;font-size:16px}
 
 <style>
 .observablehq{max-width:none!important;width:100%;box-sizing:border-box;padding-inline:clamp(14px,3vw,52px)!important}
-.il-visual-intro{padding:23px 0 11px;border-top:3px solid #b89b5e;margin:15px 0 0}
+.il-visual-intro{padding:18px 0 11px;border-top:0;margin:10px 0 0}
 .il-visual-kicker{font:800 .72rem/1.4 system-ui,sans-serif;letter-spacing:.15em;color:#9c7737}
 .il-visual-intro h1{font:800 clamp(2.2rem,4.7vw,5.6rem)/1.03 Georgia,serif;letter-spacing:-.045em;color:#0b2447;margin:8px 0 9px}
 .il-visual-intro p{font:500 clamp(.9rem,1.2vw,1.1rem)/1.55 system-ui,sans-serif;color:#64758c;max-width:100%;margin:0 0 18px}
@@ -320,7 +320,7 @@ font:750 .76rem/1.3 system-ui,sans-serif;padding:9px 12px;cursor:pointer;white-s
 @media(prefers-reduced-motion:reduce){.il-tm-cell{transition:none}}
 
 /* ATLAS gallery-first: compact entry, six graphics immediately browsable. */
-.il-gallery-intro{margin:18px 0 9px;padding:13px 0 0;border-top:2px solid #baa16d}
+.il-gallery-intro{margin:10px 0 9px;padding:10px 0 0;border-top:0}
 .il-gallery-intro span{display:block;color:#96753d;font:800 .68rem/1.3 system-ui,sans-serif;letter-spacing:.13em}
 .il-gallery-intro h1{font:750 clamp(1.5rem,2.8vw,2.35rem)/1.1 Georgia,serif;color:#0b2447;
  margin:4px 0 12px}
