@@ -9,7 +9,8 @@ ROOT = Path(__file__).resolve().parents[2]
 class BrandIdentityTests(unittest.TestCase):
     def test_product_and_parent_brand_are_distinct(self):
         home = (ROOT / "app" / "index.md").read_text(encoding="utf-8")
-        self.assertIn("UN PRODUCTO DE IDEA LAB", home)
+        self.assertIn("Un producto de", home)
+        self.assertIn('alt="IDEA LAB"', home)
         self.assertIn("<h1>España en Datos</h1>", home)
         self.assertIn("Nuestro observatorio económico, social e institucional", home)
         self.assertIn('href="/quienes-somos.html"', home)
