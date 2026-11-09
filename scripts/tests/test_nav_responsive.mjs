@@ -48,7 +48,8 @@ for(const [file,label] of pages){
   test(file+": marca la sección activa",()=>{
     const start=source.indexOf('<nav class="idealab-nav"'),end=source.indexOf("</nav>",start)+6;
     const nav=source.slice(start,end);
-    assert.ok(nav.includes("aria-current=\"page\">"+label+"</a>"),file+" sin selección activa");
+    const activeLinks=[...nav.matchAll(/<a\s+[^>]*aria-current="page"[^>]*>([^<]+)<\/a>/g)].map(m=>m[1]);
+    assert.ok(activeLinks.includes(label),file+" sin selección activa");
     assert.ok(nav.includes('href="/administraciones.html"'));
     assert.ok(nav.includes('href="/quienes-somos.html"'));
   });
