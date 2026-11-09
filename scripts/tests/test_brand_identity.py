@@ -188,7 +188,7 @@ class BrandIdentityTests(unittest.TestCase):
                 source = (ROOT / "app" / page).read_text(encoding="utf-8")
                 nav = source.split("<nav", 1)[1].split("</nav>", 1)[0]
                 dropdown = nav.split('<div class="idealab-nav-mobile-heading">Áreas temáticas</div>', 1)[1]
-                self.assertRegex(dropdown, r'^\\s*<a href="/#resumen">España en un minuto</a>')
+                self.assertRegex(dropdown, r'^\s*<a href="/#resumen">España en un minuto</a>')
                 self.assertEqual(nav.count('href="/#resumen">España en un minuto</a>'), 1)
                 self.assertIn('href="/#economia">Economía</a>', dropdown)
                 self.assertNotIn(">Indicadores</a>", nav)
