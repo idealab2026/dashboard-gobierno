@@ -542,7 +542,7 @@ if(new URLSearchParams(window.location.search).has("nav-qa")){
     if(!p||p.left<0||p.right>window.innerWidth+1)errors.push("panel-desbordado");
     if(mobile&&getComputedStyle(nav.querySelector(".idealab-nav-links")).display!=="none")errors.push("nav-duplicada");
     if(!mobile&&getComputedStyle(nav.querySelector(".idealab-nav-mobile")).display!=="none")errors.push("mobile-en-desktop");
-    const out=document.createElement("div");out.id="il-nav-qa";
+    const out=document.createElement("div");out.id="il-atlas-nav-qa";
     out.dataset.status=errors.length?"fail":"ok";
     out.textContent=errors.length?"NAV_QA_FAIL "+errors.join(","):"NAV_QA_OK";
     document.body.append(out);
