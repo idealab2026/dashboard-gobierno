@@ -69,6 +69,8 @@ jobs:
         run: node --test scripts/tests/test_spending_query.mjs
       - name: Official Treasury debt 2024 · gross issuance / principal redemption / net
         run: node --test scripts/tests/test_treasury_debt.mjs
+      - name: Responsive navigation · hide mobile menu on desktop, prevent overlap
+        run: node --test scripts/tests/test_nav_responsive.mjs
       - name: Visual treemap · quantitative area and classification reconciliation
         run: node --test scripts/tests/test_cofog_treemap.mjs
       - name: Update only validated annual population figures (official INE ECP320)
