@@ -9,7 +9,7 @@ const pages=[
 ];
 const read=p=>readFileSync(new URL("../../app/"+p+".md",import.meta.url),"utf8");
 const canonicalCSS=s=>{
-  const start=s.indexOf("/* Cabecera V3");
+  const start=s.lastIndexOf("/* Cabecera V3");
   assert.ok(start>=0,"Falta el tema compartido de navegación");
   const end=s.indexOf("</style>",start);
   assert.ok(end>start);
