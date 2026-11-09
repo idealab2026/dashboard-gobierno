@@ -27,7 +27,7 @@ class BrandIdentityTests(unittest.TestCase):
             self.assertIn("/quienes-somos.html", content)
 
     def test_all_pages_can_return_to_main_menu(self):
-        """Every public section shares one fully navigable header."""
+        """One full desktop menu plus one exclusive compact menu on every page."""
         pages = (
             "index.md", "finanzas-publicas.md", "visualizaciones.md",
             "administraciones.md", "buscador-partidas.md",
@@ -35,21 +35,18 @@ class BrandIdentityTests(unittest.TestCase):
         )
         for page in pages:
             with self.subTest(page=page):
-                source = (ROOT / "app" / page).read_text(encoding="utf-8")
-                nav = source.split("<nav", 1)[1].split("</nav>", 1)[0]
-                self.assertIn('class="idealab-nav il-atlas-nav"', nav)
-                self.assertIn('class="idealab-nav-mobile il-atlas-menu"', nav)
+                text = (ROOT / "app" / page).read_text(encoding="utf-8")
+                nav = text.split("<nav", 1)[1].split("</nav>", 1)[0]
+                self.assertIn('class="idealab-nav"', nav)
+                self.assertIn('class="idealab-nav-links"', nav)
+                self.assertIn('class="idealab-nav-mobile"', nav)
                 self.assertIn('href="/"', nav)
                 self.assertNotIn('href="./"', nav)
-                for href in (
-                    "/visualizaciones.html", "/finanzas-publicas.html",
-                    "/administraciones.html", "/buscador-partidas.html",
-                    "/metodologia.html", "/actualizaciones.html",
-                    "/quienes-somos.html",
-                ):
-                    self.assertIn(f'href="{href}"', nav)
-                self.assertNotIn('class="idealab-nav-links"', nav)
+                for path in ("visualizaciones", "finanzas-publicas", "administraciones",
+                             "buscador-partidas", "metodologia", "actualizaciones", "quienes-somos"):
+                    self.assertIn(f'href="/{path}.html"', nav)
                 self.assertNotIn('class="il-site-navigation"', nav)
+                self.assertNotIn('class="il-atlas-nav"', nav)
 
     def test_static_github_pages_routes_use_real_files(self):
         config = (ROOT / "observablehq.config.js").read_text(encoding="utf-8")
@@ -65,18 +62,15 @@ class BrandIdentityTests(unittest.TestCase):
             self.assertNotIn("/dashboard-gobierno/", content)
 
     def test_product_and_parent_brand_share_one_header_row(self):
-        """The title and IDEA LAB identity remain on one horizontal line."""
-        pages = (
-            "index.md", "finanzas-publicas.md", "visualizaciones.md",
-            "administraciones.md", "buscador-partidas.md",
-            "metodologia.md", "actualizaciones.md", "quienes-somos.md",
-        )
-        for page in pages:
+        """Preserve the original desktop brand alignment in every section."""
+        for page in ("index.md","finanzas-publicas.md","visualizaciones.md",
+                     "administraciones.md","buscador-partidas.md",
+                     "metodologia.md","actualizaciones.md","quienes-somos.md"):
             with self.subTest(page=page):
                 source = (ROOT / "app" / page).read_text(encoding="utf-8")
                 nav = source.split("<nav", 1)[1].split("</nav>", 1)[0]
                 self.assertIn("flex-direction:row!important", source)
-                self.assertIn(".il-atlas-nav .il-header-identity{", source)
+                self.assertIn(".idealab-nav .il-header-identity", source)
                 self.assertIn('class="il-header-identity"', nav)
                 self.assertIn('class="il-parent-brand"', nav)
                 self.assertEqual(nav.count('href="https://idealab2026.github.io/"'), 1)
@@ -84,14 +78,13 @@ class BrandIdentityTests(unittest.TestCase):
                 self.assertIn('href="/"', nav)
 
     def test_main_navigation_has_no_duplicate_administration_link(self):
-        for filename in ("index.md","finanzas-publicas.md"):
-            with self.subTest(filename=filename):
-                source=(ROOT/"app"/filename).read_text(encoding="utf-8")
-                self.assertEqual(
-                    source.count('<a href="/administraciones.html">Administraciones</a>'),
-                    1,
-                    "La navegación pública no debe duplicar Administraciones"
-                )
+        for filename in ("index.md", "finanzas-publicas.md", "administraciones.md"):
+            source = (ROOT/"app"/filename).read_text(encoding="utf-8")
+            nav = source.split("<nav", 1)[1].split("</nav>", 1)[0]
+            desktop = nav.split('class="idealab-nav-links"',1)[1].split('class="idealab-nav-mobile"',1)[0]
+            mobile = nav.split('class="idealab-nav-mobile"',1)[1]
+            self.assertEqual(desktop.count('>Administraciones</a>'),1)
+            self.assertEqual(mobile.count('>Administraciones</a>'),1)
 
     def test_homepage_has_single_sankey_section_divider(self):
         """Prevent the grey hero rule from reappearing beside the gold Sankey rule."""
@@ -137,19 +130,20 @@ class BrandIdentityTests(unittest.TestCase):
             self.assertNotIn("dataUrl:", content)
 
     def test_navigation_dropdowns_use_click_and_close_safely(self):
-        """No hover opening, overflow, or duplicated desktop/mobile navigation."""
+        """Restored V3 layout must not show desktop and mobile menus together."""
         for page in ("index.md", "finanzas-publicas.md", "visualizaciones.md",
-                     "administraciones.md", "buscador-partidas.md",
-                     "metodologia.md", "actualizaciones.md", "quienes-somos.md"):
+                     "administraciones.md","buscador-partidas.md","metodologia.md",
+                     "actualizaciones.md","quienes-somos.md"):
             with self.subTest(page=page):
-                source = (ROOT / "app" / page).read_text(encoding="utf-8")
-                self.assertIn('const atlasMenu=document.querySelector(".il-atlas-nav .il-atlas-menu")', source)
-                self.assertIn('if(event.key==="Escape")atlasMenu.open=false', source)
-                self.assertIn('if(atlasMenu.open&&!atlasMenu.contains(event.target))atlasMenu.open=false', source)
-                self.assertIn('.il-atlas-nav .il-atlas-menu[open] > .il-atlas-menu-panel', source)
-                self.assertIn('position:sticky!important;top:0!important;z-index:1150!important', source)
-                self.assertNotIn('const navDropdowns =', source)
-                self.assertNotIn('compactNav.addEventListener("pointerenter"', source)
+                source=(ROOT/"app"/page).read_text(encoding="utf-8")
+                self.assertIn('const navHeader=document.querySelector(".idealab-nav")',source)
+                self.assertIn('if(event.key==="Escape")closeExcept(null)',source)
+                self.assertIn('if(!navHeader.contains(event.target))closeExcept(null)',source)
+                self.assertIn('@media(max-width:1279px)',source)
+                self.assertIn('.idealab-nav .idealab-nav-links{display:none!important}',source)
+                self.assertIn('.idealab-nav .idealab-nav-mobile[open]>.idealab-nav-mobile-panel{display:grid!important}',source)
+                self.assertIn('NAV_QA_OK',source)
+                self.assertNotIn('compactNav.addEventListener("pointerenter"',source)
 
     def test_observable_reactive_cells_do_not_form_finance_kpi_cycle(self):
         """The browser runtime is reactive: build success alone does not catch cycles.
@@ -181,20 +175,20 @@ class BrandIdentityTests(unittest.TestCase):
         self.assertIn("display(financeSection);", cells[tables])
 
     def test_one_minute_dashboard_is_first_in_thematic_dropdown(self):
-        """Overview is the first link in the thematic section of every menu."""
+        """Overview remains first in both the desktop and compact topical menus."""
         for page in ("index.md", "finanzas-publicas.md", "visualizaciones.md",
-                     "administraciones.md", "buscador-partidas.md",
-                     "metodologia.md", "actualizaciones.md", "quienes-somos.md"):
+                     "administraciones.md","buscador-partidas.md","metodologia.md",
+                     "actualizaciones.md","quienes-somos.md"):
             with self.subTest(page=page):
-                source = (ROOT / "app" / page).read_text(encoding="utf-8")
-                nav = source.split("<nav", 1)[1].split("</nav>", 1)[0]
-                dropdown = nav.split('<div class="idealab-nav-mobile-heading">Áreas temáticas</div>', 1)[1]
-                self.assertRegex(dropdown, r'^\s*<a href="/#resumen">España en un minuto</a>')
-                self.assertEqual(nav.count('href="/#resumen">España en un minuto</a>'), 1)
-                self.assertIn('href="/#economia">Economía</a>', dropdown)
-                self.assertNotIn(">Indicadores</a>", nav)
-        home = (ROOT / "app" / "index.md").read_text(encoding="utf-8")
-        self.assertIn('header.id = "resumen"', home)
+                source=(ROOT/"app"/page).read_text(encoding="utf-8")
+                nav=source.split("<nav",1)[1].split("</nav>",1)[0]
+                panel=nav.split('<div class="idealab-nav-areas-panel">',1)[1]
+                self.assertRegex(panel,r'^\s*<a class="il-areas-overview" href="/#resumen">España en un minuto</a>')
+                self.assertEqual(nav.count('href="/#resumen">España en un minuto</a>'),2)
+                self.assertIn('href="/#economia">Economía</a>',nav)
+                self.assertNotIn(">Indicadores</a>",nav)
+        home=(ROOT/"app"/"index.md").read_text(encoding="utf-8")
+        self.assertIn('header.id = "resumen"',home)
 
     def test_x_bio_fits_limit(self):
         content = (ROOT / "editorial" / "PERFIL_X.md").read_text(encoding="utf-8")
