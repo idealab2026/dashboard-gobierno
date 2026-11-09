@@ -153,6 +153,92 @@ footer: IDEA LAB · Investigación y divulgación independiente
 
 
 
+
+/* Navegación corregida: escritorio y móvil nunca se pintan a la vez.
+ * También protege el estado cerrado de <details> frente a CSS heredado. */
+.idealab-nav {
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  isolation:isolate;
+}
+.idealab-nav .idealab-nav-mobile,
+.idealab-nav .idealab-nav-mobile > .idealab-nav-mobile-panel {
+  display:none!important;
+}
+.idealab-nav .idealab-nav-mobile > summary::marker {content:"";}
+@media (max-width:1279px) {
+  .idealab-nav {
+    position:sticky!important;top:0!important;z-index:1100!important;
+    display:flex!important;flex-direction:row!important;align-items:center!important;
+    justify-content:space-between!important;flex-wrap:nowrap!important;
+    gap:10px!important;min-height:56px!important;padding:8px 11px!important;
+    overflow:visible!important;background:#fff!important;
+  }
+  .idealab-nav .idealab-nav-links {display:none!important;}
+  .idealab-nav .il-header-identity {
+    display:flex!important;align-items:center!important;
+    flex:0 1 auto!important;min-width:0!important;max-width:calc(100% - 99px)!important;
+    gap:7px!important;overflow:hidden!important;
+  }
+  .idealab-nav .idealab-brand {
+    min-width:0!important;max-width:100%!important;white-space:nowrap!important;
+    overflow:hidden!important;text-overflow:ellipsis!important;flex:0 1 auto!important;
+  }
+  .idealab-nav .il-parent-brand {flex:0 0 auto!important;}
+  .idealab-nav .il-parent-brand > span {display:none!important;}
+  .idealab-nav .il-parent-brand .idealab-brand-logo {
+    display:block!important;width:28px!important;height:28px!important;max-width:28px!important;
+    aspect-ratio:1!important;object-fit:cover!important;object-position:left center!important;
+  }
+  .idealab-nav .idealab-nav-mobile {
+    display:block!important;position:relative!important;
+    flex:0 0 auto!important;margin:0 0 0 auto!important;min-width:0!important;
+  }
+  .idealab-nav .idealab-nav-mobile > summary {
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    gap:7px!important;min-height:39px!important;padding:7px 12px!important;
+    list-style:none!important;border:1px solid #0b2447!important;
+    border-radius:8px!important;background:#0b2447!important;
+    color:#fff!important;font:800 .79rem/1.25 system-ui,sans-serif!important;
+    white-space:nowrap!important;cursor:pointer!important;
+  }
+  .idealab-nav .idealab-nav-mobile > .idealab-nav-mobile-panel {
+    display:none!important;position:absolute!important;
+    top:calc(100% + 9px)!important;right:0!important;left:auto!important;
+    box-sizing:border-box!important;
+    width:min(360px,calc(100vw - 22px))!important;max-width:calc(100vw - 22px)!important;
+    max-height:min(72dvh,610px)!important;overflow-y:auto!important;overscroll-behavior:contain!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:4px 6px!important;margin:0!important;padding:10px!important;
+    z-index:1500!important;background:#fff!important;
+    border:1px solid #d6e1ec!important;border-radius:10px!important;
+    box-shadow:0 14px 34px rgba(11,36,71,.19)!important;
+  }
+  .idealab-nav .idealab-nav-mobile[open] > .idealab-nav-mobile-panel {display:grid!important;}
+  .idealab-nav .idealab-nav-mobile-panel a {
+    display:flex!important;align-items:center!important;min-width:0!important;
+    min-height:38px!important;padding:8px!important;
+    color:#203c5b!important;background:transparent!important;
+    text-decoration:none!important;border-radius:7px!important;
+    font:650 .78rem/1.35 system-ui,sans-serif!important;
+    white-space:normal!important;overflow-wrap:anywhere!important;
+  }
+  .idealab-nav .idealab-nav-mobile-panel a:hover,
+  .idealab-nav .idealab-nav-mobile-panel a:focus-visible {background:#eef3f8!important;}
+  .idealab-nav .idealab-nav-mobile-heading {
+    grid-column:1/-1!important;font:800 .68rem/1.3 system-ui,sans-serif!important;
+    letter-spacing:.06em!important;color:#896b35!important;
+  }
+}
+@media (max-width:600px) {
+  .idealab-nav .idealab-nav-mobile > .idealab-nav-mobile-panel {
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+  .idealab-nav .idealab-nav-mobile-heading {grid-column:1!important;}
+}
+
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación de España en Datos">
@@ -221,7 +307,7 @@ footer: IDEA LAB · Investigación y divulgación independiente
 ```js
 
 const pointerCanHover = window.matchMedia("(hover: hover) and (pointer: fine)");
-const desktopNav = window.matchMedia("(min-width: 1101px)");
+const desktopNav = window.matchMedia("(min-width: 1280px)");
 const navDropdowns = [...document.querySelectorAll(".idealab-nav .idealab-nav-areas, .idealab-nav .il-nav-more")];
 const closeNavDropdowns = except => {
   for (const item of navDropdowns) if (item !== except) item.open = false;
@@ -252,16 +338,7 @@ document.addEventListener("pointerdown", event => {
 document.addEventListener("keydown", event => {
   if (event.key === "Escape") closeNavDropdowns();
 });
-const compactNav = document.querySelector(".idealab-nav-mobile");
-if (compactNav) {
-  compactNav.addEventListener("pointerenter", event => {
-    if (event.pointerType === "mouse" && pointerCanHover.matches && !desktopNav.matches) compactNav.open = true;
-  });
-  compactNav.addEventListener("pointerleave", event => {
-    if (event.pointerType === "mouse") compactNav.open = false;
-  });
-}
-
+// El menú compacto solo se abre al pulsar el botón, no por hover.
 const financesMobileMenu = document.querySelector(".idealab-nav-mobile");
 if (financesMobileMenu) {
   financesMobileMenu.addEventListener("click", event => {
