@@ -286,6 +286,9 @@ footer: IDEA LAB · Investigación y divulgación independiente
  .il-29n-toolbar label,.il-29n-toolbar select{width:100%;min-width:0}
 }
 
+
+/* Elecciones 29N visible en cabeceras anchas; siempre disponible en Más y móvil. */
+@media(max-width:1599px){.idealab-nav .idealab-nav-election{display:none!important}}
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación de España en Datos">
@@ -314,6 +317,7 @@ footer: IDEA LAB · Investigación y divulgación independiente
     <a class="is-active" aria-current="page" href="/finanzas-publicas.html">Finanzas públicas</a>
     <a href="/buscador-partidas.html">Buscar partidas</a>
     <a href="/administraciones.html">Administraciones</a>
+    <a class="idealab-nav-election is-active" href="/elecciones-29n.html" aria-current="page">Elecciones 29N</a>
     <details class="il-nav-more">
       <summary>Más</summary>
       <div class="il-nav-more-panel">

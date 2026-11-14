@@ -441,6 +441,9 @@ html{scroll-behavior:smooth;font-size:16px}
  .idealab-nav .idealab-nav-mobile-heading{grid-column:1!important}
 }
 
+
+/* Elecciones 29N visible en cabeceras anchas; siempre disponible en Más y móvil. */
+@media(max-width:1599px){.idealab-nav .idealab-nav-election{display:none!important}}
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación de España en Datos">
@@ -469,9 +472,11 @@ html{scroll-behavior:smooth;font-size:16px}
     <a href="/finanzas-publicas.html">Finanzas públicas</a>
     <a class="is-active" aria-current="page" href="/buscador-partidas.html">Buscar partidas</a>
     <a href="/administraciones.html">Administraciones</a>
+    <a class="idealab-nav-election" href="/elecciones-29n.html">Elecciones 29N</a>
     <details class="il-nav-more">
       <summary>Más</summary>
       <div class="il-nav-more-panel">
+        <a href="/elecciones-29n.html">Elecciones 29N</a>
         <a href="/metodologia.html">Metodología</a>
         <a href="/actualizaciones.html">Actualizaciones</a>
         <a href="/quienes-somos.html">Quiénes somos</a>
@@ -498,6 +503,7 @@ html{scroll-behavior:smooth;font-size:16px}
       <a href="/#sociedad">Sociedad</a>
       <a href="/#mundo">Mundo</a>
       <div class="idealab-nav-mobile-heading">Más información</div>
+      <a href="/elecciones-29n.html">Elecciones 29N</a>
       <a href="/metodologia.html">Metodología</a>
       <a href="/actualizaciones.html">Actualizaciones</a>
       <a href="/quienes-somos.html">Quiénes somos</a>
