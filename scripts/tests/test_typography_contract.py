@@ -57,14 +57,12 @@ class TypographyContractTests(unittest.TestCase):
                         f"{name}: {selector.strip()!r} limita un párrafo a {size!r}",
                     )
 
-    def test_hero_is_not_clipped_or_replaced_by_a_fixed_text_column(self):
+    def test_homepage_without_presentation_banner_keeps_main_content(self):
         home = (ROOT / "app" / "index.md").read_text(encoding="utf-8")
-        self.assertIn('class="hero-subtitle"', home)
-        self.assertNotRegex(
-            home,
-            r"\.hero-subtitle\s*\{[^}]*max-width\s*:\s*[0-9.]+\s*(?:ch|em|rem|px)",
-        )
-        self.assertNotIn("max-width:90ch", home)
+        self.assertNotIn('<div id="inicio" class="hero il-impact-hero">', home)
+        self.assertIn('<section id="inicio" class="il-quick-spending"', home)
+        self.assertIn('<section id="mapa-dinero" class="il-sankey-spotlight"', home)
+        self.assertLess(home.index('<section id="inicio"'), home.index('<section id="mapa-dinero"'))
 
 
 if __name__ == "__main__":
