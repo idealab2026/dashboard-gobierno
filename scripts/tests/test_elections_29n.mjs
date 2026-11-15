@@ -91,3 +91,18 @@ test("29N: hero title and introduction span the full page width",()=>{
   assert.doesNotMatch(election,/\.il-29n-hero p\{[^}]*max-width:1000px/);
   assert.doesNotMatch(election,/\.observablehq\{[^}]*max-width:1520px/);
 });
+
+
+test("29N: closing methodology block uses full width and non-justified readable text",()=>{
+  assert.match(election,/:is\(\.observablehq,#observablehq-main\)\s*#elecciones-29n > \.il-29n-method\{/);
+  assert.match(election,/:is\(\.observablehq,#observablehq-main\)\s*#elecciones-29n \.il-29n-method > h2\{/);
+  assert.match(election,/:is\(\.observablehq,#observablehq-main\)\s*#elecciones-29n \.il-29n-method > p\{/);
+  const section=election.match(/#elecciones-29n \.il-29n-method > p\{([^}]+)\}/);
+  assert.ok(section);
+  assert.match(section[1],/width:100%!important/);
+  assert.match(section[1],/max-width:none!important/);
+  assert.match(section[1],/text-align:left!important/);
+  assert.match(section[1],/word-spacing:normal!important/);
+  assert.match(election,/aria-labelledby="il-29n-method-heading"/);
+  assert.equal((election.match(/<section class="il-29n-method"/g)||[]).length,1);
+});
