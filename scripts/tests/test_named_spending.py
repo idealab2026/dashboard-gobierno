@@ -138,10 +138,8 @@ class NamedSpendingTests(unittest.TestCase):
         self.assertIn('name="q"', home)
         self.assertIn('type="search"', home)
         self.assertIn('aria-labelledby="il-quick-spending-heading"', home)
-        self.assertLess(
-            home.index('<div id="inicio"'),
-            home.index('class="il-quick-spending"')
-        )
+        self.assertIn('<section id="inicio" class="il-quick-spending"', home)
+        self.assertNotIn('<div id="inicio" class="hero il-impact-hero">', home)
         self.assertLess(
             home.index('class="il-quick-spending"'),
             home.index('<section id="mapa-dinero"')
