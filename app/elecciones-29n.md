@@ -208,14 +208,32 @@ footer: IDEA LAB · Investigación y divulgación independiente
 
 /* Comparador 29N: neutralidad, legibilidad y trazabilidad de fuente por medida. */
 :root{--il-29n-navy:#102a4c;--il-29n-muted:#60738c;--il-29n-line:#dce5ef}
-.observablehq{box-sizing:border-box!important;max-width:1520px!important;margin:0 auto!important;
- padding-inline:clamp(14px,2vw,30px)!important}
-.il-29n-page{font-family:system-ui,-apple-system,sans-serif;color:var(--il-29n-navy);min-width:0}
-.il-29n-hero{padding:22px 0 15px;margin:3px 0 13px;border-bottom:1px solid #e3e9ef}
+/* The generic Observable heading rules constrain h1 to a narrow editorial
+   measure; the electoral hero needs the entire content width, like the table. */
+:is(.observablehq,#observablehq-main){
+ box-sizing:border-box!important;width:100%!important;max-width:none!important;
+ margin-inline:auto!important;padding-inline:clamp(14px,2vw,30px)!important
+}
+.il-29n-page{font-family:system-ui,-apple-system,sans-serif;color:var(--il-29n-navy);
+ width:100%!important;max-width:none!important;min-width:0!important}
+.il-29n-hero{display:block!important;box-sizing:border-box!important;
+ width:100%!important;max-width:none!important;min-width:0!important;
+ padding:22px 0 15px;margin:3px 0 13px;border-bottom:1px solid #e3e9ef}
 .il-29n-eyebrow{font:800 .73rem/1.4 system-ui,sans-serif;letter-spacing:.12em;
  color:#977442;text-transform:uppercase}
-.il-29n-hero h1{font:800 clamp(2rem,4vw,3.5rem)/1.1 Georgia,serif;color:#0b2447;margin:8px 0}
-.il-29n-hero p{font-size:.91rem;line-height:1.6;max-width:1000px;color:#4e6480;margin:8px 0}
+:is(.observablehq,#observablehq-main) .il-29n-hero h1{
+ display:block!important;box-sizing:border-box!important;
+ width:100%!important;max-width:none!important;min-width:0!important;
+ margin:8px 0!important;font:800 clamp(2rem,4vw,3.5rem)/1.1 Georgia,serif!important;
+ color:#0b2447!important;white-space:normal!important;text-wrap:pretty;
+ text-align:left!important;overflow-wrap:normal
+}
+:is(.observablehq,#observablehq-main) .il-29n-hero p{
+ box-sizing:border-box!important;width:100%!important;max-width:none!important;
+ min-width:0!important;margin:8px 0!important;font-size:.91rem;line-height:1.6;
+ color:#4e6480;text-align:left!important;text-align-last:left!important;
+ word-spacing:normal!important
+}
 .il-29n-statuses{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:14px 0 20px}
 .il-29n-status{border:1px solid var(--il-29n-line);border-radius:9px;padding:12px;background:#f9fbfd}
 .il-29n-status strong{display:block;font-size:1.1rem;color:#0b2447}
