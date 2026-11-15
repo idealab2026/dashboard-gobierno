@@ -64,3 +64,18 @@ test("29N: consistent menu visible in all 9 sections",()=>{
     election.indexOf("</nav>",election.indexOf('<nav class="idealab-nav"')));
   assert.ok(nav.includes('aria-current="page" href="/elecciones-29n.html"'));
 });
+
+
+test("29N: comparison table fills the available width without justified gaps",()=>{
+  assert.match(election,/\.il-29n-table-scroll\s*>\s*\.il-29n-table\{/);
+  assert.match(election,/display:table!important;width:100%!important;max-width:none!important;min-width:1120px!important/);
+  assert.match(election,/\.il-29n-table thead th:not\(:first-child\),\.il-29n-table tbody td\{/);
+  assert.match(election,/width:20\.5%!important/);
+  assert.match(election,/text-align:left!important/);
+  assert.match(election,/word-spacing:normal!important/);
+  assert.match(election,/\.il-29n-table-scroll > \.il-29n-table\.il-29n-single-party\{/);
+  assert.match(election,/min-width:0!important;table-layout:fixed!important/);
+  assert.match(election,/electionTable\.classList\.toggle\("il-29n-single-party",party!=="all"\)/);
+  assert.match(election,/@media\(max-width:760px\)/);
+  assert.match(election,/\.il-29n-table-scroll > \.il-29n-table\{min-width:960px!important\}/);
+});
