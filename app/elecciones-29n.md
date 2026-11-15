@@ -240,7 +240,16 @@ footer: IDEA LAB · Investigación y divulgación independiente
 .il-29n-status small{display:block;font-size:.73rem;line-height:1.4;margin:5px 0;color:#5e7290}
 .il-29n-status a{font-size:.72rem;color:#1f5e89}
 .il-29n-section-title{font:800 clamp(1.24rem,2.1vw,1.6rem)/1.2 Georgia,serif;margin:24px 0 9px}
-.il-29n-caption{font-size:.76rem;line-height:1.5;color:#61758e;margin:5px 0 13px}
+/* Notas descriptivas a ancho completo, sin el máximo editorial heredado. */
+:is(.observablehq,#observablehq-main) #elecciones-29n .il-29n-caption{
+ display:block!important;box-sizing:border-box!important;
+ width:100%!important;max-width:none!important;min-width:0!important;
+ margin:5px 0 13px!important;
+ font-size:.76rem;line-height:1.5;color:#61758e;
+ text-align:left!important;text-align-last:left!important;
+ word-spacing:normal!important;letter-spacing:normal!important;
+ white-space:normal!important;overflow-wrap:break-word
+}
 .il-29n-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin:14px 0}
 .il-29n-toolbar label{display:flex;flex-direction:column;gap:4px;font-size:.72rem;
  font-weight:750;color:#48627d}
