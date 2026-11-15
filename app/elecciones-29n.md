@@ -243,6 +243,12 @@ footer: IDEA LAB · Investigación y divulgación independiente
  display:table!important;width:100%!important;max-width:none!important;min-width:1120px!important;
  border-collapse:separate;border-spacing:0;font-size:.8rem;line-height:1.5;table-layout:fixed!important
 }
+/* Global Observatory CSS uses a highly specific :is(...,#observablehq-main) rule.
+   Match that specificity to prevent a site-wide table max-width override. */
+:is(#observablehq-main,.observablehq) #il-29n-compare-table{
+ display:table!important;width:100%!important;max-width:none!important;min-width:1120px!important;
+ table-layout:fixed!important
+}
 .il-29n-table th,.il-29n-table td{vertical-align:top;padding:13px 12px;
  text-align:left;border-bottom:1px solid #e2eaf2}
 .il-29n-table thead th{background:#edf3f9;font-weight:850;color:#163859;
@@ -255,13 +261,16 @@ footer: IDEA LAB · Investigación y divulgación independiente
  width:20.5%!important;min-width:0!important
 }
 .il-29n-table td{color:#354e69;text-align:left!important;vertical-align:top}
-.il-29n-table td p{
+:is(#observablehq-main,.observablehq) .il-29n-table td p{
  margin:0 0 8px!important;line-height:1.55!important;text-align:left!important;
  text-align-last:left!important;word-spacing:normal!important;letter-spacing:normal!important;
  hyphens:auto;overflow-wrap:break-word
 }
 /* A one-party filter expands its remaining data column to all the space. */
 .il-29n-table-scroll > .il-29n-table.il-29n-single-party{
+ min-width:0!important;table-layout:fixed!important
+}
+:is(#observablehq-main,.observablehq) #il-29n-compare-table.il-29n-single-party{
  min-width:0!important;table-layout:fixed!important
 }
 .il-29n-table.il-29n-single-party thead th:first-child,
@@ -302,7 +311,9 @@ footer: IDEA LAB · Investigación y divulgación independiente
  .il-29n-statuses{grid-template-columns:repeat(2,minmax(0,1fr))}
  .il-29n-profiles{grid-template-columns:1fr}
  .il-29n-table-scroll > .il-29n-table{min-width:960px!important}
+ :is(#observablehq-main,.observablehq) #il-29n-compare-table{min-width:960px!important}
  .il-29n-table-scroll > .il-29n-table.il-29n-single-party{min-width:0!important}
+ :is(#observablehq-main,.observablehq) #il-29n-compare-table.il-29n-single-party{min-width:0!important}
  .il-29n-table th,.il-29n-table td{padding:9px}
  .il-29n-table tbody th,.il-29n-table thead th:first-child{min-width:0!important}
  .il-29n-hero{padding-top:10px}
