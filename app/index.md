@@ -2286,6 +2286,7 @@ html {
 @media(max-width:1599px){.idealab-nav .idealab-nav-election{display:none!important}}
 
 
+
 /* Títulos principales: ancho real completo, una línea y escala adaptativa.
    El ajuste exacto por medición está en one-line-headings.js. */
 :is(.observablehq,#observablehq-main) :is(
