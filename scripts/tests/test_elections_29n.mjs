@@ -118,5 +118,5 @@ test("29N: section captions use full width, left aligned and natural word spacin
   assert.match(caption[1],/text-align:left!important/);
   assert.match(caption[1],/word-spacing:normal!important/);
   assert.match(election,/El PP y Vox tienen documentos electorales completos accesibles/);
-  assert.equal((election.match(/class="il-29n-caption"/g)||[]).length,2);
+  assert.equal((election.match(/class="il-29n-caption"/g)||[]).length,3);
 });
