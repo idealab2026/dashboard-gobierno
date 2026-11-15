@@ -106,3 +106,17 @@ test("29N: closing methodology block uses full width and non-justified readable 
   assert.match(election,/aria-labelledby="il-29n-method-heading"/);
   assert.equal((election.match(/<section class="il-29n-method"/g)||[]).length,1);
 });
+
+
+test("29N: section captions use full width, left aligned and natural word spacing",()=>{
+  assert.match(election,/:is\(\.observablehq,#observablehq-main\)\s*#elecciones-29n \.il-29n-caption\{/);
+  const caption=election.match(/#elecciones-29n \.il-29n-caption\{([^}]+)\}/);
+  assert.ok(caption,"Caption styling missing");
+  assert.match(caption[1],/width:100%!important/);
+  assert.match(caption[1],/max-width:none!important/);
+  assert.match(caption[1],/min-width:0!important/);
+  assert.match(caption[1],/text-align:left!important/);
+  assert.match(caption[1],/word-spacing:normal!important/);
+  assert.match(election,/El PP y Vox tienen documentos electorales completos accesibles/);
+  assert.equal((election.match(/class="il-29n-caption"/g)||[]).length,2);
+});
