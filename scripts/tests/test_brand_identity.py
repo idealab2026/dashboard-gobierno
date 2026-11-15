@@ -86,6 +86,16 @@ class BrandIdentityTests(unittest.TestCase):
             self.assertEqual(desktop.count('>Administraciones</a>'),1)
             self.assertEqual(mobile.count('>Administraciones</a>'),1)
 
+    def test_homepage_removes_yellow_presentation_banner_without_losing_content(self):
+        """The splash banner is removed; the search and financial map remain."""
+        home = (ROOT / "app" / "index.md").read_text(encoding="utf-8")
+        self.assertNotIn('<div id="inicio" class="hero il-impact-hero">', home)
+        self.assertNotIn('OBSERVATORIO INDEPENDIENTE · IDEA LAB</div>', home)
+        self.assertNotIn('DESLIZA PARA EXPLORAR ↓</span>', home)
+        self.assertIn('<section id="inicio" class="il-quick-spending"', home)
+        self.assertIn('<section id="mapa-dinero" class="il-sankey-spotlight">', home)
+        self.assertIn('<h2 id="il-quick-spending-heading">Sigue el rastro de una partida</h2>', home)
+
     def test_homepage_has_single_sankey_section_divider(self):
         """Prevent the grey hero rule from reappearing beside the gold Sankey rule."""
         home = (ROOT / "app" / "index.md").read_text(encoding="utf-8")
