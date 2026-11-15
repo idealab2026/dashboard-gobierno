@@ -443,6 +443,35 @@ footer: IDEA LAB · Investigación y divulgación independiente
 
 /* Elecciones 29N visible en cabeceras anchas; siempre disponible en Más y móvil. */
 @media(max-width:1599px){.idealab-nav .idealab-nav-election{display:none!important}}
+
+
+
+/* Títulos principales: ancho real completo, una línea y escala adaptativa.
+   El ajuste exacto por medición está en one-line-headings.js. */
+:is(.observablehq,#observablehq-main) :is(
+ .il-compact-intro h1,
+ #mapa-dinero .il-spotlight-top h2,
+ .section-header h2,
+ .il-quick-spending h2,
+ .metric-group-title,
+ .pf-hero h1,
+ .pf-section-heading h2,
+ .il-admin-intro h1,
+ .il-finder-hero h1,
+ .il-visual-intro h1,
+ .il-gallery-intro h1,
+ .il-29n-hero h1,
+ .il-29n-section-title,
+ .il-about h1,
+ .il-about section > h2
+),
+:is(#observablehq-main,.observablehq) > :is(h1,h2,h3) {
+ box-sizing:border-box!important;width:100%!important;max-width:none!important;min-width:0!important;
+ white-space:nowrap!important;text-wrap:nowrap!important;
+ overflow-wrap:normal!important;word-break:normal!important;
+ text-align:left!important
+}
+
 </style>
 
 <nav class="idealab-nav" aria-label="Navegación de España en Datos">
@@ -511,7 +540,9 @@ footer: IDEA LAB · Investigación y divulgación independiente
   </details>
 </nav>
 
-```js
+\`\`\`js
+import {enableOneLineHeadings} from "./components/one-line-headings.js";
+enableOneLineHeadings();
 // Cabecera de navegación clásica: solo clic, cierre fuera y con Escape.
 const navHeader=document.querySelector(".idealab-nav");
 if(navHeader){

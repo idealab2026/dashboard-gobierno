@@ -2228,6 +2228,89 @@ html {
 
 /* Elecciones 29N visible en cabeceras anchas; siempre disponible en Más y móvil. */
 @media(max-width:1599px){.idealab-nav .idealab-nav-election{display:none!important}}
+
+
+/* Introducción editorial breve: sin gran hero ni fondo amarillo. */
+.il-compact-intro {
+ display:flex;justify-content:space-between;align-items:center;
+ gap:18px;box-sizing:border-box;width:100%;max-width:none;
+ margin:8px 0 13px;padding:14px 0 17px;
+ background:transparent;border:0;border-bottom:1px solid #e2e8f0
+}
+.il-compact-intro-copy{flex:1 1 auto;min-width:0;max-width:none}
+.il-compact-intro .il-compact-kicker{
+ margin:0 0 5px;color:#997742;font:800 .65rem/1.35 system-ui,sans-serif;
+ letter-spacing:.12em;text-transform:uppercase;text-align:left
+}
+.il-compact-intro h1{
+ font:800 clamp(1.7rem,3vw,2.8rem)/1.1 Georgia,serif;color:#0b2447;
+ letter-spacing:-.025em;margin:0 0 5px
+}
+.il-compact-intro .il-compact-description{
+ box-sizing:border-box;width:100%;max-width:none;margin:0;
+ color:#526780;font:500 .84rem/1.5 system-ui,sans-serif;
+ text-align:left!important;text-align-last:left!important;word-spacing:normal!important
+}
+.il-compact-intro .il-compact-source{
+ flex:0 0 auto;white-space:nowrap;text-decoration:none;
+ color:#285476;font:750 .73rem/1.3 system-ui,sans-serif;
+ border-bottom:1px solid #a6bccd;padding:6px 0
+}
+/* El titular largo tiene una fila completa; el botón ocupa la siguiente. */
+#mapa-dinero .il-spotlight-top{
+ display:block!important;box-sizing:border-box!important;width:100%!important;max-width:none!important
+}
+#mapa-dinero .il-spotlight-top > :first-child{
+ display:block!important;flex:none!important;box-sizing:border-box!important;
+ width:100%!important;max-width:none!important;min-width:0!important
+}
+#mapa-dinero .il-spotlight-top h2{
+ display:block!important;width:100%!important;max-width:none!important;
+ font:790 clamp(1.35rem,2.35vw,2.25rem)/1.13 Georgia,serif!important;
+ letter-spacing:-.027em!important;margin:4px 0 7px!important
+}
+#mapa-dinero .il-spotlight-top .il-sankey-cta{
+ display:inline-flex!important;margin:7px 0 4px!important
+}
+@media(max-width:760px){
+ .il-compact-intro{flex-direction:column;align-items:flex-start;gap:5px;
+  padding:10px 0 12px;margin:5px 0 10px}
+ .il-compact-intro h1{font-size:clamp(1.45rem,6vw,1.85rem)!important}
+ .il-compact-intro .il-compact-description{font-size:.76rem;line-height:1.4}
+ .il-compact-intro .il-compact-kicker{font-size:.57rem}
+ .il-compact-intro .il-compact-source{font-size:.7rem;padding:2px 0}
+ #mapa-dinero .il-spotlight-top h2{
+  font-size:clamp(1rem,4.05vw,1.4rem)!important;line-height:1.2!important
+ }
+}
+
+
+/* Títulos principales: ancho real completo, una línea y escala adaptativa.
+   El ajuste exacto por medición está en one-line-headings.js. */
+:is(.observablehq,#observablehq-main) :is(
+ .il-compact-intro h1,
+ #mapa-dinero .il-spotlight-top h2,
+ .section-header h2,
+ .il-quick-spending h2,
+ .metric-group-title,
+ .pf-hero h1,
+ .pf-section-heading h2,
+ .il-admin-intro h1,
+ .il-finder-hero h1,
+ .il-visual-intro h1,
+ .il-gallery-intro h1,
+ .il-29n-hero h1,
+ .il-29n-section-title,
+ .il-about h1,
+ .il-about section > h2
+),
+:is(#observablehq-main,.observablehq) > :is(h1,h2,h3) {
+ box-sizing:border-box!important;width:100%!important;max-width:none!important;min-width:0!important;
+ white-space:nowrap!important;text-wrap:nowrap!important;
+ overflow-wrap:normal!important;word-break:normal!important;
+ text-align:left!important
+}
+
 </style>
 
 
@@ -2297,7 +2380,9 @@ html {
   </details>
 </nav>
 
-```js
+\`\`\`js
+import {enableOneLineHeadings} from "./components/one-line-headings.js";
+enableOneLineHeadings();
 // Cabecera de navegación clásica: solo clic, cierre fuera y con Escape.
 const navHeader=document.querySelector(".idealab-nav");
 if(navHeader){
@@ -3514,6 +3599,15 @@ const indicatorsToShow = preferredIds
 
 ```
 
+
+<section class="il-compact-intro" aria-label="Introducción a España en Datos">
+  <div class="il-compact-intro-copy">
+    <p class="il-compact-kicker">Observatorio independiente · IDEA LAB</p>
+    <h1>España en Datos</h1>
+    <p class="il-compact-description">Datos oficiales para entender la realidad económica, social e institucional de España. Explora indicadores, contrasta fuentes y sigue el recorrido del dinero público.</p>
+  </div>
+  <a class="il-compact-source" href="/metodologia.html">Fuentes y metodología ↗</a>
+</section>
 
 <section id="inicio" class="il-quick-spending" aria-labelledby="il-quick-spending-heading">
   <div class="il-quick-spending-copy">

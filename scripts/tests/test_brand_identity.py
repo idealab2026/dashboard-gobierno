@@ -87,6 +87,18 @@ class BrandIdentityTests(unittest.TestCase):
             self.assertEqual(desktop.count('>Administraciones</a>'),1)
             self.assertEqual(mobile.count('>Administraciones</a>'),1)
 
+    def test_homepage_compact_introduction_and_one_line_title(self):
+        """The white editorial introduction replaces the enormous yellow splash."""
+        home = (ROOT/"app"/"index.md").read_text(encoding="utf-8")
+        self.assertIn('class="il-compact-intro"',home)
+        self.assertIn("<h1>España en Datos</h1>",home)
+        self.assertIn("Observatorio independiente · IDEA LAB",home)
+        self.assertIn('href="/metodologia.html">Fuentes y metodología',home)
+        self.assertIn("#mapa-dinero .il-spotlight-top h2{",home)
+        self.assertIn("display:block!important;width:100%!important;max-width:none!important",home)
+        self.assertIn("enableOneLineHeadings();",home)
+        self.assertNotIn('<div id="inicio" class="hero il-impact-hero">',home)
+
     def test_homepage_removes_yellow_presentation_banner_without_losing_content(self):
         """The splash banner is removed; the search and financial map remain."""
         home = (ROOT / "app" / "index.md").read_text(encoding="utf-8")

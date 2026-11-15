@@ -57,6 +57,14 @@ class TypographyContractTests(unittest.TestCase):
                         f"{name}: {selector.strip()!r} limita un párrafo a {size!r}",
                     )
 
+    def test_no_wrapping_on_primary_headings(self):
+        home = (ROOT/"app"/"index.md").read_text(encoding="utf-8")
+        self.assertIn("white-space:nowrap!important;text-wrap:nowrap!important",home)
+        self.assertIn("enableOneLineHeadings();",home)
+        self.assertIn('class="il-compact-intro"',home)
+        self.assertIn("#mapa-dinero .il-spotlight-top{",home)
+        self.assertIn("display:block!important;box-sizing:border-box!important;width:100%!important",home)
+
     def test_homepage_without_presentation_banner_keeps_main_content(self):
         home = (ROOT / "app" / "index.md").read_text(encoding="utf-8")
         self.assertNotIn('<div id="inicio" class="hero il-impact-hero">', home)
