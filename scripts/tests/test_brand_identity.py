@@ -11,8 +11,9 @@ class BrandIdentityTests(unittest.TestCase):
         home = (ROOT / "app" / "index.md").read_text(encoding="utf-8")
         self.assertIn("Un producto de", home)
         self.assertIn('alt="IDEA LAB"', home)
-        self.assertIn("<h1>España en Datos</h1>", home)
-        self.assertIn("Nuestro observatorio económico, social e institucional", home)
+        self.assertIn('class="idealab-brand"', home)
+        self.assertIn('España en Datos</a>', home)
+        self.assertNotIn('<div id="inicio" class="hero il-impact-hero">', home)
         self.assertIn('href="/quienes-somos.html"', home)
 
     def test_about_page_and_independence(self):
