@@ -728,7 +728,7 @@ font:750 .76rem/1.3 system-ui,sans-serif;padding:9px 12px;cursor:pointer;white-s
   </details>
 </nav>
 
-\`\`\`js
+```js
 import {enableOneLineHeadings} from "./components/one-line-headings.js";
 enableOneLineHeadings();
 // Cabecera de navegación clásica: solo clic, cierre fuera y con Escape.

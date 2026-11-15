@@ -467,7 +467,7 @@ footer: IDEA LAB · Investigación y divulgación independiente
   </details>
 </nav>
 
-\`\`\`js
+```js
 import {enableOneLineHeadings} from "./components/one-line-headings.js";
 enableOneLineHeadings();
 // Cabecera de navegación clásica: solo clic, cierre fuera y con Escape.
