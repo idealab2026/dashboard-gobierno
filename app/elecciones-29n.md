@@ -229,20 +229,47 @@ footer: IDEA LAB · Investigación y divulgación independiente
 .il-29n-toolbar select{appearance:auto;border:1px solid #cbd8e5;border-radius:7px;
  font:650 .82rem/1.25 system-ui,sans-serif;padding:9px 12px;min-height:42px;
  background:#fff;color:#0b2447;min-width:195px}
-.il-29n-table-scroll{width:100%;overflow-x:auto;overscroll-behavior-x:contain;
- border:1px solid #dbe4ee;border-radius:9px;background:#fff;scrollbar-width:thin}
-.il-29n-table{width:100%;min-width:960px;border-collapse:separate;border-spacing:0;
- font-size:.78rem;line-height:1.48;table-layout:fixed}
+/* Full-width comparison: the site-wide table rules must not cap the content
+   to an intrinsic or editorial width. Desktop uses 5 proportional columns. */
+.il-29n-page, .il-29n-page > section{
+ width:100%!important;max-width:none!important;min-width:0!important;box-sizing:border-box!important
+}
+.il-29n-table-scroll{
+ display:block!important;width:100%!important;max-width:none!important;min-width:0!important;
+ box-sizing:border-box!important;overflow-x:auto!important;overscroll-behavior-x:contain;
+ border:1px solid #dbe4ee;border-radius:9px;background:#fff;scrollbar-width:thin
+}
+.il-29n-table-scroll > .il-29n-table{
+ display:table!important;width:100%!important;max-width:none!important;min-width:1120px!important;
+ border-collapse:separate;border-spacing:0;font-size:.8rem;line-height:1.5;table-layout:fixed!important
+}
 .il-29n-table th,.il-29n-table td{vertical-align:top;padding:13px 12px;
  text-align:left;border-bottom:1px solid #e2eaf2}
 .il-29n-table thead th{background:#edf3f9;font-weight:850;color:#163859;
  position:sticky;top:0;z-index:1}
 .il-29n-table tr:last-child td,.il-29n-table tr:last-child th{border-bottom:0}
 .il-29n-table tbody th{position:sticky;left:0;background:#f8fafc;z-index:1;
- min-width:158px;width:170px;font-weight:800;color:#153756}
-.il-29n-table thead th:first-child{left:0;position:sticky;z-index:2;width:170px}
-.il-29n-table td{width:calc((100% - 170px)/4);color:#354e69}
-.il-29n-table td p{margin:0 0 8px!important;line-height:1.48}
+ width:18%!important;min-width:0!important;font-weight:800;color:#153756}
+.il-29n-table thead th:first-child{left:0;position:sticky;z-index:2;width:18%!important}
+.il-29n-table thead th:not(:first-child),.il-29n-table tbody td{
+ width:20.5%!important;min-width:0!important
+}
+.il-29n-table td{color:#354e69;text-align:left!important;vertical-align:top}
+.il-29n-table td p{
+ margin:0 0 8px!important;line-height:1.55!important;text-align:left!important;
+ text-align-last:left!important;word-spacing:normal!important;letter-spacing:normal!important;
+ hyphens:auto;overflow-wrap:break-word
+}
+/* A one-party filter expands its remaining data column to all the space. */
+.il-29n-table-scroll > .il-29n-table.il-29n-single-party{
+ min-width:0!important;table-layout:fixed!important
+}
+.il-29n-table.il-29n-single-party thead th:first-child,
+.il-29n-table.il-29n-single-party tbody th{width:22%!important}
+.il-29n-table.il-29n-single-party thead th[data-party]:not(.il-29n-col-hidden),
+.il-29n-table.il-29n-single-party tbody td[data-party]:not(.il-29n-col-hidden){
+ width:78%!important
+}
 .il-29n-table td.il-29n-unknown p{color:#8491a0}
 .il-29n-table td.il-29n-unknown{background:#fcfcfd}
 .il-29n-source{color:#1f628f!important;text-decoration:underline;
@@ -274,9 +301,10 @@ footer: IDEA LAB · Investigación y divulgación independiente
 @media(max-width:760px){
  .il-29n-statuses{grid-template-columns:repeat(2,minmax(0,1fr))}
  .il-29n-profiles{grid-template-columns:1fr}
- .il-29n-table{min-width:860px}
+ .il-29n-table-scroll > .il-29n-table{min-width:960px!important}
+ .il-29n-table-scroll > .il-29n-table.il-29n-single-party{min-width:0!important}
  .il-29n-table th,.il-29n-table td{padding:9px}
- .il-29n-table tbody th,.il-29n-table thead th:first-child{width:145px;min-width:145px}
+ .il-29n-table tbody th,.il-29n-table thead th:first-child{min-width:0!important}
  .il-29n-hero{padding-top:10px}
 }
 @media(max-width:480px){
@@ -507,6 +535,7 @@ const electionTable=document.getElementById("il-29n-compare-table");
 function updateElectionFilters(){
   const party=partyFilter.value;
   const topic=topicFilter.value;
+  electionTable.classList.toggle("il-29n-single-party",party!=="all");
   electionTable.querySelectorAll("[data-party]").forEach(el=>{
     el.classList.toggle("il-29n-col-hidden",party!=="all"&&el.dataset.party!==party);
   });
