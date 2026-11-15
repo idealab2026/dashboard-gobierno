@@ -321,9 +321,24 @@ footer: IDEA LAB · Investigación y divulgación independiente
 .il-29n-cv dt{font:.76rem/1.3 system-ui,sans-serif;font-weight:850;color:#23405d}
 .il-29n-cv dd{font:.79rem/1.5 system-ui,sans-serif;color:#4c6279;margin:4px 0 0}
 .il-29n-sourcelinks{display:flex;flex-wrap:wrap;gap:12px;margin-top:11px}
-.il-29n-method{font-size:.76rem;line-height:1.6;color:#536b82;border-top:1px solid #dae4ee;
- padding-top:13px;margin-top:18px}
-.il-29n-method p{margin:7px 0}
+/* The closing methodology section, heading and paragraphs use the same
+   full-width container as the programme comparison and introductory hero. */
+:is(.observablehq,#observablehq-main) #elecciones-29n > .il-29n-method{
+ display:block!important;box-sizing:border-box!important;width:100%!important;
+ max-width:none!important;min-width:0!important;
+ font-size:.76rem;line-height:1.6;color:#536b82;
+ border-top:1px solid #dae4ee;padding:13px 0 0!important;margin:18px 0 0!important
+}
+:is(.observablehq,#observablehq-main) #elecciones-29n .il-29n-method > h2{
+ display:block!important;box-sizing:border-box!important;width:100%!important;
+ max-width:none!important;min-width:0!important;text-align:left!important
+}
+:is(.observablehq,#observablehq-main) #elecciones-29n .il-29n-method > p{
+ display:block!important;box-sizing:border-box!important;width:100%!important;
+ max-width:none!important;min-width:0!important;margin:8px 0!important;
+ text-align:left!important;text-align-last:left!important;word-spacing:normal!important;
+ letter-spacing:normal!important;white-space:normal!important;overflow-wrap:break-word
+}
 .il-29n-method a{color:#1c5c86}
 @media(max-width:760px){
  .il-29n-statuses{grid-template-columns:repeat(2,minmax(0,1fr))}
