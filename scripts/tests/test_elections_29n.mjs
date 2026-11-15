@@ -79,3 +79,15 @@ test("29N: comparison table fills the available width without justified gaps",()
   assert.match(election,/@media\(max-width:760px\)/);
   assert.match(election,/\.il-29n-table-scroll > \.il-29n-table\{min-width:960px!important\}/);
 });
+
+
+test("29N: hero title and introduction span the full page width",()=>{
+  assert.match(election,/:is\(\.observablehq,#observablehq-main\)\s*\.il-29n-hero h1\{/);
+  assert.match(election,/:is\(\.observablehq,#observablehq-main\)\s*\.il-29n-hero p\{/);
+  assert.match(election,/\.il-29n-hero\{display:block!important;box-sizing:border-box!important;/);
+  assert.match(election,/width:100%!important;max-width:none!important;min-width:0!important/);
+  assert.match(election,/white-space:normal!important;text-wrap:pretty/);
+  assert.match(election,/text-align:left!important;text-align-last:left!important/);
+  assert.doesNotMatch(election,/\.il-29n-hero p\{[^}]*max-width:1000px/);
+  assert.doesNotMatch(election,/\.observablehq\{[^}]*max-width:1520px/);
+});
