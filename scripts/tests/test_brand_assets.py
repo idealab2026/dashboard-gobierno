@@ -15,7 +15,8 @@ class IDEAAssetsTests(unittest.TestCase):
                 source = (ROOT / "app" / filename).read_text(encoding="utf-8")
                 svg = ElementTree.fromstring(source)
                 self.assertTrue(svg.tag.endswith("svg"))
-                self.assertIn("IDEA LAB", source)
+                expected_name = "España en Datos" if filename == "favicon.svg" else "IDEA LAB"
+                self.assertIn(expected_name, source)
                 self.assertNotIn("<script", source.lower())
                 # XML SVG namespace uses the canonical http:// URL and is safe.
                 # Only block externally fetched resources or hyperlinks.
